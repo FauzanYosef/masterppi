@@ -89,13 +89,26 @@ const FasilitasPage = () => {
       <div className="container">
 
         {/* TITLE */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-black text-gray-900">
-            Fasilitas <br />
-            <span className="text-primary">
-              Program Magister Pemikiran Politik Islam
-            </span>
+        <div className="text-center space-y-4 mb-6">
+
+          {/* BADGE */}
+          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
+            Akademik
+          </div> */}
+
+          {/* TITLE */}
+          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+            Fasilitas <span className="text-primary">Akademik</span>
           </h2>
+
+          {/* SUBTITLE */}
+          <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
+            Program Magister PPI didukung oleh berbagai fasilitas akademik, antara lain:
+          </p>
+
+          {/* GARIS AKSEN */}
+          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+
         </div>
 
         {/* GRID FITUR */}

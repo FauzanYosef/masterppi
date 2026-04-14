@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
 import { supabase } from '@/lib/supabase'
 
-const KalenderPage = () => {
+const MatkulPage = () => {
   const pathname = usePathname()
   const pathSegments = pathname.split('/').filter(Boolean)
 
@@ -17,9 +17,17 @@ const KalenderPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const { data, error } = await supabase
-        .from('kalender')
-        .select('tahun_akademik, link_kalender')
-        .order('tahun_akademik', { ascending: false })
+        .from('mata_kuliah')
+        .select(`
+          kode_mk,
+          nama_mk,
+          sks,
+          deskripsi,
+          tipe_matkul:tipe_mk (
+            tipe_id
+          )
+        `)
+        .order('nama_mk', { ascending: true })
 
       if (error) console.error(error)
       if (data) setData(data)
@@ -46,14 +54,12 @@ const KalenderPage = () => {
 
           <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-center px-4">
             <h1 className="text-3xl md:text-4xl font-bold text-white">
-              Kalender Akademik
+              Mata Kuliah
             </h1>
 
             {/* BREADCRUMB */}
             <div className="flex gap-2 flex-wrap justify-center text-sm text-white/80 mt-3">
-              <Link href="/" className="hover:text-white">
-                Home
-              </Link>
+              <Link href="/">Home</Link>
 
               {pathSegments.map((segment, index) => {
                 const href =
@@ -72,9 +78,7 @@ const KalenderPage = () => {
                         {label}
                       </span>
                     ) : (
-                      <Link href={href} className="hover:text-white">
-                        {label}
-                      </Link>
+                      <Link href={href}>{label}</Link>
                     )}
                   </span>
                 )
@@ -89,16 +93,12 @@ const KalenderPage = () => {
 
         {/* TITLE */}
         <div className="text-center space-y-5">
-          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            Akademik
-          </div> */}
-
           <h2 className="text-3xl md:text-4xl font-bold">
-            Kalender <span className="text-primary">Akademik</span>
+            Deskripsi <span className="text-primary">Mata Kuliah</span>
           </h2>
 
           <p className="text-gray-500 dark:text-gray-400">
-            Informasi jadwal kegiatan akademik setiap tahun ajaran
+            Informasi lengkap mengenai setiap mata kuliah dalam program studi
           </p>
 
           <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
@@ -109,43 +109,55 @@ const KalenderPage = () => {
           <p className="text-center">Loading...</p>
         ) : data.length === 0 ? (
           <p className="text-center text-gray-500">
-            Data kalender belum tersedia
+            Data mata kuliah belum tersedia
           </p>
         ) : (
-          data.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white dark:bg-dark rounded-2xl shadow-md p-6 space-y-6"
-            >
-              {/* HEADER */}
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
-                <h3 className="text-xl font-semibold text-primary">
-                  Tahun Akademik {item.tahun_akademik}
-                </h3>
+          <div className="grid md:grid-cols-2 gap-8">
+            {data.map((mk, index) => (
+              <div
+                key={index}
+                className="bg-white dark:bg-dark rounded-2xl shadow-md p-6 space-y-4 hover:shadow-xl transition"
+              >
+                {/* HEADER */}
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold text-primary">
+                      {mk.nama_mk}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {mk.kode_mk}
+                    </p>
+                  </div>
 
-                <a
-                  href={item.link_kalender}
-                  target="_blank"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Lihat Full Kalender →
-                </a>
-              </div>
+                  <span className="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
+                    {mk.sks} SKS
+                  </span>
+                </div>
 
-              {/* EMBED */}
-              <div className="w-full h-[500px] rounded-xl overflow-hidden border">
-                <iframe
-                  src={item.link_kalender}
-                  className="w-full h-full"
-                  loading="lazy"
-                ></iframe>
+                {/* TIPE */}
+                <div>
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full font-medium ${
+                      mk.tipe_matkul?.tipe_id === 'Wajib'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}
+                  >
+                    {mk.tipe_matkul?.tipe_id}
+                  </span>
+                </div>
+
+                {/* DESKRIPSI */}
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-justify">
+                  {mk.deskripsi || 'Belum ada deskripsi mata kuliah.'}
+                </p>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
   )
 }
 
-export default KalenderPage
+export default MatkulPage

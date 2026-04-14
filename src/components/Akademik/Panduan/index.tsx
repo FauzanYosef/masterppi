@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
 import { supabase } from '@/lib/supabase'
 
-const KalenderPage = () => {
+const PanduanPage = () => {
   const pathname = usePathname()
   const pathSegments = pathname.split('/').filter(Boolean)
 
@@ -17,9 +17,9 @@ const KalenderPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const { data, error } = await supabase
-        .from('kalender')
-        .select('tahun_akademik, link_kalender')
-        .order('tahun_akademik', { ascending: false })
+        .from('panduan')
+        .select('title, deskripsi, link_panduan')
+        .order('title', { ascending: true })
 
       if (error) console.error(error)
       if (data) setData(data)
@@ -46,14 +46,12 @@ const KalenderPage = () => {
 
           <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-center px-4">
             <h1 className="text-3xl md:text-4xl font-bold text-white">
-              Kalender Akademik
+              Panduan Akademik
             </h1>
 
             {/* BREADCRUMB */}
             <div className="flex gap-2 flex-wrap justify-center text-sm text-white/80 mt-3">
-              <Link href="/" className="hover:text-white">
-                Home
-              </Link>
+              <Link href="/">Home</Link>
 
               {pathSegments.map((segment, index) => {
                 const href =
@@ -72,9 +70,7 @@ const KalenderPage = () => {
                         {label}
                       </span>
                     ) : (
-                      <Link href={href} className="hover:text-white">
-                        {label}
-                      </Link>
+                      <Link href={href}>{label}</Link>
                     )}
                   </span>
                 )
@@ -89,16 +85,12 @@ const KalenderPage = () => {
 
         {/* TITLE */}
         <div className="text-center space-y-5">
-          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            Akademik
-          </div> */}
-
           <h2 className="text-3xl md:text-4xl font-bold">
-            Kalender <span className="text-primary">Akademik</span>
+            Panduan <span className="text-primary">Akademik</span>
           </h2>
 
           <p className="text-gray-500 dark:text-gray-400">
-            Informasi jadwal kegiatan akademik setiap tahun ajaran
+            Kumpulan panduan resmi untuk mendukung kegiatan akademik mahasiswa
           </p>
 
           <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
@@ -109,43 +101,44 @@ const KalenderPage = () => {
           <p className="text-center">Loading...</p>
         ) : data.length === 0 ? (
           <p className="text-center text-gray-500">
-            Data kalender belum tersedia
+            Data panduan belum tersedia
           </p>
         ) : (
-          data.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white dark:bg-dark rounded-2xl shadow-md p-6 space-y-6"
-            >
-              {/* HEADER */}
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
-                <h3 className="text-xl font-semibold text-primary">
-                  Tahun Akademik {item.tahun_akademik}
-                </h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {data.map((item, index) => (
+              <div
+                key={index}
+                className="group bg-white dark:bg-dark rounded-2xl shadow-md p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800"
+              >
+                {/* CONTENT */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-primary group-hover:underline">
+                    {item.title}
+                  </h3>
 
-                <a
-                  href={item.link_kalender}
-                  target="_blank"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Lihat Full Kalender →
-                </a>
-              </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed text-justify line-clamp-4">
+                    {item.deskripsi || 'Belum ada deskripsi.'}
+                  </p>
+                </div>
 
-              {/* EMBED */}
-              <div className="w-full h-[500px] rounded-xl overflow-hidden border">
-                <iframe
-                  src={item.link_kalender}
-                  className="w-full h-full"
-                  loading="lazy"
-                ></iframe>
+                {/* BUTTON */}
+                <div className="mt-6">
+                  <a
+                    href={item.link_panduan}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition"
+                  >
+                    Lihat Panduan →
+                  </a>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
   )
 }
 
-export default KalenderPage
+export default PanduanPage

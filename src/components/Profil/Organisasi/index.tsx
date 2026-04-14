@@ -89,12 +89,24 @@ const OrganisasiPage = () => {
       <div className="container">
 
         <div className="pb-12 text-center">
-          <h2 className="text-3xl lg:text-4xl font-black text-gray-900">
-            Struktur Organisasi <br />
+          {/* TITLE SECTION */}
+        <div className="text-center space-y-5 mb-12">
+
+          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
+            Profil
+          </div> */}
+
+          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+            Struktur Organisasi Magister <br />
             <span className="text-primary">
-              Pemikiran Politik Islam
+              Pemikiran Politik Islam ?
             </span>
           </h2>
+
+          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+
+        </div>
+        
         </div>
 
         {loading ? (

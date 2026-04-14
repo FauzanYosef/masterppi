@@ -73,14 +73,26 @@ const DosenPage = () => {
 
       {/* CONTENT */}
       <div className="container">
+        <div className="text-center space-y-4 mb-6">
 
-        <div className="pb-10 text-center">
-          <h2 className="text-3xl lg:text-4xl font-black text-gray-900 pb-10">
-            Daftar Dosen <br />
-            <span className="text-primary">
-              Pemikiran Politik Islam
-            </span>
+          {/* BADGE */}
+          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
+            Akademik
+          </div> */}
+
+          {/* TITLE */}
+          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+            Daftar <span className="text-primary">Dosen</span>
           </h2>
+
+          {/* SUBTITLE */}
+          <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
+            Dosen tetap Program Magister Pemikiran Politik Islam terdiri atas para akademisi dengan latar kepakaran yang saling melengkapi dalam bidang politik Islam, agama dan politik, pemikiran Islam, serta studi agama. Komposisi ini menunjukkan kekuatan program dalam membangun kajian yang interdisipliner, sekaligus tetap berakar kuat pada tradisi intelektual Islam dan isu-isu politik kontemporer.
+          </p>
+
+          {/* GARIS AKSEN */}
+          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+
         </div>
 
         {loading ? (

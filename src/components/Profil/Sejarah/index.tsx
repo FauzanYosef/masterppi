@@ -7,47 +7,23 @@ import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
 import { supabase } from '@/lib/supabase'
 
-import Ontologi from './ontologi'
-import Epistemologi from './epistemologi'
-import Aksiologi from './aksiologi'
-
-type MenuType = 'ontologi' | 'epistemologi' | 'aksiologi'
-
-const menuItems: { key: MenuType; label: string }[] = [
-  { key: 'ontologi', label: 'Perspektif Ontologis' },
-  { key: 'epistemologi', label: 'Perspektif Epistemologis' },
-  { key: 'aksiologi', label: 'Perspektif Aksiologis' },
-]
-
-const contentMap: Record<MenuType, React.ReactNode> = {
-  ontologi: <Ontologi />,
-  epistemologi: <Epistemologi />,
-  aksiologi: <Aksiologi />,
-}
-
 const SejarahPage = () => {
   const pathname = usePathname()
   const pathSegments = pathname.split('/').filter(Boolean)
 
-  const [activeMenu, setActiveMenu] = useState<MenuType>('ontologi')
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchContent = async () => {
       const { data, error } = await supabase
-        .from('profile') // ✅ ganti ke profile
+        .from('profile')
         .select('content')
-        .eq('key', 'sejarah_content') // bebas, sesuai isi DB kamu
+        .eq('key', 'sejarah_content')
         .single()
 
-      if (error) {
-        console.error('Supabase error:', error)
-      }
-
-      if (data) {
-        setContent(data.content)
-      }
+      if (error) console.error('Supabase error:', error)
+      if (data) setContent(data.content)
 
       setLoading(false)
     }
@@ -58,9 +34,9 @@ const SejarahPage = () => {
   return (
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
 
-      {/* HERO */}
-      <div className="container mb-16">
-        <div className="relative rounded-2xl overflow-hidden">
+      {/* 🔥 HERO */}
+      <div className="container mb-20">
+        <div className="relative rounded-2xl overflow-hidden shadow-lg">
           <Image
             src={getImgPath('/images/banner/uin.jpg')}
             alt="Profile Banner"
@@ -69,14 +45,18 @@ const SejarahPage = () => {
             className="w-full h-[300px] md:h-[400px] object-cover"
           />
 
-          <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white">
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-center px-4">
+
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Sejarah Pemikiran Politik Islam
             </h1>
 
             {/* Breadcrumb */}
-            <div className="text-sm md:text-base text-white/90 flex items-center gap-2 flex-wrap">
-              <Link href="/">Home</Link>
+            <div className="flex gap-2 flex-wrap justify-center text-sm text-white/80">
+              <Link href="/" className="hover:text-white transition">
+                Home
+              </Link>
 
               {pathSegments.map((segment, index) => {
                 const href =
@@ -89,60 +69,85 @@ const SejarahPage = () => {
 
                 return (
                   <span key={href} className="flex items-center gap-2">
-                    <span>›</span>
+                    <span className="opacity-60">›</span>
+
                     {isLast ? (
-                      <span className="font-medium">{label}</span>
+                      <span className="text-white font-medium">
+                        {label}
+                      </span>
                     ) : (
-                      <Link href={href}>{label}</Link>
+                      <Link
+                        href={href}
+                        className="hover:text-white transition"
+                      >
+                        {label}
+                      </Link>
                     )}
                   </span>
                 )
               })}
             </div>
+
           </div>
         </div>
       </div>
 
-      {/* CONTENT */}
+      {/* 🔥 CONTENT */}
       <div className="container">
-        <div className="pb-10">
-          <h2 className="text-3xl lg:text-4xl font-black text-gray-900 text-center pb-8">
-            Sejarah <br />
+
+        {/* TITLE SECTION */}
+        <div className="text-center space-y-5 mb-12">
+
+          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
+            Profil
+          </div> */}
+
+          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+            Sejarah Program Magister <br />
             <span className="text-primary">
               Pemikiran Politik Islam
             </span>
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-10 items-start">
-            <div className="relative group">
-              <div className="overflow-hidden rounded-2xl shadow-lg">
-                <Image
-                  src={getImgPath('/images/banner/uin.jpg')}
-                  alt="Sejarah"
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+
+        </div>
+
+        {/* GRID CONTENT */}
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+
+          {/* IMAGE */}
+          <div className="relative group">
+            <div className="overflow-hidden rounded-2xl shadow-xl">
+              <Image
+                src={getImgPath('/images/banner/uin.jpg')}
+                alt="Sejarah"
+                width={600}
+                height={400}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+
+            {/* subtle border */}
             <div className="absolute inset-0 rounded-2xl ring-1 ring-black/10"></div>
           </div>
 
-         {/* RIGHT: CONTENT */}
-          <div>
+          {/* TEXT */}
+          <div className="flex flex-col justify-center">
+
             {loading ? (
-              <p>Loading...</p>
+              <p className="text-gray-500">Loading...</p>
             ) : (
               <div
-                className="prose prose-lg max-w-none dark:prose-invert text-justify"
+                className="prose prose-lg max-w-none dark:prose-invert text-justify leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}
-              </div>
 
           </div>
+
         </div>
 
-        
       </div>
     </div>
   )
