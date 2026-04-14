@@ -1,0 +1,110 @@
+{
+    "label": "Riset dan Publikasi",
+    "href": "/riset",
+    "submenu": [
+      {
+        "label": "Fokus Riset",
+        "href": "/riset/focus"
+      },
+      {
+        "label": "Peta Jalan Riset",
+        "href": "/riset/roadmap"
+      },
+      {
+        "label": "Pusat Kajian",
+        "href": "/riset/kajian"
+      },
+      {
+        "label": "Laboratorium",
+        "href": "/riset/laboratory"
+      },
+      {
+        "label": "Publikasi Dosen dan Mahasiswa",
+        "href": "/riset/publication"
+      },
+      {
+        "label": "Jurnal dan Prosiding",
+        "href": "/riset/jurnal"
+      },
+      {
+        "label": "Kolaborasi Roset",
+        "href": "/riset/colaboration"
+      },
+      {
+        "label": "Hibah dan Proyek Penelitian",
+        "href": "/riset/projects"
+      }
+    ]
+  },
+  {
+    "label": "Kemitraan",
+    "href": "/mitra",
+    "submenu": [
+      {
+        "label": "Program Kemitraan",
+        "href": "/mitra/program"
+      },
+      {
+        "label": "Tema Kemitraan",
+        "href": "/mitra/themes"
+      },
+      {
+        "label": "Mitra",
+        "href": "/mitra/partners"
+      },
+      {
+        "label": "Kerjasama Institusional",
+        "href": "/mitra/cooperation"
+      },
+      {
+        "label": "Jejaring Nasional dan Internasional",
+        "href": "/mitra/network"
+      },
+      {
+        "label": "Kegiatan dan Dokumentasi",
+        "href": "/mitra/activities"
+      },
+      {
+        "label": "Dampak dan Capaian",
+        "href": "/mitra/achievements"
+      }
+    ]
+  },
+  {
+    "label": "Mahasiswa dan Alumni",
+    "href": "/mahasiswa",
+    "submenu": [
+      {
+        "label": "Profil Mahasiswa",
+        "href": "/mahasiswa/profile"
+      },
+      {
+        "label": "kegiatan Mahasiswa",
+        "href": "/mahasiswa/activity"
+      },
+      {
+        "label": "Prestasi Mahasiswa",
+        "href": "/mahasiswa/achievements"
+      },
+      {
+        "label": "Layanan Akademik",
+        "href": "/mahasiswa/service"
+      },
+      {
+        "label": "Beasiswa dan Bantuan Dana",
+        "href": "/mahasiswa/scholarships"
+      },
+      {
+        "label": "Tesis dan Karya Akhir",
+        "href": "/mahasiswa/thesis"
+      },
+      {
+        "label": "Alumni",
+        "href": "/mahasiswa/alumni"
+      },
+      {
+        "label":"Karier Lulusan",
+        "href":"/mahasiswa/careers"
+      }
+    ]
+  },

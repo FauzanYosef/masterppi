@@ -1,0 +1,341 @@
+
+{
+  "PartnerData": [
+    { "imgSrc": "/images/partners/dinsos.png" },
+    { "imgSrc": "/images/partners/iainkudus.png" },
+    { "imgSrc": "/images/partners/kab-sumedang.png" },
+    { "imgSrc": "/images/partners/malaya.png" },
+    { "imgSrc": "/images/partners/umroh.png" }
+  ],
+
+  "NewsData": [
+    {
+      "imgSrc": "/images/news/news1.webp",
+      "title": "Seminar Nasional Pemikiran Politik Islam",
+      "desc": "Diskusi akademik mengenai relevansi pemikiran politik klasik dalam konteks demokrasi modern.",
+      "date": "20 Februari 2026",
+      "category": "Kegiatan"
+    },
+    {
+      "imgSrc": "/images/news/news2.webp",
+      "title": "Call for Papers: Politik Islam Kontemporer",
+      "desc": "Mengundang akademisi dan peneliti untuk mengirimkan artikel ilmiah terkait dinamika politik Islam di era global.",
+      "date": "15 Februari 2026",
+      "category": "Artikel"
+    },
+    {
+      "imgSrc": "/images/news/news3.webp",
+      "title": "Kerjasama Riset dengan Perguruan Tinggi Nasional",
+      "desc": "Penandatanganan kerja sama penelitian dalam pengembangan kajian politik Islam dan kebijakan publik.",
+      "date": "10 Februari 2026",
+      "category": "Berita"
+    },
+    {
+      "imgSrc": "/images/news/news4.webp",
+      "title": "Diskusi Publik: Demokrasi dalam Perspektif Islam",
+      "desc": "Forum ilmiah yang membahas konsep demokrasi, syura, dan tata kelola pemerintahan dalam tradisi pemikiran Islam.",
+      "date": "5 Februari 2026",
+      "category": "Kegiatan"
+    },
+    {
+      "imgSrc": "/images/news/news5.webp",
+      "title": "Publikasi Edisi Terbaru Journal Politik",
+      "desc": "Edisi terbaru menghadirkan artikel-artikel pilihan yang mengkaji pemikiran politik Islam klasik dan modern.",
+      "date": "1 Februari 2026",
+      "category": "Artikel"
+    }
+  ],
+
+  "HeroData": [
+    {
+      "imgSrc": "/images/banner/blogforgeCover.webp"
+    },
+    {
+      "imgSrc": "/images/banner/gleamerCover.webp"
+    },
+    {
+      "imgSrc": "/images/banner/learnaxisCover.webp"
+    },
+    {
+      "imgSrc": "/images/banner/studiovaCover.webp"
+    }
+  ],
+  "NavLinkData": [
+  {
+    "label": "Beranda",
+    "href": "/"
+  },
+  {
+    "label": "Tentang Program",
+    "href": "/profil",
+    "submenu": [
+      {
+        "label": "Sejarah Program",
+        "href": "/profil/sejarah"
+      },
+      {
+        "label": "Apa Itu Magister PPI",
+        "href": "/profil/program"
+      },
+      {
+        "label": "Profil Lulusan",
+        "href": "/profil/lulusan"
+      },
+      {
+        "label": "Dosen",
+        "href": "/profil/dosen"
+      },
+      {
+        "label": "Struktur Organisasi",
+        "href": "/profil/organisasi"
+      },
+      {
+        "label": "Fasilitas",
+        "href": "/profil/fasilitas"
+      },
+      {
+        "label": "Kontak Kami",
+        "href": "/profil/kontak"
+      }
+    ]
+  },
+  {
+    "label": "Akademik dan Admisi",
+    "href": "/akademik",
+    "submenu": [
+      {
+        "label": "Kurikulum",
+        "href": "/akademik/kurikulum"
+      },
+      {
+        "label": "Kalender Akademik",
+        "href": "/akademik/kalender"
+      },
+      {
+        "label": "Mata Kuliah",
+        "href": "/akademik/courses"
+      },
+      {
+        "label": "Panduan Akademik",
+        "href": "/akademik/guidelines"
+      },
+      {
+         "label": "Biaya Pendidikan",
+        "href": "/akademik/biaya"
+      }
+    ]
+  },
+  
+  
+
+  {
+    "label": "Berita",
+    "href": "/berita"
+  }
+
+  
+],
+  "ProjectData": [
+    {
+      "coverImg": "/images/project/blogforge.webp",
+      "name": "Jurnal Politik"
+    },
+    {
+      "coverImg": "/images/project/gleamer.webp",
+      "name": "Jurnal Politik"
+    },
+    {
+      "coverImg": "/images/project/learnaxis.webp",
+      "name": "Jurnal Politik"
+    },
+    {
+      "coverImg": "/images/project/studiova.webp",
+      "name": "Jurnal Politik"
+    },
+    {
+      "coverImg": "/images/project/homely.webp",
+      "name": "Jurnal Politik"
+    },
+    {
+      "coverImg": "/images/project/awake.webp",
+      "name": "Jurnal Politik"
+    },
+    {
+      "coverImg": "/images/project/endeavor.webp",
+      "name": "Jurnal Politik"
+    }
+  ],
+  "RecordData": [
+    {
+      "imgSrc": "/images/records/star.svg",
+      "digit": "4.9 Rating",
+      "desc": "Rated by 3,500+ clients on Google and Clutch platforms"
+    },
+    {
+      "imgSrc": "/images/records/user.svg",
+      "digit": "3,500+ Clients",
+      "desc": "Trusted by global brands for design and digital solutions"
+    },
+    {
+      "imgSrc": "/images/records/cart.svg",
+      "digit": "$45M+ Revenue",
+      "desc": "Generated through websites, apps, and marketing globally"
+    },
+    {
+      "imgSrc": "/images/records/star.svg",
+      "digit": "500+ Projects",
+      "desc": "Delivered websites, branding, and full digital experiences worldwide"
+    }
+  ],
+  "ReviewData": [
+    {
+      "imgSrc": "/images/review/daniel.webp",
+      "name": "Daniel Reid",
+      "rating": 4.2,
+      "desc": "Pixelize nailed our website redesign. Clean layout, fast loading, and mobile-friendly. Highly recommended!"
+    },
+    {
+      "imgSrc": "/images/review/sophia.webp",
+      "name": "Sophia Turner",
+      "rating": 4.5,
+      "desc": "The UI/UX improvements boosted our user engagement and conversions. Truly a professional team!"
+    },
+    {
+      "imgSrc": "/images/review/marcus.webp",
+      "name": "Marcus Lee",
+      "rating": 4.8,
+      "desc": "They understood our brand vision perfectly and delivered a logo that stands out in our industry."
+    }
+  ],
+  "SpecializeData": [
+    {
+      "imgSrc": "/images/specialization/webdesign.svg",
+      "title": "Web Design",
+      "desc": "Modern, responsive websites built to engage users and convert leads."
+    },
+    {
+      "imgSrc": "/images/specialization/logodesign.svg",
+      "title": "Logo Design",
+      "desc": "Distinct, memorable logos crafted to define and elevate your brand."
+    },
+    {
+      "imgSrc": "/images/specialization/mobileapp.svg",
+      "title": "Mobile App Development",
+      "desc": "Custom iOS and Android apps with seamless flow and functionality."
+    },
+    {
+      "imgSrc": "/images/specialization/contentwrite.svg",
+      "title": "Content Writing",
+      "desc": "SEO-driven content designed to educate, engage, and boost visibility."
+    },
+    {
+      "imgSrc": "/images/specialization/seooptimize.svg",
+      "title": "SEO Optimization",
+      "desc": "Proven SEO strategies that increase rankings, traffic, and brand reach."
+    },
+    {
+      "imgSrc": "/images/specialization/digitalmarketing.svg",
+      "title": "Digital Marketing",
+      "desc": "Targeted digital campaigns to build awareness and grow your audience."
+    }
+  ],
+  "PlanData": [
+    {
+      "type": "Basic",
+      "price": {
+        "monthly": 9,
+        "yearly": 95
+      },
+      "desc": "Ideal for freelancers and startups.",
+      "option": [
+        "Consultation with strategy session",
+        "Basic design and development",
+        "One revision per project",
+        "Responsive on all devices",
+        "Email support included only"
+      ]
+    },
+    {
+      "type": "Pro",
+      "price": {
+        "monthly": 19,
+        "yearly": 185
+      },
+      "desc": "Perfect for small growing teams.",
+      "option": [
+        "Advanced project planning support",
+        "Premium design and development",
+        "Three revisions per project",
+        "Fully responsive and optimized",
+        "Priority email and chat support"
+      ]
+    }
+  ],
+  "CategoryData": [
+    {
+      "imgSrc": "/images/category/webdev.webp",
+      "title": "Web Design"
+    },
+    {
+      "imgSrc": "/images/category/logods.webp",
+      "title": "Logo Design"
+    },
+    {
+      "imgSrc": "/images/category/mobileapp.webp",
+      "title": "Mobile App Development"
+    },
+    {
+      "imgSrc": "/images/category/contentwrite.webp",
+      "title": "Content Writing"
+    },
+    {
+      "imgSrc": "/images/category/digitalmarket.webp",
+      "title": "Digital Marketing"
+    }
+  ],
+  "FooterLinkData": [
+    {
+      "section": "Akademik",
+      "links": [
+        {
+          "label": "Profil",
+          "href": "/#project"
+        },
+        {
+          "label": "Kurikulum",
+          "href": "/#expertise"
+        },
+        {
+          "label": "Dosen",
+          "href": "/#pricing"
+        },
+        {
+          "label": "Program Studi",
+          "href": "/#categories"
+        }
+      ]
+    },
+    {
+      "section": "Support",
+      "links": [
+        {
+          "label": "Help center",
+          "href": "/"
+        },
+        {
+          "label": "Terms of service",
+          "href": "/"
+        },
+        {
+          "label": "Legal",
+          "href": "/"
+        },
+        {
+          "label": "Privacy Policy",
+          "href": "/"
+        }
+      ]
+    }
+  ]
+}
+
