@@ -11,6 +11,10 @@ import Registration from '../../components/Home/Registration'
 import Sambutan from '../../components/Home/Sambutan'
 import Sejarah from '../../components/Home/Sejarah'
 
+export const metadata = {
+  title: "Master PPI",
+};
+
 export default function Home() {
   return (
     <main>

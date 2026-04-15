@@ -28,7 +28,7 @@ const BiayaPage = () => {
 
   return (
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
-        
+
       {/* CONTENT */}
       <div className="container space-y-14">
 
