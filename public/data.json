@@ -120,6 +120,14 @@
         "href": "/akademik/panduan"
       },
       {
+        "label": "Kegiatan Akademik",
+        "href": "/akademik/kegiatan"
+      },
+      {
+        "label": "Gallery Akademik",
+        "href": "/akademik/gallery"
+      },
+      {
          "label": "Biaya Pendidikan",
         "href": "/akademik/biaya"
       }
@@ -127,7 +135,6 @@
   },
   
   
-
   {
     "label": "Berita",
     "href": "/berita"

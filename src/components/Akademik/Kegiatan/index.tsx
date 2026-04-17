@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 
 const LIMIT = 6
 
-const BeritaPage = () => {
+const EventPage = () => {
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -22,12 +22,12 @@ const BeritaPage = () => {
     const to = from + LIMIT - 1
 
     const { data, error, count } = await supabase
-      .from('articles')
+      .from('events')
       .select(
-        'title, slug, author, content, category, published_date, cover_img',
+        'title, slug, description, category, start_date, end_date, cover_img, location, status',
         { count: 'exact' }
       )
-      .order('published_date', { ascending: false })
+      .order('start_date', { ascending: true })
       .range(from, to)
 
     if (error) console.error(error)
@@ -42,6 +42,15 @@ const BeritaPage = () => {
     fetchData(page)
   }, [page])
 
+  const formatDate = (date?: string) => {
+    if (!date) return ''
+    return new Date(date).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  }
+
   return (
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
       <div className="container space-y-14">
@@ -49,12 +58,12 @@ const BeritaPage = () => {
         {/* HEADER */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">
-            Berita Terbaru
+            Agenda & Kegiatan
           </h1>
 
           <p className="text-gray-500 dark:text-gray-400">
-            Informasi terkini seputar publikasi, kegiatan ilmiah, kolaborasi institusi,
-            serta perkembangan kajian pemikiran politik Islam.
+            Informasi agenda dan kegiatan akademik Program Magister Pemikiran Politik Islam,
+            mencakup seminar, workshop, dan diskusi ilmiah.
           </p>
         </div>
 
@@ -63,7 +72,7 @@ const BeritaPage = () => {
           <p className="text-center">Loading...</p>
         ) : data.length === 0 ? (
           <p className="text-center text-gray-500">
-            Belum ada berita tersedia
+            Belum ada agenda tersedia
           </p>
         ) : (
           <>
@@ -72,7 +81,7 @@ const BeritaPage = () => {
               {data.map((item) => (
                 <Link
                   key={item.slug}
-                  href={`/berita/${item.slug}`}
+                  href={`/akademik/kegiatan/${item.slug}`}
                   className="block group"
                 >
                   <div className="bg-white dark:bg-dark rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition">
@@ -85,6 +94,16 @@ const BeritaPage = () => {
                         fill
                         className="object-cover group-hover:scale-105 transition duration-300"
                       />
+
+                      {/* STATUS */}
+                      <span className={`
+                        absolute top-3 left-3 text-xs px-3 py-1 rounded-full text-white
+                        ${item.status === 'upcoming' && 'bg-blue-500'}
+                        ${item.status === 'ongoing' && 'bg-green-500'}
+                        ${item.status === 'finished' && 'bg-gray-500'}
+                      `}>
+                        {item.status || 'upcoming'}
+                      </span>
                     </div>
 
                     {/* CONTENT */}
@@ -92,17 +111,12 @@ const BeritaPage = () => {
 
                       {/* CATEGORY + DATE */}
                       <div className="flex justify-between items-center text-sm">
-                        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
                           {item.category || 'Umum'}
                         </span>
 
                         <span className="text-gray-500 text-xs">
-                          {item.published_date &&
-                            new Date(item.published_date).toLocaleDateString('id-ID', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric',
-                            })}
+                          {formatDate(item.start_date)}
                         </span>
                       </div>
 
@@ -111,14 +125,14 @@ const BeritaPage = () => {
                         {item.title}
                       </h3>
 
-                      {/* EXCERPT */}
+                      {/* DESCRIPTION */}
                       <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
-                        {item.content?.replace(/<[^>]+>/g, '').slice(0, 120)}...
+                        {item.description?.slice(0, 120)}...
                       </p>
 
-                      {/* AUTHOR */}
+                      {/* LOCATION */}
                       <p className="text-xs text-gray-400">
-                        Oleh {item.author || 'Admin'}
+                        📍 {item.location || 'Lokasi belum tersedia'}
                       </p>
                     </div>
 
@@ -176,4 +190,4 @@ const BeritaPage = () => {
   )
 }
 
-export default BeritaPage
+export default EventPage
