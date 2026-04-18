@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 
+// ✅ FIX: params jadi Promise
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // ===== TYPE DETAIL =====
@@ -52,10 +53,12 @@ export async function generateStaticParams() {
 
 // ================= SEO =================
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+
   const { data } = await supabase
     .from('events')
     .select('title, description')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .maybeSingle()
 
   return {
@@ -77,11 +80,14 @@ const formatTanggal = (date?: string) => {
 
 // ================= PAGE =================
 const DetailEvent = async ({ params }: Props) => {
+  // ✅ ambil slug dari Promise
+  const { slug } = await params
+
   // ===== DETAIL =====
   const { data, error } = await supabase
     .from('events')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .maybeSingle()
 
   if (error || !data) return notFound()
@@ -91,7 +97,7 @@ const DetailEvent = async ({ params }: Props) => {
     .from('events')
     .select('id, title, slug, cover_img')
     .eq('category', data.category)
-    .neq('slug', params.slug)
+    .neq('slug', slug)
     .limit(3)
 
   const related: EventCard[] = relatedData ?? []
@@ -149,7 +155,6 @@ const DetailEvent = async ({ params }: Props) => {
           {/* MAIN */}
           <div className="space-y-6 lg:col-span-2">
 
-            {/* META */}
             <div className="flex flex-wrap justify-between gap-2 text-sm">
               <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700">
                 {data.category || 'Umum'}
@@ -160,17 +165,14 @@ const DetailEvent = async ({ params }: Props) => {
               </span>
             </div>
 
-            {/* TITLE */}
-            <h1 className="text-3xl font-bold leading-snug md:text-4xl">
+            <h1 className="text-3xl font-bold md:text-4xl">
               {data.title}
             </h1>
 
-            {/* INFO */}
             <p className="text-sm text-gray-500">
               📍 {data.location || '-'} • Status: {data.status || 'upcoming'}
             </p>
 
-            {/* COVER */}
             <div className="relative h-[420px] w-full overflow-hidden rounded-xl">
               <Image
                 src={data.cover_img || '/images/default-news.jpg'}
@@ -180,27 +182,17 @@ const DetailEvent = async ({ params }: Props) => {
               />
             </div>
 
-            {/* CONTENT */}
             <div
-              className="prose max-w-none text-[17px] leading-relaxed text-justify dark:prose-invert"
+              className="prose max-w-none text-[17px] text-justify dark:prose-invert"
               dangerouslySetInnerHTML={{
                 __html: data.content || '',
               }}
             />
 
-            {/* ===== GALLERY MASONRY + OPEN TAB ===== */}
+            {/* GALLERY */}
             {gallery.length > 0 && (
               <div className="pt-10 space-y-6">
-                <div className="space-y-3">
-                    <div className="h-1 w-12 rounded bg-primary"></div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
-                        Galeri Kegiatan
-                    </h3>
-
-                    <p className="text-sm text-gray-500">
-                        Dokumentasi visual kegiatan yang telah dilaksanakan
-                    </p>
-                </div>
+                <h3 className="text-2xl font-bold">Galeri Kegiatan</h3>
 
                 <div className="columns-1 sm:columns-2 md:columns-3 gap-5 space-y-5">
                   {gallery.map((img) => (
@@ -209,23 +201,15 @@ const DetailEvent = async ({ params }: Props) => {
                       href={img.image_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative block cursor-zoom-in break-inside-avoid overflow-hidden rounded-2xl hover:shadow-xl transition"
+                      className="block overflow-hidden rounded-2xl"
                     >
                       <Image
                         src={img.image_url}
                         alt={img.caption || 'gallery'}
                         width={600}
                         height={400}
-                        className="h-auto w-full object-cover transition duration-500 group-hover:scale-110"
+                        className="w-full object-cover"
                       />
-
-                      {img.caption && (
-                        <div className="absolute inset-0 flex items-end bg-black/40 opacity-0 transition duration-300 group-hover:opacity-100">
-                          <p className="p-4 text-sm text-white line-clamp-3">
-                            {img.caption}
-                          </p>
-                        </div>
-                      )}
                     </a>
                   ))}
                 </div>
@@ -239,21 +223,18 @@ const DetailEvent = async ({ params }: Props) => {
 
                 <div className="grid gap-6 md:grid-cols-3">
                   {related.map((item) => (
-                    <Link
-                      key={item.slug}
-                      href={`/akademik/kegiatan/${item.slug}`}
-                    >
-                      <div className="group cursor-pointer">
-                        <div className="relative h-40 overflow-hidden rounded-lg">
+                    <Link key={item.slug} href={`/akademik/kegiatan/${item.slug}`}>
+                      <div>
+                        <div className="relative h-40 rounded-lg overflow-hidden">
                           <Image
                             src={item.cover_img || '/images/default-news.jpg'}
                             alt={item.title}
                             fill
-                            className="object-cover transition group-hover:scale-110"
+                            className="object-cover"
                           />
                         </div>
 
-                        <p className="mt-2 text-sm font-medium group-hover:text-primary">
+                        <p className="mt-2 text-sm font-medium">
                           {item.title}
                         </p>
                       </div>
@@ -274,13 +255,9 @@ const DetailEvent = async ({ params }: Props) => {
 
               <div className="space-y-4">
                 {latest.map((item) => (
-                  <Link
-                    key={item.slug}
-                    href={`/akademik/kegiatan/${item.slug}`}
-                  >
-                    <div className="group flex gap-4 rounded-lg p-2 transition hover:bg-gray-50 dark:hover:bg-dark">
-
-                      <div className="relative h-16 w-20 overflow-hidden rounded-lg">
+                  <Link key={item.slug} href={`/akademik/kegiatan/${item.slug}`}>
+                    <div className="flex gap-4">
+                      <div className="relative h-16 w-20 rounded-lg overflow-hidden">
                         <Image
                           src={item.cover_img || '/images/default-news.jpg'}
                           alt={item.title}
@@ -294,11 +271,10 @@ const DetailEvent = async ({ params }: Props) => {
                           {item.category}
                         </span>
 
-                        <p className="text-sm font-medium group-hover:text-primary">
+                        <p className="text-sm font-medium">
                           {item.title}
                         </p>
                       </div>
-
                     </div>
                   </Link>
                 ))}
