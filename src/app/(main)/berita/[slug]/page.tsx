@@ -4,8 +4,12 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+// ✅ WAJIB: supaya tidak dipaksa static saat build
+export const dynamic = 'force-dynamic'
+
+// ✅ FIX: params = Promise
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 type Article = {
@@ -64,11 +68,13 @@ export async function generateStaticParams() {
 
 // ================= SEO =================
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+
   try {
     const { data } = await supabase
       .from('articles')
       .select('title, content, cover_img')
-      .eq('slug', params.slug)
+      .eq('slug', slug)
       .maybeSingle()
 
     return {
@@ -89,11 +95,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // ================= PAGE =================
 const DetailBerita = async ({ params }: Props) => {
+  // ✅ ambil slug dari Promise
+  const { slug } = await params
+
   // ================= MAIN =================
   const { data, error } = await supabase
     .from('articles')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .maybeSingle()
 
   if (error || !data) return notFound()
@@ -103,7 +112,7 @@ const DetailBerita = async ({ params }: Props) => {
     .from('articles')
     .select('title, slug, cover_img')
     .eq('category', data.category)
-    .neq('slug', params.slug)
+    .neq('slug', slug)
     .limit(3)
 
   const related: Article[] = relatedData ?? []
@@ -135,7 +144,6 @@ const DetailBerita = async ({ params }: Props) => {
               Detail Berita
             </h1>
 
-            {/* BREADCRUMB */}
             <div className="flex gap-2 text-sm text-white/80 mt-3">
               <Link href="/">Home</Link>
               <span>›</span>
@@ -156,7 +164,6 @@ const DetailBerita = async ({ params }: Props) => {
           {/* MAIN */}
           <div className="lg:col-span-2 space-y-6">
 
-            {/* META */}
             <div className="flex justify-between text-sm flex-wrap gap-2">
               <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
                 {data.category || 'Umum'}
@@ -170,17 +177,14 @@ const DetailBerita = async ({ params }: Props) => {
               </span>
             </div>
 
-            {/* TITLE */}
             <h1 className="text-3xl md:text-4xl font-bold">
               {data.title}
             </h1>
 
-            {/* AUTHOR */}
             <p className="text-sm text-gray-500">
               ✍️ Oleh {data.author || 'Admin'}
             </p>
 
-            {/* COVER */}
             <div className="relative w-full h-[420px] rounded-xl overflow-hidden">
               <Image
                 src={data.cover_img || '/images/default-news.jpg'}
@@ -190,7 +194,6 @@ const DetailBerita = async ({ params }: Props) => {
               />
             </div>
 
-            {/* CONTENT */}
             <div
               className="prose max-w-none dark:prose-invert text-justify leading-relaxed text-[17px]"
               dangerouslySetInnerHTML={{
