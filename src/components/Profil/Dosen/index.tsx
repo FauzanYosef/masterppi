@@ -4,14 +4,22 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
 import { supabase } from '@/lib/supabase'
+
+type Lecturer = {
+  id: number
+  nama: string
+  jabatan: string
+  skills: string
+  matkul: string
+  image_url: string | null
+}
 
 const DosenPage = () => {
   const pathname = usePathname()
   const pathSegments = pathname.split('/').filter(Boolean)
 
-  const [lecturers, setLecturers] = useState<any[]>([])
+  const [lecturers, setLecturers] = useState<Lecturer[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -19,6 +27,7 @@ const DosenPage = () => {
       const { data, error } = await supabase
         .from('lecturers')
         .select('*')
+        .order('id', { ascending: true })
 
       if (error) console.error(error)
       if (data) setLecturers(data)
@@ -36,7 +45,7 @@ const DosenPage = () => {
       <div className="container mb-16">
         <div className="relative rounded-2xl overflow-hidden">
           <Image
-            src={getImgPath('/images/banner/uin.jpg')}
+            src="/images/banner/uin.jpg"
             alt="Banner"
             width={1400}
             height={500}
@@ -59,9 +68,11 @@ const DosenPage = () => {
                   <span key={href} className="flex gap-2">
                     ›
                     {isLast ? (
-                      <span>{segment}</span>
+                      <span className="capitalize">{segment}</span>
                     ) : (
-                      <Link href={href}>{segment}</Link>
+                      <Link href={href} className="capitalize">
+                        {segment}
+                      </Link>
                     )}
                   </span>
                 )
@@ -73,26 +84,19 @@ const DosenPage = () => {
 
       {/* CONTENT */}
       <div className="container">
-        <div className="text-center space-y-4 mb-6">
+        <div className="text-center space-y-4 mb-10">
 
-          {/* BADGE */}
-          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            Akademik
-          </div> */}
-
-          {/* TITLE */}
           <h2 className="text-3xl md:text-4xl font-bold leading-tight">
             Daftar <span className="text-primary">Dosen</span>
           </h2>
 
-          {/* SUBTITLE */}
           <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
-            Dosen tetap Program Magister Pemikiran Politik Islam terdiri atas para akademisi dengan latar kepakaran yang saling melengkapi dalam bidang politik Islam, agama dan politik, pemikiran Islam, serta studi agama. Komposisi ini menunjukkan kekuatan program dalam membangun kajian yang interdisipliner, sekaligus tetap berakar kuat pada tradisi intelektual Islam dan isu-isu politik kontemporer.
+            Dosen tetap Program Magister Pemikiran Politik Islam terdiri atas para akademisi
+            dengan latar kepakaran yang saling melengkapi dalam bidang politik Islam,
+            pemikiran Islam, dan studi agama.
           </p>
 
-          {/* GARIS AKSEN */}
           <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-
         </div>
 
         {loading ? (
@@ -100,10 +104,10 @@ const DosenPage = () => {
         ) : (
           <div className="grid md:grid-cols-2 gap-10">
 
-            {lecturers.map((dosen, i) => (
+            {lecturers.map((dosen) => (
               <div
-                key={i}
-                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition"
+                key={dosen.id}
+                className="bg-white dark:bg-dark rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden group"
               >
 
                 {/* TOP */}
@@ -113,73 +117,82 @@ const DosenPage = () => {
                   <div className="flex-shrink-0">
                     <div className="w-[180px] h-[220px] relative rounded-xl overflow-hidden">
                       <Image
-                        src={dosen.foto || getImgPath('/images/dosen/1.png')}
-                        alt={dosen.nama}
+                        src={
+                          dosen.image_url ||
+                          '/images/dosen/1.png'
+                        }
+                        alt={dosen.nama || 'Dosen'}
                         fill
-                        className="object-cover"
+                        className="object-cover object-top group-hover:scale-105 transition duration-300"
                       />
                     </div>
                   </div>
 
                   {/* TEXT */}
-                  <div className="flex-1 text-left">
-                    <h3 className="text-xl font-bold text-primary mb-2">
+                  <div className="flex-1 text-left space-y-2">
+                    <h3 className="text-xl font-bold text-primary">
                       {dosen.nama}
                     </h3>
 
                     <p>
-                      <span className="font-semibold">Jabatan:</span> {dosen.jabatan}
+                      <span className="font-semibold">Jabatan:</span>{' '}
+                      {dosen.jabatan}
                     </p>
 
                     <p>
-                      <span className="font-semibold">Keahlian:</span> {dosen.skills}
+                      <span className="font-semibold">Keahlian:</span>{' '}
+                      {dosen.skills}
                     </p>
 
                     <p>
-                      <span className="font-semibold">Mata Kuliah Diampu:</span>{' '}
+                      <span className="font-semibold">
+                        Mata Kuliah:
+                      </span>{' '}
                       {dosen.matkul}
                     </p>
                   </div>
 
                 </div>
 
-                {/* BOTTOM LOGO */}
-                <div className="p-6">
-                    <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6"></div>
+                {/* BOTTOM */}
+                <div className="px-6 pb-6">
+                  <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6"></div>
 
-                    <div className="flex justify-center gap-6 flex-wrap items-center">
-                        <Image
-                    src={getImgPath('/images/dosen/akademik/google-scholar.png')}
-                    alt="google scholar"
-                    width={120}
-                    height={40}
-                    className="opacity-70 hover:opacity-100 transition"
-                  />
+                  <div className="flex justify-center gap-6 flex-wrap items-center">
 
-                  <Image
-                    src={getImgPath('/images/dosen/akademik/sinta.png')}
-                    alt="sinta"
-                    width={100}
-                    height={40}
-                    className="opacity-70 hover:opacity-100 transition"
-                  />
+                    <Image
+                      src="/images/dosen/akademik/google-scholar.png"
+                      alt="Google Scholar"
+                      width={110}
+                      height={40}
+                      className="opacity-70 hover:opacity-100 transition"
+                    />
 
-                  <Image
-                    src={getImgPath('/images/dosen/akademik/scopus.png')}
-                    alt="scopus"
-                    width={100}
-                    height={40}
-                    className="opacity-70 hover:opacity-100 transition"
-                  />
+                    <Image
+                      src="/images/dosen/akademik/sinta.png"
+                      alt="Sinta"
+                      width={90}
+                      height={40}
+                      className="opacity-70 hover:opacity-100 transition"
+                    />
 
-                  <Image
-                    src={getImgPath('/images/dosen/akademik/orcid.png')}
-                    alt="orcid"
-                    width={100}
-                    height={40}
-                    className="opacity-70 hover:opacity-100 transition"
-                  />
-                    </div>
+                    <Image
+                      src="/images/dosen/akademik/scopus.png"
+                      alt="Scopus"
+                      width={90}
+                      height={40}
+                      className="opacity-70 hover:opacity-100 transition"
+                    />
+
+                    <Image
+                      src="/images/dosen/akademik/orcid.png"
+                      alt="ORCID"
+                      width={90}
+                      height={40}
+                      className="opacity-70 hover:opacity-100 transition"
+                    />
+
+                  </div>
                 </div>
 
               </div>
