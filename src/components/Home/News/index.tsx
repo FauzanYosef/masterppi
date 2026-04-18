@@ -24,16 +24,11 @@ const News = () => {
         const { data, error } = await supabase
           .from('articles')
           .select('title, slug, cover_img, content, category, published_date')
-          .order('published_date', { ascending: false })
-          .limit(6)
+          .order('published_date', { ascending: false }) // 🔥 terbaru dulu
+          .limit(3) // 🔥 hanya 3 data
 
-        if (error) {
-          console.error(error)
-        }
-
-        if (data) {
-          setNews(data)
-        }
+        if (error) console.error(error)
+        if (data) setNews(data)
       } catch (error) {
         console.error('Error fetching news', error)
       } finally {
@@ -84,7 +79,6 @@ const News = () => {
                   {/* CONTENT */}
                   <div className='p-6'>
 
-                    {/* CATEGORY & DATE */}
                     <div className='flex justify-between items-center text-sm mb-3'>
                       <span className='px-3 py-1 bg-primary/10 text-primary rounded-full text-xs'>
                         {item.category || 'Umum'}
@@ -100,12 +94,10 @@ const News = () => {
                       </span>
                     </div>
 
-                    {/* TITLE */}
                     <h5 className='font-bold text-lg mb-3 line-clamp-2 group-hover:text-primary transition'>
                       {item.title}
                     </h5>
 
-                    {/* DESCRIPTION */}
                     <p className='text-sm text-gray-600 dark:text-gray-300 line-clamp-3'>
                       {item.content
                         ?.replace(/<[^>]+>/g, '')
@@ -121,23 +113,13 @@ const News = () => {
         )}
       </div>
 
-      {/* FLOATING IMAGES */}
+      {/* FLOATING */}
       <div className='absolute top-28 -left-9 dark:opacity-5'>
-        <Image
-          src='/images/banner/pattern1.svg'
-          alt='pattern'
-          width={141}
-          height={141}
-        />
+        <Image src='/images/banner/pattern1.svg' alt='pattern' width={141} height={141} />
       </div>
 
       <div className='absolute -bottom-7 -right-7 dark:opacity-5 z-10'>
-        <Image
-          src='/images/banner/pattern2.svg'
-          alt='pattern'
-          width={141}
-          height={141}
-        />
+        <Image src='/images/banner/pattern2.svg' alt='pattern' width={141} height={141} />
       </div>
     </section>
   )

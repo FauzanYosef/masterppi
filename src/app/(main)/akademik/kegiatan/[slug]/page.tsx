@@ -8,10 +8,13 @@ type Props = {
   params: { slug: string }
 }
 
+// ===== TYPE DETAIL =====
 type Event = {
+  id: number
   title: string
   slug: string
   description?: string
+  content?: string
   category?: string
   start_date?: string
   end_date?: string
@@ -20,16 +23,28 @@ type Event = {
   status?: string
 }
 
+// ===== TYPE CARD =====
+type EventCard = {
+  id: number
+  title: string
+  slug: string
+  cover_img?: string
+  category?: string
+}
+
+// ===== GALLERY =====
 type Gallery = {
+  id: number
+  event_id: number
   image_url: string
+  caption?: string
 }
 
 // ================= STATIC PARAMS =================
 export async function generateStaticParams() {
   try {
     const { data } = await supabase.from('events').select('slug')
-    if (!data) return []
-    return data.map((item) => ({ slug: item.slug }))
+    return data?.map((item) => ({ slug: item.slug })) || []
   } catch {
     return []
   }
@@ -39,7 +54,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { data } = await supabase
     .from('events')
-    .select('title, description, cover_img')
+    .select('title, description')
     .eq('slug', params.slug)
     .maybeSingle()
 
@@ -62,6 +77,7 @@ const formatTanggal = (date?: string) => {
 
 // ================= PAGE =================
 const DetailEvent = async ({ params }: Props) => {
+  // ===== DETAIL =====
   const { data, error } = await supabase
     .from('events')
     .select('*')
@@ -70,27 +86,30 @@ const DetailEvent = async ({ params }: Props) => {
 
   if (error || !data) return notFound()
 
+  // ===== RELATED =====
   const { data: relatedData } = await supabase
     .from('events')
-    .select('title, slug, cover_img')
+    .select('id, title, slug, cover_img')
     .eq('category', data.category)
     .neq('slug', params.slug)
     .limit(3)
 
-  const related: Event[] = relatedData ?? []
+  const related: EventCard[] = relatedData ?? []
 
+  // ===== LATEST =====
   const { data: latestData } = await supabase
     .from('events')
-    .select('title, slug, cover_img, category')
+    .select('id, title, slug, cover_img, category')
     .order('start_date', { ascending: false })
     .limit(5)
 
-  const latest: Event[] = latestData ?? []
+  const latest: EventCard[] = latestData ?? []
 
+  // ===== GALLERY =====
   const { data: galleryData } = await supabase
     .from('event_galleries')
-    .select('image_url')
-    .eq('event_slug', params.slug)
+    .select('id, event_id, image_url, caption')
+    .eq('event_id', data.id)
 
   const gallery: Gallery[] = galleryData ?? []
 
@@ -98,21 +117,21 @@ const DetailEvent = async ({ params }: Props) => {
     <>
       {/* HERO */}
       <div className="container mb-16 pt-[140px]">
-        <div className="relative rounded-2xl overflow-hidden shadow-lg">
+        <div className="relative overflow-hidden rounded-2xl shadow-lg">
           <Image
             src="/images/banner/uin.jpg"
             alt="Banner"
             width={1400}
             height={500}
-            className="w-full h-[320px] md:h-[420px] object-cover"
+            className="h-[320px] w-full object-cover md:h-[420px]"
           />
 
-          <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-white text-center px-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 px-4 text-center text-white">
+            <h1 className="text-3xl font-bold md:text-4xl">
               Detail Kegiatan
             </h1>
 
-            <div className="flex gap-2 mt-3 text-sm">
+            <div className="mt-3 flex gap-2 text-sm">
               <Link href="/">Home</Link>
               <span>›</span>
               <Link href="/akademik/kegiatan">Kegiatan</Link>
@@ -125,14 +144,14 @@ const DetailEvent = async ({ params }: Props) => {
 
       {/* CONTENT */}
       <div className="pb-[100px] dark:bg-darklight">
-        <div className="container grid lg:grid-cols-3 gap-10">
+        <div className="container grid gap-10 lg:grid-cols-3">
 
           {/* MAIN */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
 
-            {/* META (STYLE BERITA) */}
-            <div className="flex justify-between text-sm flex-wrap gap-2">
-              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+            {/* META */}
+            <div className="flex flex-wrap justify-between gap-2 text-sm">
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700">
                 {data.category || 'Umum'}
               </span>
 
@@ -142,17 +161,17 @@ const DetailEvent = async ({ params }: Props) => {
             </div>
 
             {/* TITLE */}
-            <h1 className="text-3xl md:text-4xl font-bold leading-snug">
+            <h1 className="text-3xl font-bold leading-snug md:text-4xl">
               {data.title}
             </h1>
 
-            {/* INFO TAMBAHAN */}
+            {/* INFO */}
             <p className="text-sm text-gray-500">
               📍 {data.location || '-'} • Status: {data.status || 'upcoming'}
             </p>
 
             {/* COVER */}
-            <div className="relative w-full h-[420px] rounded-xl overflow-hidden">
+            <div className="relative h-[420px] w-full overflow-hidden rounded-xl">
               <Image
                 src={data.cover_img || '/images/default-news.jpg'}
                 alt={data.title}
@@ -163,30 +182,51 @@ const DetailEvent = async ({ params }: Props) => {
 
             {/* CONTENT */}
             <div
-              className="prose max-w-none dark:prose-invert text-justify leading-relaxed text-[17px]"
+              className="prose max-w-none text-[17px] leading-relaxed text-justify dark:prose-invert"
               dangerouslySetInnerHTML={{
                 __html: data.content || '',
               }}
             />
 
-            {/* GALLERY */}
+            {/* ===== GALLERY MASONRY + OPEN TAB ===== */}
             {gallery.length > 0 && (
-              <div className="pt-10 space-y-4">
-                <h3 className="text-xl font-bold">Galeri Kegiatan</h3>
+              <div className="pt-10 space-y-6">
+                <div className="space-y-3">
+                    <div className="h-1 w-12 rounded bg-primary"></div>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+                        Galeri Kegiatan
+                    </h3>
 
-                <div className="grid md:grid-cols-3 gap-4">
-                  {gallery.map((img, i) => (
-                    <div
-                      key={i}
-                      className="relative h-40 rounded-lg overflow-hidden"
+                    <p className="text-sm text-gray-500">
+                        Dokumentasi visual kegiatan yang telah dilaksanakan
+                    </p>
+                </div>
+
+                <div className="columns-1 sm:columns-2 md:columns-3 gap-5 space-y-5">
+                  {gallery.map((img) => (
+                    <a
+                      key={img.id}
+                      href={img.image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative block cursor-zoom-in break-inside-avoid overflow-hidden rounded-2xl hover:shadow-xl transition"
                     >
                       <Image
                         src={img.image_url}
-                        alt="gallery"
-                        fill
-                        className="object-cover hover:scale-110 transition"
+                        alt={img.caption || 'gallery'}
+                        width={600}
+                        height={400}
+                        className="h-auto w-full object-cover transition duration-500 group-hover:scale-110"
                       />
-                    </div>
+
+                      {img.caption && (
+                        <div className="absolute inset-0 flex items-end bg-black/40 opacity-0 transition duration-300 group-hover:opacity-100">
+                          <p className="p-4 text-sm text-white line-clamp-3">
+                            {img.caption}
+                          </p>
+                        </div>
+                      )}
+                    </a>
                   ))}
                 </div>
               </div>
@@ -197,19 +237,19 @@ const DetailEvent = async ({ params }: Props) => {
               <div className="pt-10 space-y-4">
                 <h3 className="text-xl font-bold">Kegiatan Terkait</h3>
 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid gap-6 md:grid-cols-3">
                   {related.map((item) => (
                     <Link
                       key={item.slug}
                       href={`/akademik/kegiatan/${item.slug}`}
                     >
                       <div className="group cursor-pointer">
-                        <div className="relative h-40 rounded-lg overflow-hidden">
+                        <div className="relative h-40 overflow-hidden rounded-lg">
                           <Image
                             src={item.cover_img || '/images/default-news.jpg'}
                             alt={item.title}
                             fill
-                            className="object-cover group-hover:scale-110 transition"
+                            className="object-cover transition group-hover:scale-110"
                           />
                         </div>
 
@@ -225,10 +265,10 @@ const DetailEvent = async ({ params }: Props) => {
 
           </div>
 
-          {/* SIDEBAR (STYLE BERITA) */}
+          {/* SIDEBAR */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-dark rounded-xl shadow p-5">
-              <h3 className="font-bold mb-4 text-primary">
+            <div className="rounded-xl bg-white p-5 shadow dark:bg-dark">
+              <h3 className="mb-4 font-bold text-primary">
                 🔥 Kegiatan Terbaru
               </h3>
 
@@ -238,9 +278,9 @@ const DetailEvent = async ({ params }: Props) => {
                     key={item.slug}
                     href={`/akademik/kegiatan/${item.slug}`}
                   >
-                    <div className="flex gap-4 group hover:bg-gray-50 dark:hover:bg-dark p-2 rounded-lg transition">
+                    <div className="group flex gap-4 rounded-lg p-2 transition hover:bg-gray-50 dark:hover:bg-dark">
 
-                      <div className="relative w-20 h-16 rounded-lg overflow-hidden">
+                      <div className="relative h-16 w-20 overflow-hidden rounded-lg">
                         <Image
                           src={item.cover_img || '/images/default-news.jpg'}
                           alt={item.title}
