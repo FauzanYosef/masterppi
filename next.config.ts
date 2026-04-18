@@ -1,16 +1,14 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === "production";
-const basePath = isProd ? "/MasterPPI" : "";
-
 const nextConfig: NextConfig = {
+  // ❌ HAPUS ini
   // output: "export",
 
-  basePath,
-  assetPrefix: basePath,
+  // ❌ sementara hapus dulu
+  // basePath: "/MasterPPI",
+  // assetPrefix: "/MasterPPI",
 
   images: {
-    unoptimized: true, // kalau masih mau static image
     domains: ['vfiikiikssljzqrkervl.supabase.co'],
   },
 
@@ -18,10 +16,6 @@ const nextConfig: NextConfig = {
 
   eslint: {
     ignoreDuringBuilds: true,
-  },
-
-  env: {
-    NEXT_PUBLIC_BASE_PATH: basePath,
   },
 };
 
