@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { supabase } from '@/lib/supabase' // ✅ pakai dari lib
+import { supabase } from '@/lib/supabase'
 
 const SambutanPage = () => {
   const [content, setContent] = useState<string>('')
@@ -11,108 +11,100 @@ const SambutanPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profile')
-          .select('content')
-          .eq('key', 'sambutan_content')
-          .single()
+      const { data, error } = await supabase
+        .from('profile')
+        .select('content')
+        .eq('key', 'sambutan_content')
+        .single()
 
-        if (error) throw error
-        setContent(data?.content || '')
-      } catch (err) {
-        console.error('Error fetch sambutan:', err)
-      } finally {
-        setLoading(false)
-      }
+      if (!error) setContent(data?.content || '')
+      setLoading(false)
     }
 
     fetchData()
   }, [])
 
   return (
-    <section className="py-16 bg-gray-50 dark:bg-black">
-      <div className="container">
+    <section className="py-20 bg-secondary dark:bg-black">
+      <div className="container max-w-6xl">
 
-        {/* GRID 40:60 */}
-        <div className="grid lg:grid-cols-[30%_70%] gap-12 items-stretch">
+        {/* GRID */}
+        <div className="grid lg:grid-cols-[40%_60%] gap-16">
 
-          {/* FOTO */}
-          <div className="flex flex-col items-center text-center lg:text-left h-full">
-            <div className="relative w-[280px] h-[360px] lg:w-[320px] lg:h-[420px]">
+          {/* LEFT (STICKY FOTO) */}
+          <div className="lg:sticky top-32 h-fit">
+
+            <div className="w-full max-w-[420px]">
               <Image
-                src="/images/dosen/kajur.png"
+                src="/images/dosen/kaprodi.png"
                 alt="Kaprodi"
-                fill
-                className="object-cover rounded-2xl shadow-xl"
+                width={420}
+                height={520}
+                className="w-full h-auto object-cover rounded-xl shadow-lg"
               />
             </div>
 
-            <div className="mt-6">
-              <h3 className="text-gray-800 dark:text-white text-lg font-semibold">
+            {/* IDENTITAS */}
+            {/* <div className="mt-6 border-l-4 border-primary pl-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Asep Muhamad Iqbal, Ph.D.
               </h3>
-              <p className="text-gray-500 text-sm">
-                Ketua Program Magister PPI
+              <p className="text-gray-500 text-sm mt-1">
+                Ketua Program Magister Pemikiran Politik Islam
               </p>
-            </div>
+            </div> */}
+
           </div>
 
-          {/* SAMBUTAN */}
-          <div className="flex flex-col h-full">
-            <div className="relative flex flex-col h-full overflow-hidden">
+          {/* RIGHT (CONTENT) */}
+          <div>
 
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                <>
-                  {/* TEXT FIX */}
-                  <div className="text-left mb-8">
+            {/* HEADER */}
+            <div className="mb-10">
+              <span className="text-sm uppercase tracking-widest text-primary font-semibold">
+                Sambutan
+              </span>
 
-                    {/* BADGE */}
-                    <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary/10 text-primary">
-                      Sambutan
-                    </span>
+              <h2 className="text-4xl lg:text-5xl font-bold leading-tight mt-3 text-gray-900 dark:text-white">
+                Ketua Program Magister
+                <br />
+                Pemikiran Politik Islam
+              </h2>
 
-                    {/* TITLE */}
-                    <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white leading-tight">
-                      Ketua Program Magister <br className="hidden lg:block" />
-                      Pemikiran Politik Islam
-                    </h2>
-
-                    {/* SUBTLE LINE */}
-                    <div className="mt-4 w-20 h-1 bg-primary rounded-full"></div>
-
-                  </div>
-
-                  <div
-                    className={`prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed transition-all duration-500 overflow-hidden ${
-                      expanded ? 'max-h-[2000px]' : 'max-h-[370px] text-justify'
-                    }`}
-                    dangerouslySetInnerHTML={{ __html: content }}
-                  />
-
-                  {/* GRADIENT */}
-                  {!expanded && (
-                    <div className="pointer-events-none absolute bottom-0 left-0 w-full h-24 " />
-                  )}
-                </>
-              )}
+              <div className="w-16 h-[2px] bg-primary mt-6"></div>
             </div>
 
-            {/* BUTTON */}
-            {!loading && (
-              <div className="flex justify-end mt-8">
-                <button
-                  onClick={() => setExpanded(!expanded)}
-                  className="px-12 py-3 rounded-lg border-primary bg-primary text-white text-sm font-semibold shadow hover:scale-105 hover:shadow-lg transition-all duration-300"
-                >
-                  {expanded ? 'Tutup' : 'Baca Selengkapnya'}
-                </button>
-              </div>
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <>
+                {/* QUOTE HIGHLIGHT */}
+                <blockquote className="border-l-4 border-primary pl-6 italic text-lg text-gray-600 dark:text-gray-300 mb-8">
+                  “Membangun pemikiran politik Islam yang kritis,
+                  inklusif, dan relevan dengan tantangan global.”
+                </blockquote>
+
+                {/* CONTENT */}
+                <div
+                  className={`prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed text-justify transition-all duration-500 ${
+                    expanded ? '' : 'line-clamp-[12]'
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: content }}
+                />
+
+                {/* BUTTON */}
+                <div className="mt-10">
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="px-8 py-3 border border-primary text-primary hover:bg-primary hover:text-white transition rounded-md text-sm font-medium"
+                  >
+                    {expanded ? 'Tutup' : 'Baca Selengkapnya'}
+                  </button>
+                </div>
+              </>
             )}
-          </div>
 
+          </div>
         </div>
       </div>
     </section>
