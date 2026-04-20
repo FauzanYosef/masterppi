@@ -201,41 +201,15 @@ const DetailBerita = async ({ params }: Props) => {
               }}
             />
 
-            {/* RELATED */}
-            {related.length > 0 && (
-              <div className="pt-10 space-y-4">
-                <h3 className="text-xl font-bold">Berita Terkait</h3>
-
-                <div className="grid md:grid-cols-3 gap-6">
-                  {related.map((item) => (
-                    <Link key={item.slug} href={`/berita/${item.slug}`}>
-                      <div className="group cursor-pointer">
-                        <div className="relative h-40 rounded-lg overflow-hidden">
-                          <Image
-                            src={item.cover_img || '/images/default-news.jpg'}
-                            alt={item.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition"
-                          />
-                        </div>
-
-                        <p className="mt-2 text-sm font-medium group-hover:text-primary">
-                          {item.title}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+          
 
           </div>
 
           {/* SIDEBAR */}
           <div className="space-y-6">
             <div className="bg-white dark:bg-dark rounded-xl shadow p-5">
-              <h3 className="font-bold mb-4 text-primary">
-                🔥 Berita Terbaru
+              <h3 className="font-bold mb-10 text-primary">
+                Berita Terbaru
               </h3>
 
               <div className="space-y-4">
@@ -261,7 +235,6 @@ const DetailBerita = async ({ params }: Props) => {
                           {item.title}
                         </p>
                       </div>
-
                     </div>
                   </Link>
                 ))}

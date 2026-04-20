@@ -29,7 +29,7 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/')
+    router.push('/dashboard')
   }
 return (
   <div className="min-h-screen flex">
@@ -37,7 +37,7 @@ return (
     {/* LEFT IMAGE */}
     <div className="hidden md:flex w-[60%] relative">
       <img
-        src="/images/banner/uin.jpg" // taruh gambar di public/images
+        src="/images/banner/uin.jpg" 
         alt="login"
         className="w-full h-full object-cover"
       />
@@ -47,7 +47,7 @@ return (
         href="/"
         className="fixed top-6 left-6 z-50 bg-white/80 backdrop-blur-md px-5 py-2 rounded-full text-sm font-semibold shadow-lg hover:bg-white hover:scale-105 active:scale-95 transition"
       >
-        Dashboard
+        Landing Page
       </Link>
     </div>
 

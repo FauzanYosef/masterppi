@@ -18,12 +18,37 @@
   /* breakpoint */
   --breakpoint-xs: 420px;
 }
+.scrollbar-hide:hover::-webkit-scrollbar {
+  display: block;
+  width: 4px;
+}
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 @layer utilities {
   .container {
     @apply max-w-7xl mx-auto w-full px-4;
   }
+}
+
+.btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f3f4f6;
 }
 
 @layer base {

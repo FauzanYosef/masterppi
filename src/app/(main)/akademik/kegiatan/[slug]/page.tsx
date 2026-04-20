@@ -216,69 +216,53 @@ const DetailEvent = async ({ params }: Props) => {
               </div>
             )}
 
-            {/* RELATED */}
-            {related.length > 0 && (
-              <div className="pt-10 space-y-4">
-                <h3 className="text-xl font-bold">Kegiatan Terkait</h3>
-
-                <div className="grid gap-6 md:grid-cols-3">
-                  {related.map((item) => (
-                    <Link key={item.slug} href={`/akademik/kegiatan/${item.slug}`}>
-                      <div>
-                        <div className="relative h-40 rounded-lg overflow-hidden">
-                          <Image
-                            src={item.cover_img || '/images/default-news.jpg'}
-                            alt={item.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-
-                        <p className="mt-2 text-sm font-medium">
-                          {item.title}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
           </div>
 
           {/* SIDEBAR */}
           <div className="space-y-6">
             <div className="rounded-xl bg-white p-5 shadow dark:bg-dark">
-              <h3 className="mb-4 font-bold text-primary">
-                🔥 Kegiatan Terbaru
-              </h3>
+                
+                {/* TITLE */}
+                <h3 className="mb-10 mt-4 font-bold text-primary">
+                Kegiatan Terbaru
+                </h3>
 
-              <div className="space-y-4">
+                {/* LIST */}
+                <div className="space-y-4">
                 {latest.map((item) => (
-                  <Link key={item.slug} href={`/akademik/kegiatan/${item.slug}`}>
-                    <div className="flex gap-4">
-                      <div className="relative h-16 w-20 rounded-lg overflow-hidden">
-                        <Image
-                          src={item.cover_img || '/images/default-news.jpg'}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
+                    <Link
+                    key={item.slug}
+                    href={`/akademik/kegiatan/${item.slug}`}
+                    className="block group"
+                    >
+                    <div className="flex gap-4 items-center">
 
-                      <div>
-                        <span className="text-xs text-primary">
-                          {item.category}
+                        {/* IMAGE */}
+                        <div className="relative h-16 w-20 rounded-lg overflow-hidden flex-shrink-0">
+                        <Image
+                            src={item.cover_img || '/images/default-news.jpg'}
+                            alt={item.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        </div>
+
+                        {/* TEXT */}
+                        <div className="flex flex-col justify-center space-y-1">
+                        <span className="text-xs font-medium text-primary">
+                            {item.category}
                         </span>
 
-                        <p className="text-sm font-medium">
-                          {item.title}
+                        <p className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary transition">
+                            {item.title}
                         </p>
-                      </div>
+                        </div>
+
                     </div>
-                  </Link>
+                    </Link>
                 ))}
-              </div>
+                </div>
+
             </div>
           </div>
 
