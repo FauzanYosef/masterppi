@@ -42,7 +42,7 @@ const ProgramPage = () => {
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
 
       {/* HERO */}
-      <div className="container mb-16">
+      {/* <div className="container mb-16">
         <div className="relative rounded-2xl overflow-hidden">
           <Image
             src={getImgPath('/images/banner/uin.jpg')}
@@ -57,7 +57,6 @@ const ProgramPage = () => {
               Apa Itu Magister PPI?
             </h1>
 
-            {/* Breadcrumb */}
             <div className="text-sm md:text-base text-white/90 flex items-center gap-2 flex-wrap">
               <Link href="/">Home</Link>
 
@@ -84,7 +83,7 @@ const ProgramPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CONTENT */}
       <div className="container">

@@ -18,48 +18,48 @@ const menu = [
   {
     title: 'Main',
     items: [
-      { name: 'Dashboard', href: ' /dashboard', icon: LayoutDashboard },
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     ],
   },
   {
     title: 'Content',
     items: [
       { name: 'Articles', href: '/articles', icon: FileText },
-      { name: 'Events', href: ' /events', icon: Calendar },
-      { name: 'Event Galleries', href: ' /event-galleries', icon: ImageIcon },
-      { name: 'Publikasi', href: ' /publikasi', icon: BookOpen },
-    ],
+      { name: 'Events', href: '/events', icon: Calendar },
+      { name: 'Galleries', href: '/gallery', icon: ImageIcon },
+      // { name: 'Publikasi', href: '/publikasi', icon: BookOpen },
+    ],  
   },
   {
     title: 'Akademik',
     items: [
-      { name: 'Kurikulum', href: ' /kurikulum', icon: GraduationCap },
-      { name: 'Kurikulum Detail', href: ' /kurikulum-detail', icon: Folder },
-      { name: 'Mata Kuliah', href: ' /mata-kuliah', icon: BookOpen },
-      { name: 'Tipe Matkul', href: ' /tipe-matkul', icon: Folder },
-      { name: 'Semester', href: ' /semester', icon: Calendar },
+      { name: 'Kurikulum', href: '/kurikulum', icon: GraduationCap },
+      { name: 'Kurikulum Detail', href: '/kurikulum-detail', icon: Folder },
+      { name: 'Mata Kuliah', href: '/mata-kuliah', icon: BookOpen },
+      { name: 'Tipe Matkul', href: '/tipe-matkul', icon: Folder },
+      { name: 'Semester', href: '/semester', icon: Calendar },
     ],
   },
   {
     title: 'SDM',
     items: [
-      { name: 'Lecturers', href: ' /lecturers', icon: Users },
-      { name: 'Organization', href: ' /organization', icon: Users },
+      { name: 'Lecturers', href: '/lecturers', icon: Users },
+      { name: 'Organization', href: '/organization', icon: Users },
     ],
   },
   {
     title: 'Informasi',
     items: [
-      { name: 'Profile', href: ' /profile', icon: FileText },
-      { name: 'Panduan', href: ' /panduan', icon: FileText },
-      { name: 'Kontak', href: ' /kontak', icon: FileText },
+      { name: 'Profile', href: '/profile', icon: FileText },
+      { name: 'Panduan', href: '/panduan', icon: FileText },
+      { name: 'Kontak', href: '/kontak', icon: FileText },
     ],
   },
   {
     title: 'Penelitian',
     items: [
-      { name: 'Thesis', href: ' /thesis', icon: BookOpen },
-      { name: 'Jurnal', href: ' /jurnal', icon: BookOpen },
+      { name: 'Thesis', href: '/thesis', icon: BookOpen },
+      { name: 'Jurnal', href: '/jurnal', icon: BookOpen },
     ],
   },
 ]

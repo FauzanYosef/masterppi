@@ -61,30 +61,30 @@
   }
 
   h1 {
-    @apply text-darkblue dark:text-white capitalize md:text-6xl text-5xl font-bold xl:leading-tight leading-tight;
+    @apply text-darkblue dark:text-white  normal-case md:text-6xl text-5xl font-bold xl:leading-tight leading-tight;
   }
 
   h2 {
-    @apply text-darkblue dark:text-white capitalize md:text-5xl text-4xl font-bold;
+    @apply text-darkblue dark:text-white  normal-case md:text-5xl text-4xl font-bold;
   }
 
   h3 {
-    @apply text-white capitalize text-3xl font-normal
+    @apply text-white  normal-case text-3xl font-normal
   }
 
   h4 {
-    @apply text-darkblue dark:text-white capitalize text-2xl font-medium;
+    @apply text-darkblue dark:text-white  normal-case text-2xl font-medium;
   }
 
   h5 {
-    @apply text-darkblue dark:text-white capitalize text-xl font-medium;
+    @apply text-darkblue dark:text-white  normal-case text-xl font-medium;
   }
 
   h6 {
-    @apply text-darkblue dark:text-white capitalize text-lg font-medium;
+    @apply text-darkblue dark:text-white  normal-case text-lg font-medium;
   }
 
   p {
-    @apply text-lightgrey capitalize text-base;
+    @apply text-lightgrey normal-case text-base;
   }
 }

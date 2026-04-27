@@ -48,7 +48,7 @@ const OrganisasiPage = () => {
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
 
       {/* HERO */}
-      <div className="container mb-16">
+      {/* <div className="container mb-16">
         <div className="relative rounded-2xl overflow-hidden">
           <Image
             src={getImgPath('/images/banner/uin.jpg')}
@@ -83,7 +83,7 @@ const OrganisasiPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CONTENT */}
       <div className="container">

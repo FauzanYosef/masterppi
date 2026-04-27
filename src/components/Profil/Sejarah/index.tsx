@@ -35,7 +35,7 @@ const SejarahPage = () => {
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
 
       {/* 🔥 HERO */}
-      <div className="container mb-20">
+      {/* <div className="container mb-20">
         <div className="relative rounded-2xl overflow-hidden shadow-lg">
           <Image
             src={getImgPath('/images/banner/uin.jpg')}
@@ -45,14 +45,12 @@ const SejarahPage = () => {
             className="w-full h-[300px] md:h-[400px] object-cover"
           />
 
-          {/* Overlay */}
           <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-center px-4">
 
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Sejarah Pemikiran Politik Islam
             </h1>
 
-            {/* Breadcrumb */}
             <div className="flex gap-2 flex-wrap justify-center text-sm text-white/80">
               <Link href="/" className="hover:text-white transition">
                 Home
@@ -90,7 +88,7 @@ const SejarahPage = () => {
 
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* 🔥 CONTENT */}
       <div className="container">

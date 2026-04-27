@@ -42,7 +42,7 @@ const DosenPage = () => {
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
 
       {/* HERO */}
-      <div className="container mb-16">
+      {/* <div className="container mb-16">
         <div className="relative rounded-2xl overflow-hidden">
           <Image
             src="/images/banner/uin.jpg"
@@ -80,7 +80,7 @@ const DosenPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CONTENT */}
       <div className="container">

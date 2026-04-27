@@ -6,22 +6,24 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
 
-export default function CreateArticlePage() {
+export default function CreateEventPage() {
   const router = useRouter()
 
   const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [content, setContent] = useState('')
+  const [organizer, setOrganizer] = useState('')
+  const [description, setDescription] = useState('') // short text
+  const [content, setContent] = useState('') // full content
   const [category, setCategory] = useState('')
+  const [location, setLocation] = useState('')
 
-  const [publishedDate, setPublishedDate] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(false)
 
-  // ===== SLUG =====
   const slug = useMemo(() => {
     return title
       .toLowerCase()
@@ -30,20 +32,16 @@ export default function CreateArticlePage() {
       .replace(/(^-|-$)+/g, '')
   }, [title])
 
-  // ===== UPLOAD IMAGE (bucket: news) =====
   const uploadImage = async () => {
     if (!imageFile) return null
 
     const fileExt = imageFile.name.split('.').pop()
     const fileName = `${Date.now()}.${fileExt}`
-    const filePath = `covers/${fileName}`
+    const filePath = `events/${fileName}`
 
     const { error } = await supabase.storage
       .from('news')
-      .upload(filePath, imageFile, {
-        cacheControl: '3600',
-        upsert: false,
-      })
+      .upload(filePath, imageFile)
 
     if (error) {
       console.error(error)
@@ -58,25 +56,24 @@ export default function CreateArticlePage() {
     return data.publicUrl
   }
 
-  // ===== SUBMIT =====
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     const imageUrl = await uploadImage()
 
-    const finalDate =
-      publishedDate || new Date().toISOString()
-
-    const { error } = await supabase.from('articles').insert([
+    const { error } = await supabase.from('events').insert([
       {
         title,
-        author,
+        organizer,
+        description,
         content,
         category,
+        location,
         cover_img: imageUrl,
         slug,
-        published_date: finalDate,
+        start_date: startDate,
+        end_date: endDate,
       },
     ])
 
@@ -84,9 +81,9 @@ export default function CreateArticlePage() {
 
     if (error) {
       console.error(error)
-      alert('Gagal simpan artikel')
+      alert('Gagal simpan event')
     } else {
-      router.push('/articles')
+      router.push('/events')
     }
   }
 
@@ -94,12 +91,10 @@ export default function CreateArticlePage() {
     <div className="min-h-screen bg-gray-50">
       <div className="w-full px-4 py-6">
 
-        {/* HEADER */}
         <div className="mb-8">
           <div className="flex items-center gap-3">
-            
             <button
-              onClick={() => router.push('/articles')}
+              onClick={() => router.push('/events')}
               className="p-2 rounded-lg hover:bg-gray-200 transition"
             >
               <ArrowLeft size={18} />
@@ -107,39 +102,52 @@ export default function CreateArticlePage() {
 
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-               Create Article
+                Create Event
               </h1>
               <p className="text-gray-500 mt-1">
-                Write and publish content quickly and efficiently
+                Tambahkan event dengan lengkap
               </p>
             </div>
-
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-            {/* LEFT SIDE */}
+            {/* LEFT */}
             <div className="lg:col-span-8 space-y-6">
 
               {/* TITLE */}
               <div className="bg-white rounded-2xl p-6 shadow">
                 <h2 className="text-sm font-semibold text-gray-700 mb-2">
-                  Article Title
+                  Event Title
                 </h2>
 
                 <input
                   type="text"
-                  placeholder="Enter article title..."
+                  placeholder="Enter event title..."
                   className="w-full text-3xl font-semibold outline-none placeholder-gray-300"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
 
                 <p className="mt-3 text-sm text-gray-500">
-                  URL: <span className="text-purple-600">/articles/{slug || 'slug'}</span>
+                  URL: <span className="text-purple-600">/events/{slug || 'slug'}</span>
                 </p>
+              </div>
+
+              {/* SHORT DESCRIPTION */}
+              <div className="bg-white rounded-2xl p-6 shadow">
+                <h2 className="text-sm font-semibold text-gray-700 mb-3">
+                  Short Description
+                </h2>
+
+                <textarea
+                  placeholder="Short description (for card preview)..."
+                  className="w-full h-[120px] resize-none outline-none text-gray-700"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
               </div>
 
               {/* CONTENT */}
@@ -149,7 +157,7 @@ export default function CreateArticlePage() {
                 </h2>
 
                 <textarea
-                  placeholder="Write your article content..."
+                  placeholder="Full event content..."
                   className="w-full h-[420px] resize-none outline-none text-gray-700"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
@@ -158,29 +166,26 @@ export default function CreateArticlePage() {
 
             </div>
 
-            {/* RIGHT SIDE */}
+            {/* RIGHT */}
             <div className="lg:col-span-4 space-y-6">
 
               <div className="sticky top-6 space-y-6">
 
-                {/* SETTINGS */}
                 <div className="bg-white rounded-2xl p-6 shadow space-y-5">
 
                   <h2 className="text-base font-semibold text-gray-800">
-                    Publish Settings
+                    Event Settings
                   </h2>
 
-                  {/* AUTHOR */}
                   <div>
-                    <label className="text-sm">Author</label>
+                    <label className="text-sm">Organizer</label>
                     <input
                       className="w-full shadow-sm rounded-lg p-2 mt-1"
-                      value={author}
-                      onChange={(e) => setAuthor(e.target.value)}
+                      value={organizer}
+                      onChange={(e) => setOrganizer(e.target.value)}
                     />
                   </div>
 
-                  {/* CATEGORY */}
                   <div>
                     <label className="text-sm">Category</label>
                     <input
@@ -190,21 +195,33 @@ export default function CreateArticlePage() {
                     />
                   </div>
 
-                  {/* PUBLISHED DATE (NEW) */}
                   <div>
-                    <label className="text-sm ">Published Date</label>
+                    <label className="text-sm">Location</label>
                     <input
-                      type="date"
-                      className="w-full shadow-sm rounded-lg p-2 mt-2 text-sm"
-                      value={publishedDate}
-                      onChange={(e) => setPublishedDate(e.target.value)}
+                      className="w-full  shadow-sm rounded-lg p-2 mt-1"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
                     />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Leave empty for today
-                    </p>
                   </div>
 
-                  {/* IMAGE */}
+                  <div>
+                    <label className="text-sm">Event Date</label>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      <input
+                        type="date"
+                        className="shadow-sm p-3 rounded-lg text-sm"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                      <input
+                        type="date"
+                        className=" shadow-sm p-3 rounded-lg text-sm"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="text-sm font-semibold text-gray-700">
                       Cover Image
@@ -216,7 +233,7 @@ export default function CreateArticlePage() {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        id="edit-upload"
+                        id="upload"
                         onChange={(e) => {
                           const file = e.target.files?.[0] || null
                           setImageFile(file)
@@ -227,7 +244,7 @@ export default function CreateArticlePage() {
                         }}
                       />
 
-                      <label htmlFor="edit-upload" className="cursor-pointer block">
+                      <label htmlFor="upload" className="cursor-pointer block">
                         <p className="text-sm font-medium text-gray-700">
                           Click to upload image
                         </p>
@@ -267,13 +284,12 @@ export default function CreateArticlePage() {
                     )}
                   </div>
 
-                  {/* SUBMIT */}
                   <button
                     type="submit"
                     disabled={loading}
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl font-medium"
                   >
-                    {loading ? 'Saving...' : 'Publish Article'}
+                    {loading ? 'Saving...' : 'Publish Event'}
                   </button>
 
                 </div>

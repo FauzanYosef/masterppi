@@ -72,7 +72,7 @@ const KurikulumPage = () => {
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
 
       {/* HERO */}
-      <div className="container mb-16">
+      {/* <div className="container mb-16">
         <div className="relative rounded-2xl overflow-hidden">
           <Image
             src={getImgPath('/images/banner/uin.jpg')}
@@ -82,13 +82,13 @@ const KurikulumPage = () => {
             className="w-full h-[300px] md:h-[400px] object-cover"
           />
 
-          {/* OVERLAY */}
+          
           <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center px-4">
             <h1 className="text-3xl md:text-4xl font-bold text-white">
               Kurikulum Akademik
             </h1>
 
-            {/* BREADCRUMB */}
+            
             <div className="text-white/90 flex gap-2 mt-3 flex-wrap justify-center text-sm">
               <Link href="/" className="hover:underline">
                 Home
@@ -121,7 +121,7 @@ const KurikulumPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CONTENT */}
       <div className="container space-y-12">

@@ -45,10 +45,10 @@ const FasilitasPage = () => {
   ]
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
+    <div className="pt-[160px] pb-[120px]">
 
       {/* HERO */}
-      <div className="container mb-16">
+      {/* <div className="container mb-16">
         <div className="relative rounded-2xl overflow-hidden">
           <Image
             src={getImgPath('/images/banner/uin.jpg')}
@@ -83,13 +83,13 @@ const FasilitasPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CONTENT */}
       <div className="container">
 
         {/* TITLE */}
-        <div className="text-center space-y-4 mb-6">
+        <div className="text-center space-y-4 mb-10">
 
           {/* BADGE */}
           {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
@@ -112,7 +112,7 @@ const FasilitasPage = () => {
         </div>
 
         {/* GRID FITUR */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 pt-10">
 
           {fasilitas.map((item, i) => {
             const Icon = item.icon
