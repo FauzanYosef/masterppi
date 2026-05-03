@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import CreateGalleryForm from '@/components/Admin/Gallery/Create'
 
 export const metadata = {
