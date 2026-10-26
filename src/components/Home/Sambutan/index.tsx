@@ -2,23 +2,41 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { supabase } from '@/lib/supabase'
+import { apiFetch, getImageUrl } from '@/lib/api'
+import { toHtml } from '@/lib/site-content'
+
+type SambutanData = {
+  title: string | null
+  subtitle: string | null
+  description: string | null
+  image: string | null
+}
+
+type HomeResponse = {
+  success: boolean
+  data: {
+    sambutan?: SambutanData
+  }
+}
 
 const SambutanPage = () => {
-  const [content, setContent] = useState<string>('')
+  const [sambutan, setSambutan] = useState<SambutanData | null>(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('content')
-        .eq('key', 'sambutan_content')
-        .single()
+      try {
+        const response = await apiFetch<HomeResponse>(
+          '/api/home'
+        )
 
-      if (!error) setContent(data?.content || '')
-      setLoading(false)
+        setSambutan(response.data?.sambutan || null)
+      } catch (error) {
+        console.error('Error fetching sambutan:', error)
+      } finally {
+        setLoading(false)
+      }
     }
 
     fetchData()
@@ -36,23 +54,13 @@ const SambutanPage = () => {
 
             <div className="w-full max-w-[420px]">
               <Image
-                src="/images/dosen/kaprodi.png"
+                src={getImageUrl(sambutan?.image)}
                 alt="Kaprodi"
                 width={420}
                 height={520}
                 className="w-full h-auto object-cover rounded-xl shadow-lg"
               />
             </div>
-
-            {/* IDENTITAS */}
-            {/* <div className="mt-6 border-l-4 border-primary pl-4">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Asep Muhamad Iqbal, Ph.D.
-              </h3>
-              <p className="text-gray-500 text-sm mt-1">
-                Ketua Program Magister Pemikiran Politik Islam
-              </p>
-            </div> */}
 
           </div>
 
@@ -76,6 +84,10 @@ const SambutanPage = () => {
 
             {loading ? (
               <p>Loading...</p>
+            ) : !sambutan ? (
+              <p className="text-gray-500">
+                Sambutan belum tersedia.
+              </p>
             ) : (
               <>
                 {/* QUOTE HIGHLIGHT */}
@@ -89,7 +101,9 @@ const SambutanPage = () => {
                   className={`prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed text-justify transition-all duration-500 ${
                     expanded ? '' : 'line-clamp-[12]'
                   }`}
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{
+                    __html: toHtml(sambutan.description)
+                  }}
                 />
 
                 {/* BUTTON */}
@@ -98,7 +112,9 @@ const SambutanPage = () => {
                     onClick={() => setExpanded(!expanded)}
                     className="px-8 py-3 border border-primary text-primary hover:bg-primary hover:text-white transition rounded-md text-sm font-medium"
                   >
-                    {expanded ? 'Tutup' : 'Baca Selengkapnya'}
+                    {expanded
+                      ? 'Tutup'
+                      : 'Baca Selengkapnya'}
                   </button>
                 </div>
               </>

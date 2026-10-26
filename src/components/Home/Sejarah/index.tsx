@@ -3,22 +3,35 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { apiFetch } from '@/lib/api'
+import { toHtml } from '@/lib/site-content'
+
+type SejarahData = {
+  title: string | null
+  subtitle: string | null
+  description: string | null
+  image: string | null
+}
+
+type HomeResponse = {
+  success: boolean
+  data: {
+    sejarah?: SejarahData
+  }
+}
 
 const SejarahPage = () => {
-  const [content, setContent] = useState<string>('')
+  const [sejarah, setSejarah] = useState<SejarahData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data, error } = await supabase
-          .from('profile')
-          .select('content')
-          .eq('key', 'sejarah_content')
+        const response = await apiFetch<HomeResponse>(
+          '/api/home'
+        )
 
-        if (error) throw error
-        setContent(data?.[0]?.content || '')
+        setSejarah(response.data?.sejarah || null)
       } catch (err) {
         console.error('Error fetch sejarah:', err)
       } finally {
@@ -42,6 +55,10 @@ const SejarahPage = () => {
 
               {loading ? (
                 <p>Loading...</p>
+              ) : !sejarah ? (
+                <p className="text-gray-500">
+                  Sejarah belum tersedia.
+                </p>
               ) : (
                 <>
                   {/* TITLE */}
@@ -49,34 +66,41 @@ const SejarahPage = () => {
 
                     {/* BADGE */}
                     <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary/10 text-primary">
-                        Sejarah Singkat
+                      {sejarah.subtitle || 'Sejarah Singkat'}
                     </span>
 
                     {/* TITLE */}
                     <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Program Magister <br className="hidden lg:block" />
-                        Pemikiran Politik Islam
+                      {sejarah.title || (
+                        <>
+                          Program Magister <br className="hidden lg:block" />
+                          Pemikiran Politik Islam
+                        </>
+                      )}
                     </h2>
 
                     {/* SUBTLE LINE */}
                     <div className="mt-4 w-20 h-1 bg-primary rounded-full"></div>
 
-                    </div>
+                  </div>
 
-                  {/* TEXT (preview saja) */}
+                  {/* TEXT PREVIEW */}
                   <div
                     className="prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed overflow-hidden max-h-[200px] mr-10 text-justify"
-                    dangerouslySetInnerHTML={{ __html: content }}
+                    dangerouslySetInnerHTML={{
+                      __html: toHtml(sejarah.description)
+                    }}
                   />
 
                   {/* GRADIENT */}
-                  <div className="pointer-events-none absolute bottom-0 left-0 w-full h-24 " />
+                  <div className="pointer-events-none absolute bottom-0 left-0 w-full h-24" />
                 </>
               )}
+
             </div>
 
-            {/* BUTTON → LINK */}
-            {!loading && (
+            {/* BUTTON */}
+            {!loading && sejarah && (
               <div className="flex justify-start mt-8">
                 <Link
                   href="/profil/sejarah"
@@ -86,17 +110,26 @@ const SejarahPage = () => {
                 </Link>
               </div>
             )}
+
           </div>
 
           {/* GAMBAR */}
           <div className="flex justify-center items-start">
             <div className="relative w-full h-[300px] lg:h-[420px]">
+
               <Image
-                src="/images/banner/uin.jpg"
-                alt="UIN Bandung"
+                src={
+                  sejarah?.image ||
+                  '/images/banner/uin.jpg'
+                }
+                alt={
+                  sejarah?.title ||
+                  'UIN Sunan Gunung Djati Bandung'
+                }
                 fill
                 className="object-cover rounded-2xl shadow-xl"
               />
+
             </div>
           </div>
 

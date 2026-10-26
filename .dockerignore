@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.gitignore
+.claude
+.DS_Store
+npm-debug.log*
+# File env tidak boleh ikut ke dalam image; nilainya dikirim lewat build args.
+.env
+.env.*
+!.env.example
+Dockerfile
+docker-compose*.yml
+README.md

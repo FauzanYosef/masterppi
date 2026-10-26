@@ -1,15 +1,23 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { getImgPath } from '@/app/(main)/utils/paths'
+import { useEffect, useState } from 'react'
+import { getPage, PROFILE_PAGES } from '@/lib/site-content'
 import { Calendar, BookOpen, Building2, Users, Database, FlaskConical } from 'lucide-react'
 
 const FasilitasPage = () => {
-  const pathname = usePathname()
-  const pathSegments = pathname.split('/').filter(Boolean)
+  const [content, setContent] = useState<string | null>(null)
+
+  // Fasilitas dari CMS (Halaman → "Fasilitas"); tanpa itu, daftar bawaan di bawah yang tampil.
+  useEffect(() => {
+    let active = true
+    getPage(PROFILE_PAGES.fasilitas).then((page) => {
+      if (active && page?.content) setContent(page.content)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   const fasilitas = [
     {
@@ -111,7 +119,13 @@ const FasilitasPage = () => {
 
         </div>
 
-        {/* GRID FITUR */}
+        {content ? (
+          <div
+            className="prose prose-lg max-w-3xl mx-auto dark:prose-invert pt-10"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        ) : (
+        /* GRID FITUR */
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 pt-10">
 
           {fasilitas.map((item, i) => {
@@ -144,6 +158,7 @@ const FasilitasPage = () => {
           })}
 
         </div>
+        )}
       </div>
     </div>
   )

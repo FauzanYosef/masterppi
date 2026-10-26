@@ -3,12 +3,25 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
-import { CalendarDays, User } from 'lucide-react'
+import { getPage, PROFILE_PAGES } from '@/lib/site-content'
 
 const VisiPage = () => {
   const pathname = usePathname()
   const pathSegments = pathname.split('/').filter(Boolean)
+  const [content, setContent] = useState<string | null>(null)
+
+  // Visi Misi dari CMS (Profil → Visi Misi); tanpa isi, kutipan visi bawaan yang tampil.
+  useEffect(() => {
+    let active = true
+    getPage(PROFILE_PAGES.visi).then((page) => {
+      if (active && page?.content) setContent(page.content)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
@@ -95,7 +108,13 @@ const VisiPage = () => {
 
           </div> */}
 
-          {/* VISI QUOTE */}
+          {content ? (
+            <div
+              className="prose prose-lg max-w-none dark:prose-invert text-left leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          ) : (
+          /* VISI QUOTE */
           <div className="relative  px-10 py-16">
 
             {/* Quote Left */}
@@ -113,6 +132,7 @@ const VisiPage = () => {
             </p>
 
           </div>
+          )}
 
         </div>
 

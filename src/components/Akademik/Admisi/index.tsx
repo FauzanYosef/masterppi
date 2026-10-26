@@ -3,29 +3,35 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
-import { supabase } from '@/lib/supabase'
+import { getImageUrl } from '@/lib/api'
+import { getCurrentAdmission, type Admission } from '@/lib/site-content'
+
+const DEFAULT_REGISTRATION_URL = 'https://pmb.uinsgd.ac.id/program-pascasarjana/'
+const DEFAULT_BROCHURES = ['/images/brosur/1.png', '/images/brosur/2.png'].map(getImgPath)
+
+const formatDate = (value: string | null) =>
+  value ? new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : null
 
 const AdmisiPage = () => {
-  const [linkBiaya, setLinkBiaya] = useState<string>('')
-  const [loading, setLoading] = useState(true)
+  const [admission, setAdmission] = useState<Admission | null>(null)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
+  // Gelombang penerimaan aktif dari CMS (Akademik → Penerimaan).
   useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabase
-        .from('panduan')
-        .select('link_panduan')
-        .limit(1)
-        .single()
-
-      if (error) console.error(error)
-      if (data) setLinkBiaya(data.link_panduan)
-
-      setLoading(false)
+    let active = true
+    getCurrentAdmission(getImageUrl).then((data) => {
+      if (active) setAdmission(data)
+    })
+    return () => {
+      active = false
     }
-
-    fetchData()
   }, [])
+
+  const brochures = admission?.files.filter((f) => f.isImage).map((f) => f.url) ?? []
+  const images = brochures.length > 0 ? brochures : DEFAULT_BROCHURES
+  const documents = admission?.files.filter((f) => !f.isImage) ?? []
+  const opens = formatDate(admission?.registrationStart ?? null)
+  const closes = formatDate(admission?.registrationEnd ?? null)
 
   return (
     <div className="pt-[140px] pb-[100px] dark:bg-darklight">
@@ -48,15 +54,16 @@ const AdmisiPage = () => {
         {/* GRID IMAGE */}
         <div className="grid md:grid-cols-2 gap-6">
 
-          {['/images/brosur/1.png', '/images/brosur/2.png'].map((img, i) => (
+          {images.map((img, i) => (
             <div
               key={i}
               onClick={() => setSelectedImage(img)}
               className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer"
             >
               <Image
-                src={getImgPath(img)}
+                src={img}
                 alt={`Brosur PMB ${i + 1}`}
+                unoptimized={img.startsWith('http')}
                 fill
                 className="object-cover group-hover:scale-105 transition duration-500"
               />
@@ -100,11 +107,43 @@ const AdmisiPage = () => {
 
         </div> */}
 
+        {/* GELOMBANG & DOKUMEN (dari CMS) */}
+        {admission && (opens || documents.length > 0) && (
+          <div className="mt-12 max-w-3xl mx-auto bg-white dark:bg-dark rounded-2xl shadow-md p-6 md:p-8 space-y-4">
+            <h3 className="font-semibold text-lg text-gray-800 dark:text-white">
+              {admission.title}
+              {admission.academicYear ? ` — Tahun Akademik ${admission.academicYear}` : ''}
+            </h3>
+            {opens && (
+              <p className="text-gray-600 dark:text-gray-300">
+                Pendaftaran dibuka <span className="text-primary font-medium">{opens}</span>
+                {closes && (
+                  <>
+                    {' '}sampai <span className="text-primary font-medium">{closes}</span>
+                  </>
+                )}
+                .
+              </p>
+            )}
+            {documents.length > 0 && (
+              <ul className="space-y-2 text-sm">
+                {documents.map((doc) => (
+                  <li key={doc.url}>
+                    <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
+                      {doc.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {/* CTA */}
         <div className="text-center mt-10 space-y-3">
 
           <a
-            href="https://pmb.uinsgd.ac.id/program-pascasarjana/"
+            href={admission?.registrationUrl || DEFAULT_REGISTRATION_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-8 py-4 bg-primary text-white rounded-full text-sm md:text-base font-medium shadow-lg hover:bg-primary/90 transition"
@@ -112,15 +151,7 @@ const AdmisiPage = () => {
             Daftar Sekarang
           </a>
 
-          {/* <div>
-            <a
-              href={linkBiaya || '#'}
-              target="_blank"
-              className="text-sm text-gray-600 dark:text-gray-400 underline hover:text-primary transition"
-            >
-              {loading ? 'Loading...' : 'Lihat Informasi Biaya'}
-            </a>
-          </div> */}
+
 
         </div>
 
@@ -134,8 +165,9 @@ const AdmisiPage = () => {
         >
           <div className="relative w-full max-w-4xl h-[80vh]">
             <Image
-              src={getImgPath(selectedImage)}
+              src={selectedImage}
               alt="Preview Brosur"
+              unoptimized={selectedImage.startsWith('http')}
               fill
               className="object-contain rounded-lg"
             />

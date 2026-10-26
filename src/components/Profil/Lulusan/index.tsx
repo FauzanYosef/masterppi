@@ -1,40 +1,25 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
-import { supabase } from '@/lib/supabase'
+import { getPage, PROFILE_PAGES } from '@/lib/site-content'
 
 const LulusanPage = () => {
-  const pathname = usePathname()
-  const pathSegments = pathname.split('/').filter(Boolean)
 
   // ✅ STATE
   const [content, setContent] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
+  // Isi halaman dari CMS (fisip-api: /api/pages/<slug>).
   useEffect(() => {
-    const fetchContent = async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('content')
-        .eq('key', 'lulusan_content') // ✅ ganti key
-        .single()
-
-      if (error) {
-        console.error('Supabase error:', error)
-      }
-
-      if (data) {
-        setContent(data.content)
-      }
-
+    let active = true
+    getPage(PROFILE_PAGES.lulusan).then((page) => {
+      if (!active) return
+      setContent(page?.content ?? '')
       setLoading(false)
+    })
+    return () => {
+      active = false
     }
-
-    fetchContent()
   }, [])
 
   return (
@@ -113,8 +98,10 @@ const LulusanPage = () => {
 
           {/* 🔥 CONTENT DARI SUPABASE */}
           {loading ? (
-            <p className="text-gray-500">Loading...</p>
-          ) : (
+              <p className="text-gray-500">Memuat…</p>
+            ) : !content ? (
+              <p className="text-gray-500">Konten sedang disiapkan.</p>
+            ) : (
             <div
               className="
                 prose prose-lg max-w-none 

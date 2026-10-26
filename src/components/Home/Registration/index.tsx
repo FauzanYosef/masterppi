@@ -1,9 +1,27 @@
 'use client'
 
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
+import { getImageUrl } from '@/lib/api'
+import { getCurrentAdmission } from '@/lib/site-content'
+
+const DEFAULT_REGISTRATION_URL = 'https://pmb.uinsgd.ac.id'
 
 const RegistrationBanner = () => {
+  const [registrationUrl, setRegistrationUrl] = useState(DEFAULT_REGISTRATION_URL)
+
+  // Tautan pendaftaran dari CMS (Akademik → Penerimaan).
+  useEffect(() => {
+    let active = true
+    getCurrentAdmission(getImageUrl).then((admission) => {
+      if (active && admission?.registrationUrl) setRegistrationUrl(admission.registrationUrl)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <section className="py-16 bg-secondary">
       <div className="container">
@@ -46,8 +64,9 @@ const RegistrationBanner = () => {
           {/* RIGHT BUTTON */}
           <div className="z-10">
             <a
-              href="https://pmb.uinsgd.ac.id"
+              href={registrationUrl}
               target="_blank"
+              rel="noopener noreferrer"
               className="bg-primary text-white px-7 py-3 rounded-xl font-medium border border-primary hover:bg-transparent hover:text-primary transition-all duration-300 active:scale-95"
             >
               Daftar Sekarang

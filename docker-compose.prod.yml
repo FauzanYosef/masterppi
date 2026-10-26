@@ -1,0 +1,19 @@
+# Server produksi:
+#   docker compose -f docker-compose.prod.yml up -d --build
+# Nilai bisa ditimpa lewat file .env di folder ini (lihat .env.example).
+services:
+  web:
+    container_name: mppi-web
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api-fisip.uinsgd.ac.id}
+        NEXT_PUBLIC_SITE_DOMAIN: ${NEXT_PUBLIC_SITE_DOMAIN:-magisterppi.uinsgd.ac.id}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://magisterppi.uinsgd.ac.id}
+        NEXT_IMAGE_UNOPTIMIZED: ${NEXT_IMAGE_UNOPTIMIZED:-false}
+    environment:
+      # Bila API berjalan sebagai container di server yang sama, isi dengan nama container-nya.
+      INTERNAL_API_URL: ${INTERNAL_API_URL:-https://api-fisip.uinsgd.ac.id}
+    ports:
+      - "${WEB_PORT:-3002}:3000"
+    restart: unless-stopped

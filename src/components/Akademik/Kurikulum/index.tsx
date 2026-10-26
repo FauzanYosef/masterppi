@@ -1,238 +1,441 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
-import { supabase } from '@/lib/supabase'
+import { useEffect, useMemo, useState } from 'react'
+import { apiFetch } from '@/lib/api'
+
+type Course = {
+  id: number
+  curriculum_id: number
+  study_program_id: number
+  code: string
+  name: string
+  semester: number | null
+  sks: number | string
+  course_type: string
+  description: string | null
+}
+
+type Curriculum = {
+  id: number
+  faculty_id: number | null
+  study_program_id: number
+  name: string
+  code: string | null
+  academic_year: string | null
+  description: string | null
+  total_sks: number | string | null
+  is_active: number
+}
+
+type CurriculumResponse = {
+  success: boolean
+  message?: string
+  data: Curriculum[]
+  total?: number
+}
+
+type CourseResponse = {
+  success: boolean
+  message?: string
+  data: Course[]
+  total?: number
+}
+
+type SemesterGroup = {
+  semester: number
+  courses: Course[]
+  totalSks: number
+}
+
+type CurriculumGroup = {
+  curriculum: Curriculum
+  semesters: SemesterGroup[]
+}
 
 const KurikulumPage = () => {
-  const pathname = usePathname()
-  const pathSegments = pathname.split('/').filter(Boolean)
-
-  const [data, setData] = useState<any[]>([])
+  const [curriculums, setCurriculums] = useState<Curriculum[]>([])
+  const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase
-        .from('kurikulum_detail')
-        .select(`
-          kurikulum:kurikulum_id (
-            nama_kurikulum,
-            tahun
-          ),
-          semester:semester_id (
-            nama_semester
-          ),
-          mata_kuliah:mk_id (
-            kode_mk,
-            nama_mk,
-            sks,
-            tipe_matkul:tipe_mk (
-              tipe_id
-            )
+      try {
+        setLoading(true)
+        setError('')
+
+        const [curriculumResult, courseResult] =
+          await Promise.all([
+            apiFetch<CurriculumResponse>(
+              '/api/curriculums',
+              {
+                method: 'GET',
+                cache: 'no-store',
+              }
+            ),
+
+            apiFetch<CourseResponse>(
+              '/api/courses',
+              {
+                method: 'GET',
+                cache: 'no-store',
+              }
+            ),
+          ])
+
+        if (!curriculumResult.success) {
+          throw new Error(
+            curriculumResult.message ||
+              'Gagal mengambil data kurikulum'
           )
-        `)
-        .order('semester_id', { ascending: true })
+        }
 
-      if (error) console.error(error)
-      if (data) setData(data)
+        if (!courseResult.success) {
+          throw new Error(
+            courseResult.message ||
+              'Gagal mengambil data mata kuliah'
+          )
+        }
 
-      setLoading(false)
+        setCurriculums(curriculumResult.data || [])
+        setCourses(courseResult.data || [])
+      } catch (err) {
+        console.error(
+          'FETCH KURIKULUM ERROR:',
+          err
+        )
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Terjadi kesalahan saat mengambil data kurikulum'
+        )
+      } finally {
+        setLoading(false)
+      }
     }
 
     fetchData()
   }, [])
 
-  // 🔥 GROUPING DATA
-  const grouped = data.reduce((acc: any, item: any) => {
-    const kurName = item.kurikulum?.nama_kurikulum
-    const tahun = item.kurikulum?.tahun
-    const semester = item.semester?.nama_semester
+  const groupedData = useMemo<CurriculumGroup[]>(() => {
+    return curriculums.map((curriculum) => {
+      const curriculumCourses = courses.filter(
+        (course) =>
+          course.curriculum_id === curriculum.id
+      )
 
-    if (!acc[kurName]) {
-      acc[kurName] = {
-        tahun,
-        semesters: {}
+      const semesterMap =
+        curriculumCourses.reduce<
+          Record<number, Course[]>
+        >((acc, course) => {
+          const semester = course.semester || 0
+
+          if (!acc[semester]) {
+            acc[semester] = []
+          }
+
+          acc[semester].push(course)
+
+          return acc
+        }, {})
+
+      const semesters: SemesterGroup[] =
+        Object.entries(semesterMap)
+          .map(
+            ([semester, semesterCourses]) => ({
+              semester: Number(semester),
+              courses: semesterCourses,
+              totalSks: semesterCourses.reduce(
+                (total, course) =>
+                  total + Number(course.sks || 0),
+                0
+              ),
+            })
+          )
+          .sort(
+            (a, b) => a.semester - b.semester
+          )
+
+      return {
+        curriculum,
+        semesters,
       }
+    })
+  }, [curriculums, courses])
+
+  const getCourseTypeLabel = (
+    type: string
+  ) => {
+    switch (type) {
+      case 'wajib':
+        return 'Wajib'
+
+      case 'pilihan':
+        return 'Pilihan'
+
+      case 'konsentrasi':
+        return 'Konsentrasi'
+
+      case 'tesis':
+        return 'Tesis'
+
+      case 'disertasi':
+        return 'Disertasi'
+
+      case 'praktikum':
+        return 'Praktikum'
+
+      default:
+        return 'Lainnya'
     }
+  }
 
-    if (!acc[kurName].semesters[semester]) {
-      acc[kurName].semesters[semester] = []
+  const getCourseTypeClass = (
+    type: string
+  ) => {
+    switch (type) {
+      case 'wajib':
+        return 'bg-green-100 text-green-700'
+
+      case 'pilihan':
+        return 'bg-yellow-100 text-yellow-700'
+
+      case 'konsentrasi':
+        return 'bg-purple-100 text-purple-700'
+
+      case 'tesis':
+        return 'bg-blue-100 text-blue-700'
+
+      case 'disertasi':
+        return 'bg-indigo-100 text-indigo-700'
+
+      case 'praktikum':
+        return 'bg-orange-100 text-orange-700'
+
+      default:
+        return 'bg-gray-100 text-gray-700'
     }
-
-    acc[kurName].semesters[semester].push(item.mata_kuliah)
-
-    return acc
-  }, {})
+  }
 
   return (
     <div className="pt-[160px] pb-[120px] dark:bg-darklight">
-
-      {/* HERO */}
-      {/* <div className="container mb-16">
-        <div className="relative rounded-2xl overflow-hidden">
-          <Image
-            src={getImgPath('/images/banner/uin.jpg')}
-            alt="Banner"
-            width={1400}
-            height={500}
-            className="w-full h-[300px] md:h-[400px] object-cover"
-          />
-
-          
-          <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center px-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              Kurikulum Akademik
-            </h1>
-
-            
-            <div className="text-white/90 flex gap-2 mt-3 flex-wrap justify-center text-sm">
-              <Link href="/" className="hover:underline">
-                Home
-              </Link>
-
-              {pathSegments.map((segment, index) => {
-                const href =
-                  '/' + pathSegments.slice(0, index + 1).join('/')
-                const isLast = index === pathSegments.length - 1
-
-                const label =
-                  segment.charAt(0).toUpperCase() + segment.slice(1)
-
-                return (
-                  <span key={href} className="flex gap-2 items-center">
-                    <span className="opacity-70">/</span>
-
-                    {isLast ? (
-                      <span className="text-white font-medium">
-                        {label}
-                      </span>
-                    ) : (
-                      <Link href={href} className="hover:underline">
-                        {label}
-                      </Link>
-                    )}
-                  </span>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* CONTENT */}
       <div className="container space-y-12">
+
+        {/* HEADER */}
         <div className="text-center space-y-4">
+          <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+            Kurikulum{' '}
+            <span className="text-primary">
+              Akademik
+            </span>
+          </h1>
 
-          {/* BADGE */}
-          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            Akademik
-          </div> */}
-
-          {/* TITLE */}
-          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-            Kurikulum <span className="text-primary">Akademik</span>
-          </h2>
-
-          {/* SUBTITLE */}
           <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
-            Struktur kurikulum dirancang untuk memberikan keseimbangan antara teori dan praktik, 
-            serta mendukung pengembangan kompetensi akademik dan profesional mahasiswa.
+            Struktur kurikulum dirancang untuk
+            memberikan keseimbangan antara teori
+            dan praktik, serta mendukung
+            pengembangan kompetensi akademik dan
+            profesional mahasiswa.
           </p>
 
-          {/* GARIS AKSEN */}
-          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-
+          <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </div>
 
-        {loading ? (
-          <p className="text-center">Loading...</p>
-        ) : (
-          Object.keys(grouped).map((kurName) => {
-            const kur = grouped[kurName]
-
-            return (
-              <div key={kurName} className="space-y-8">
-
-                {/* HEADER */}
-                {/* <div className="text-center">
-                  <h3 className="text-2xl font-bold text-primary">
-                    {kurName}
-                  </h3>
-                  <p className="text-gray-500">
-                    Tahun {kur.tahun}
-                  </p>
-                </div> */}
-
-                {/* SEMESTER */}
-                {Object.keys(kur.semesters).map((semester) => (
-                  <div
-                    key={semester}
-                    className="bg-white dark:bg-dark rounded-2xl shadow-md p-6"
-                  >
-                    <h4 className="text-lg font-semibold mb-6">
-                      {semester}
-                    </h4>
-
-                    {/* 🔥 MODERN TABLE */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm border-separate border-spacing-y-2">
-
-                        {/* HEADER */}
-                        <thead>
-                          <tr className="text-xs uppercase text-gray-500 dark:text-gray-400">
-                            <th className="px-4 py-2 text-left">Kode</th>
-                            <th className="px-4 py-2 text-left">Mata Kuliah</th>
-                            <th className="px-4 py-2 text-center">SKS</th>
-                            <th className="px-4 py-2 text-center">Tipe</th>
-                          </tr>
-                        </thead>
-
-                        {/* BODY */}
-                        <tbody>
-                          {kur.semesters[semester].map((mk: any, i: number) => (
-                            <tr
-                              key={i}
-                              className="bg-white dark:bg-darklight shadow-sm hover:shadow-md transition-all"
-                            >
-                              <td className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300 rounded-l-xl">
-                                {mk.kode_mk}
-                              </td>
-
-                              <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                                {mk.nama_mk}
-                              </td>
-
-                              <td className="px-4 py-3 text-center font-semibold">
-                                {mk.sks}
-                              </td>
-
-                              <td className="px-4 py-3 text-center rounded-r-xl">
-                                <span
-                                  className={`px-3 py-1 text-xs font-medium rounded-full ${
-                                    mk.tipe_matkul?.tipe_id === 'Wajib'
-                                      ? 'bg-green-100 text-green-700'
-                                      : 'bg-yellow-100 text-yellow-700'
-                                  }`}
-                                >
-                                  {mk.tipe_matkul?.tipe_id}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                  </div>
-                ))}
-              </div>
-            )
-          })
+        {/* LOADING */}
+        {loading && (
+          <div className="py-16 text-center">
+            <div className="inline-flex items-center gap-3 text-gray-500">
+              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <span>
+                Memuat kurikulum...
+              </span>
+            </div>
+          </div>
         )}
+
+        {/* ERROR */}
+        {!loading && error && (
+          <div className="max-w-xl mx-auto p-6 rounded-2xl border border-red-200 bg-red-50 text-center">
+            <h3 className="font-semibold text-red-700">
+              Gagal Memuat Data
+            </h3>
+
+            <p className="mt-2 text-sm text-red-600">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* EMPTY */}
+        {!loading &&
+          !error &&
+          groupedData.length === 0 && (
+            <div className="py-16 text-center">
+              <p className="text-gray-500 dark:text-gray-400">
+                Data kurikulum belum tersedia.
+              </p>
+            </div>
+          )}
+
+        {/* CURRICULUM */}
+        {!loading &&
+          !error &&
+          groupedData.map(
+            ({
+              curriculum,
+              semesters,
+            }) => (
+              <section
+                key={curriculum.id}
+                className="space-y-8"
+              >
+
+                {/* CURRICULUM INFO */}
+                <div className="text-center">
+                  <h2 className="text-2xl md:text-3xl font-bold text-primary">
+                    {curriculum.name}
+                  </h2>
+
+                  {curriculum.academic_year && (
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
+                      Tahun Akademik{' '}
+                      {curriculum.academic_year}
+                    </p>
+                  )}
+
+                  {curriculum.total_sks && (
+                    <p className="mt-1 text-sm text-gray-500">
+                      Total{' '}
+                      <span className="font-semibold text-gray-700 dark:text-gray-300">
+                        {Number(
+                          curriculum.total_sks
+                        )}{' '}
+                        SKS
+                      </span>
+                    </p>
+                  )}
+
+                  {curriculum.description && (
+                    <p className="max-w-2xl mx-auto mt-3 text-sm text-gray-500 dark:text-gray-400">
+                      {curriculum.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* SEMESTERS */}
+                {semesters.map(
+                  ({
+                    semester,
+                    courses,
+                    totalSks,
+                  }) => (
+                    <div
+                      key={semester}
+                      className="overflow-hidden bg-white dark:bg-dark rounded-2xl shadow-md"
+                    >
+
+                      {/* SEMESTER HEADER */}
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-6 py-5 border-b border-gray-100 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                          Semester {semester}
+                        </h3>
+
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {courses.length}{' '}
+                          Mata Kuliah
+                          <span className="mx-2">
+                            •
+                          </span>
+                          {totalSks} SKS
+                        </div>
+                      </div>
+
+                      {/* TABLE */}
+                      <div className="overflow-x-auto p-4">
+                        <table className="w-full text-sm border-separate border-spacing-y-2">
+
+                          <thead>
+                            <tr className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                              <th className="px-4 py-2 text-left">
+                                Kode
+                              </th>
+
+                              <th className="px-4 py-2 text-left">
+                                Mata Kuliah
+                              </th>
+
+                              <th className="px-4 py-2 text-center">
+                                SKS
+                              </th>
+
+                              <th className="px-4 py-2 text-center">
+                                Tipe
+                              </th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            {courses.map(
+                              (course) => (
+                                <tr
+                                  key={course.id}
+                                  className="bg-gray-50 dark:bg-darklight hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                >
+
+                                  {/* KODE */}
+                                  <td className="px-4 py-4 rounded-l-xl font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                    {course.code}
+                                  </td>
+
+                                  {/* MATA KULIAH */}
+                                  <td className="px-4 py-4">
+                                    <div className="font-medium text-gray-800 dark:text-gray-200">
+                                      {course.name}
+                                    </div>
+
+                                    {course.description && (
+                                      <p className="mt-1 text-xs leading-relaxed text-gray-400 dark:text-gray-500">
+                                        {
+                                          course.description
+                                        }
+                                      </p>
+                                    )}
+                                  </td>
+
+                                  {/* SKS */}
+                                  <td className="px-4 py-4 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                    {Number(
+                                      course.sks
+                                    )}
+                                  </td>
+
+                                  {/* TYPE */}
+                                  <td className="px-4 py-4 text-center rounded-r-xl whitespace-nowrap">
+                                    <span
+                                      className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getCourseTypeClass(
+                                        course.course_type
+                                      )}`}
+                                    >
+                                      {getCourseTypeLabel(
+                                        course.course_type
+                                      )}
+                                    </span>
+                                  </td>
+
+                                </tr>
+                              )
+                            )}
+                          </tbody>
+
+                        </table>
+                      </div>
+                    </div>
+                  )
+                )}
+              </section>
+            )
+          )}
       </div>
     </div>
   )

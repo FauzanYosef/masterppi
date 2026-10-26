@@ -1,34 +1,26 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
-import { supabase } from '@/lib/supabase'
+import { getHistory } from '@/lib/site-content'
 
 const SejarahPage = () => {
-  const pathname = usePathname()
-  const pathSegments = pathname.split('/').filter(Boolean)
 
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(true)
 
+  // Isi dari CMS: Profil → Sejarah, atau teks Sejarah di beranda prodi.
   useEffect(() => {
-    const fetchContent = async () => {
-      const { data, error } = await supabase
-        .from('profile')
-        .select('content')
-        .eq('key', 'sejarah_content')
-        .single()
-
-      if (error) console.error('Supabase error:', error)
-      if (data) setContent(data.content)
-
+    let active = true
+    getHistory().then((page) => {
+      if (!active) return
+      setContent(page?.content ?? '')
       setLoading(false)
+    })
+    return () => {
+      active = false
     }
-
-    fetchContent()
   }, [])
 
   return (
@@ -134,7 +126,9 @@ const SejarahPage = () => {
           <div className="flex flex-col justify-center">
 
             {loading ? (
-              <p className="text-gray-500">Loading...</p>
+              <p className="text-gray-500">Memuat…</p>
+            ) : !content ? (
+              <p className="text-gray-500">Konten sedang disiapkan.</p>
             ) : (
               <div
                 className="prose prose-lg max-w-none dark:prose-invert text-justify leading-relaxed"

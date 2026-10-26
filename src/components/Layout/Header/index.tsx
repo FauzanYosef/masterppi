@@ -5,78 +5,52 @@ import Logo from './Logo'
 import HeaderLink from './Navigation/HeaderLink'
 import MobileHeaderLink from './Navigation/MobileHeaderLink'
 import { NavLinkType } from '@/app/(main)/types/navlink'
-import { Icon } from '@iconify/react'
-import { useTheme } from 'next-themes'
-import { getDataPath } from '@/app/(main)/utils/paths'
+import { DEFAULT_NAVIGATION, getNavigation } from '@/lib/site-content'
+
+const CONTACT_HREF = '/profil/kontak'
 
 const Header: React.FC = () => {
-  const [navlink, setNavlink] = useState<NavLinkType[]>([])
-  const { theme, setTheme } = useTheme()
+  const [navlink, setNavlink] = useState<NavLinkType[]>(DEFAULT_NAVIGATION)
   const [navbarOpen, setNavbarOpen] = useState(false)
   const [sticky, setSticky] = useState(false)
-  const [isSignInOpen, setIsSignInOpen] = useState(false)
-  const [isSignUpOpen, setIsSignUpOpen] = useState(false)
-  const signInRef = useRef<HTMLDivElement>(null)
-  const signUpRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
-  //   fetchData
+  // Menu dari CMS (Website → Navigasi); menu bawaan tampil lebih dulu.
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(getDataPath('/data.json'))
-        if (!res.ok) throw new Error('Failed to fetch')
-        const data = await res.json()
-        setNavlink(data.NavLinkData)
-      } catch (error) {
-        console.error('Error fetching service', error)
-      }
+    let active = true
+    getNavigation().then((items) => {
+      if (active) setNavlink(items)
+    })
+    return () => {
+      active = false
     }
-    fetchData()
   }, [])
 
-  const handleScroll = () => {
-    setSticky(window.scrollY >= 80)
-  }
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      signInRef.current &&
-      !signInRef.current.contains(event.target as Node)
-    ) {
-      setIsSignInOpen(false)
-    }
-    if (
-      signUpRef.current &&
-      !signUpRef.current.contains(event.target as Node)
-    ) {
-      setIsSignUpOpen(false)
-    }
-    if (
-      mobileMenuRef.current &&
-      !mobileMenuRef.current.contains(event.target as Node) &&
-      navbarOpen
-    ) {
-      setNavbarOpen(false)
-    }
-  }
-
   useEffect(() => {
+    const handleScroll = () => setSticky(window.scrollY >= 80)
     window.addEventListener('scroll', handleScroll)
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [navbarOpen, isSignInOpen, isSignUpOpen])
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
+  // Klik di luar panel menu mobile menutupnya.
   useEffect(() => {
-    if (isSignInOpen || isSignUpOpen || navbarOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
+    if (!navbarOpen) return
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setNavbarOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [navbarOpen])
+
+  // Halaman tidak bisa di-scroll saat menu mobile terbuka.
+  useEffect(() => {
+    document.body.style.overflow = navbarOpen ? 'hidden' : ''
+    return () => {
       document.body.style.overflow = ''
     }
-  }, [isSignInOpen, isSignUpOpen, navbarOpen])
+  }, [navbarOpen])
 
   return (
     <header
@@ -96,49 +70,16 @@ const Header: React.FC = () => {
           </ul>
         </nav>
         <div className='flex items-center gap-4'>
-          {/* <div>
-            <div className='relative hidden xl:block'>
-              <input
-                type='text'
-                placeholder='Search'
-                className='border rounded-lg pl-4 pr-8 py-2 border-primary/50 focus:border-primary outline-0 placeholder:text-primary/30'
-              />
-              <button>
-                <Icon
-                  icon={'solar:magnifer-linear'}
-                  width={17}
-                  height={17}
-                  className='text-primary text-bold absolute top-3 right-3'
-                />
-              </button>
-            </div>
-          </div> */}
-          {/* <button
-            aria-label='Toggle theme'
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className='flex items-center justify-center text-body-color duration-300 hover:cursor-pointer hover:text-primary dark:text-white bg-neutral-50 rounded-full dark:bg-darklight p-2 outline-none'>
-            <Icon
-              icon='solar:sun-2-bold'
-              width='24'
-              height='24'
-              className='hidden dark:block'
-            />
-            <Icon
-              icon='solar:moon-bold'
-              width='24'
-              height='24'
-              className='dark:hidden block'
-            />
-          </button> */}
           <Link
-            href='/login'
+            href={CONTACT_HREF}
             className='hidden xl:block px-4 py-2 bg-primary text-white rounded-lg outline-none hover:bg-transparent hover:text-primary border border-primary duration-500 text-base font-semibold'>
-            Login
+            Kontak
           </Link>
           <button
             onClick={() => setNavbarOpen(!navbarOpen)}
             className='block xl:hidden p-2 rounded-lg hover:cursor-pointer'
-            aria-label='Toggle mobile menu'>
+            aria-label='Buka menu'
+            aria-expanded={navbarOpen}>
             <span className='block w-6 h-0.5 bg-darkblue dark:bg-white'></span>
             <span className='block w-6 h-0.5 bg-darkblue dark:bg-white mt-1.5'></span>
             <span className='block w-6 h-0.5 bg-darkblue dark:bg-white mt-1.5'></span>
@@ -157,7 +98,7 @@ const Header: React.FC = () => {
           <Logo />
           <button
             onClick={() => setNavbarOpen(false)}
-            aria-label='Close mobile menu'>
+            aria-label='Tutup menu'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='24'
@@ -180,26 +121,11 @@ const Header: React.FC = () => {
             <MobileHeaderLink key={index} item={item} />
           ))}
           <div className='mt-4 flex flex-col gap-4 w-full'>
-            <div className='relative w-full'>
-              <input
-                type='text'
-                placeholder='Search'
-                className='border rounded-lg pl-4 pr-8 py-2 border-primary/50 focus:border-primary outline-0 placeholder:text-primary/20 w-full'
-              />
-              <Icon
-                icon={'solar:magnifer-linear'}
-                width={17}
-                height={17}
-                className='text-primary text-bold absolute top-3 right-3'
-              />
-            </div>
             <Link
-              href='/#contact'
-              className='px-4 py-2 bg-primary text-white rounded-lg outline-none hover:bg-transparent hover:text-primary border border-primary duration-500 text-base font-semibold'
-              onClick={() => {
-                setNavbarOpen(false)
-              }}>
-              Contact Us
+              href={CONTACT_HREF}
+              className='px-4 py-2 bg-primary text-white rounded-lg outline-none hover:bg-transparent hover:text-primary border border-primary duration-500 text-base font-semibold text-center'
+              onClick={() => setNavbarOpen(false)}>
+              Kontak
             </Link>
           </div>
         </nav>
