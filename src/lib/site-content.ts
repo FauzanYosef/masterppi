@@ -279,13 +279,17 @@ async function isReachable(url: string): Promise<boolean> {
  */
 export async function getCurrentAdmission(
   toUrl: (path: string) => string,
+  options: { withFiles?: boolean } = {},
 ): Promise<Admission | null> {
+  const withFiles = options.withFiles ?? true
   try {
     const [admissions, files] = await Promise.all([
       apiFetch<{ data?: AdmissionRow[] }>('/api/admissions?limit=50', { auth: false }),
-      apiFetch<{ data?: AdmissionFileRow[] }>('/api/admission-files?limit=100', { auth: false }).catch(() => ({
-        data: [] as AdmissionFileRow[],
-      })),
+      withFiles
+        ? apiFetch<{ data?: AdmissionFileRow[] }>('/api/admission-files?limit=100', { auth: false }).catch(() => ({
+            data: [] as AdmissionFileRow[],
+          }))
+        : Promise.resolve({ data: [] as AdmissionFileRow[] }),
     ])
 
     const today = new Date().toISOString().slice(0, 10)

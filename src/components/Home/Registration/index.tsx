@@ -14,7 +14,7 @@ const RegistrationBanner = () => {
   // Tautan pendaftaran dari CMS (Akademik → Penerimaan).
   useEffect(() => {
     let active = true
-    getCurrentAdmission(getImageUrl).then((admission) => {
+    getCurrentAdmission(getImageUrl, { withFiles: false }).then((admission) => {
       if (active && admission?.registrationUrl) setRegistrationUrl(admission.registrationUrl)
     })
     return () => {
