@@ -145,13 +145,17 @@ export async function getPage(lookup: PageLookup): Promise<PageContent | null> {
   }
 }
 
-/** Halaman profil Magister PPI: Sejarah & Visi Misi lewat CMS Profil, Program & Lulusan lewat CMS Halaman. */
+/**
+ * Halaman profil Magister PPI dari CMS Website → Profil (slug standar yang sama untuk
+ * semua website: tentang, sejarah, visi-misi, fasilitas, profil-lulusan). Slug lama
+ * tetap dikenali untuk halaman yang dibuat sebelumnya lewat CMS Halaman.
+ */
 export const PROFILE_PAGES = {
   sejarah: { template: 'profile:history', slugs: ['sejarah', 'sejarah-program'] },
   visi: { template: 'profile:vision_mission', slugs: ['visi-misi', 'visi-dan-misi'] },
-  program: { slugs: ['program', 'apa-itu-magister-ppi', 'profil-program'] },
-  fasilitas: { slugs: ['fasilitas'] },
-  lulusan: { slugs: ['profil-lulusan', 'lulusan'] },
+  program: { template: 'profile:about', slugs: ['tentang', 'program', 'apa-itu-magister-ppi', 'profil-program'] },
+  fasilitas: { template: 'profile:facilities', slugs: ['fasilitas'] },
+  lulusan: { template: 'profile:graduate_profile', slugs: ['profil-lulusan', 'lulusan'] },
 } as const satisfies Record<string, PageLookup>
 
 /** Section beranda prodi (CMS: Settings → Homepage), mis. "sejarah". */
