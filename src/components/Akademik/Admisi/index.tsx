@@ -1,5 +1,6 @@
 'use client'
 
+import PageHeader from '@/components/UI/PageHeader'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
@@ -34,19 +35,13 @@ const AdmisiPage = () => {
   const closes = formatDate(admission?.registrationEnd ?? null)
 
   return (
-    <div className="pt-[140px] pb-[100px] dark:bg-darklight">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Pendaftaran Mahasiswa Baru"
+        description="Calon mahasiswa dapat mengajukan pendaftaran melalui sistem resmi PMB UIN Sunan Gunung Djati Bandung."
+      />
 
-      {/* HEADER */}
-      <div className="text-center space-y-4 mb-12 px-4">
-        <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-          <span className="text-primary">Pendaftaran</span> Mahasiswa Baru
-        </h2>
-
-        <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
-          Calon mahasiswa dapat mengajukan pendaftaran melalui sistem resmi 
-          PMB UIN Sunan Gunung Djati Bandung.
-        </p>
-      </div>
+      <div className="py-16 lg:py-24">
 
       {/* CONTENT */}
       <div className="container">
@@ -175,6 +170,7 @@ const AdmisiPage = () => {
         </div>
       )}
     </div>
+    </main>
   )
 }
 

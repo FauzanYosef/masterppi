@@ -1,14 +1,14 @@
-
 'use client'
 
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { getImgPath } from '@/app/(main)/utils/paths'
 import { getPage, PROFILE_PAGES } from '@/lib/site-content'
+import PageHeader from '@/components/UI/PageHeader'
+import RichText, { RichTextSkeleton } from '@/components/UI/RichText'
+import EmptyState from '@/components/UI/EmptyState'
 
 const ProgramPage = () => {
-
-  // STATE
   const [content, setContent] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
@@ -26,111 +26,46 @@ const ProgramPage = () => {
   }, [])
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
+    <main className='bg-white dark:bg-darklight'>
+      <PageHeader
+        title='Apa Itu Magister PPI?'
+        description='Mengenal Program Magister Pemikiran Politik Islam: fokus kajian, pendekatan, dan arah pengembangannya.'
+      />
 
-      {/* HERO */}
-      {/* <div className="container mb-16">
-        <div className="relative rounded-2xl overflow-hidden">
-          <Image
-            src={getImgPath('/images/banner/uin.jpg')}
-            alt="Profile Banner"
-            width={1400}
-            height={500}
-            className="w-full h-[300px] md:h-[400px] object-cover"
-          />
-
-          <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white">
-              Apa Itu Magister PPI?
-            </h1>
-
-            <div className="text-sm md:text-base text-white/90 flex items-center gap-2 flex-wrap">
-              <Link href="/">Home</Link>
-
-              {pathSegments.map((segment, index) => {
-                const href =
-                  '/' + pathSegments.slice(0, index + 1).join('/')
-                const isLast = index === pathSegments.length - 1
-
-                const label = segment
-                  .replace(/-/g, ' ')
-                  .replace(/\b\w/g, (l) => l.toUpperCase())
-
-                return (
-                  <span key={href} className="flex items-center gap-2">
-                    <span>›</span>
-                    {isLast ? (
-                      <span className="font-medium">{label}</span>
-                    ) : (
-                      <Link href={href}>{label}</Link>
-                    )}
-                  </span>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* CONTENT */}
-      <div className="container">
-        
-        <div className="pb-10">
-          {/* TITLE SECTION */}
-        <div className="text-center space-y-5 mb-12">
-
-          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            Profil
-          </div> */}
-
-          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-            Apa Itu Magister <br />
-            <span className="text-primary">
-              Pemikiran Politik Islam ?
-            </span>
-          </h2>
-
-          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-
-        </div>
-          
-
-          <div className="grid md:grid-cols-2 gap-10 items-start">
-
-            {/* LEFT IMAGE */}
-            <div className="relative group">
-              <div className="overflow-hidden rounded-2xl shadow-lg">
+      <div className='container py-16 lg:py-24'>
+        <div className='grid items-start gap-12 lg:grid-cols-12 lg:gap-16'>
+          <aside className='lg:sticky lg:top-32 lg:col-span-5'>
+            <div className='relative'>
+              <div className='absolute -left-4 -top-4 hidden h-32 w-32 rounded-2xl bg-dots sm:block' />
+              <div className='relative aspect-[4/3] overflow-hidden rounded-3xl shadow-lift'>
                 <Image
                   src={getImgPath('/images/banner/uin.jpg')}
-                  alt="Sejarah"
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  alt='Gedung UIN Sunan Gunung Djati Bandung'
+                  fill
+                  sizes='(min-width: 1024px) 40vw, 100vw'
+                  className='object-cover'
                 />
               </div>
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-black/10"></div>
             </div>
+          </aside>
 
-            {/* RIGHT CONTENT */}
-            <div>
-              {loading ? (
-              <p className="text-gray-500">Memuat…</p>
+          <article className='lg:col-span-7'>
+            <span className='eyebrow'>Profil Program</span>
+            <h2 className='mt-4'>
+              Magister <span className='text-primary dark:text-sec-yellow'>Pemikiran Politik Islam</span>
+            </h2>
+            <span className='accent-bar mt-6 mb-10' />
+            {loading ? (
+              <RichTextSkeleton />
             ) : !content ? (
-              <p className="text-gray-500">Konten sedang disiapkan.</p>
+              <EmptyState icon='tabler:file-text' title='Konten sedang disiapkan' />
             ) : (
-                <div
-                  className="
-                    text-justify
-                  "
-                  dangerouslySetInnerHTML={{ __html: content }}
-                />
-              )}
-            </div>
-
-          </div>
+              <RichText html={content} />
+            )}
+          </article>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

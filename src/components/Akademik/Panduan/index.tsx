@@ -1,10 +1,7 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useState } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
 import { apiFetch } from '@/lib/api'
 
 type AcademicGuide = {
@@ -38,8 +35,6 @@ type AcademicGuideResponse = {
 }
 
 const PanduanPage = () => {
-  const pathname = usePathname()
-  const pathSegments = pathname.split('/').filter(Boolean)
 
   const [data, setData] = useState<AcademicGuide[]>([])
   const [loading, setLoading] = useState(true)
@@ -88,95 +83,13 @@ const PanduanPage = () => {
   }, [])
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Panduan Akademik"
+        description="Dokumen panduan dan pedoman akademik bagi mahasiswa Program Magister Pemikiran Politik Islam."
+      />
 
-      {/* HERO */}
-      <div className="container mb-16">
-        <div className="relative overflow-hidden rounded-2xl shadow-lg">
-
-          <Image
-            src={getImgPath('/images/banner/uin.jpg')}
-            alt="Banner"
-            width={1400}
-            height={500}
-            className="h-[300px] w-full object-cover md:h-[400px]"
-          />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 px-4 text-center">
-
-            <h1 className="text-3xl font-bold text-white md:text-4xl">
-              Panduan Akademik
-            </h1>
-
-            {/* BREADCRUMB */}
-            <div className="mt-3 flex flex-wrap justify-center gap-2 text-sm text-white/80">
-
-              <Link href="/">
-                Home
-              </Link>
-
-              {pathSegments.map((segment, index) => {
-                const href =
-                  '/' +
-                  pathSegments
-                    .slice(0, index + 1)
-                    .join('/')
-
-                const isLast =
-                  index === pathSegments.length - 1
-
-                const label =
-                  segment.charAt(0).toUpperCase() +
-                  segment.slice(1)
-
-                return (
-                  <span
-                    key={href}
-                    className="flex items-center gap-2"
-                  >
-                    <span className="opacity-60">
-                      ›
-                    </span>
-
-                    {isLast ? (
-                      <span className="font-medium text-white">
-                        {label}
-                      </span>
-                    ) : (
-                      <Link href={href}>
-                        {label}
-                      </Link>
-                    )}
-                  </span>
-                )
-              })}
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CONTENT */}
-      <div className="container space-y-14">
-
-        {/* TITLE */}
-        <div className="space-y-5 text-center">
-
-          <h2 className="text-3xl font-bold md:text-4xl">
-            Panduan{' '}
-            <span className="text-primary">
-              Akademik
-            </span>
-          </h2>
-
-          <p className="text-gray-500 dark:text-gray-400">
-            Kumpulan panduan resmi untuk mendukung
-            kegiatan akademik mahasiswa
-          </p>
-
-          <div className="mx-auto h-1 w-20 rounded-full bg-primary" />
-
-        </div>
+      <div className="container  py-16 lg:py-24">
 
         {/* LOADING */}
         {loading && (
@@ -298,7 +211,7 @@ const PanduanPage = () => {
           )}
 
       </div>
-    </div>
+    </main>
   )
 }
 

@@ -7,7 +7,9 @@ import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
+import { Icon } from '@iconify/react'
 import { apiFetch, getImageUrl } from '@/lib/api'
+import SectionHeading from '@/components/UI/SectionHeading'
 
 type Partner = {
   id: number
@@ -90,180 +92,71 @@ const Partners = () => {
   }
 
   return (
-    <section className='relative overflow-hidden bg-secondary dark:bg-darklight py-20 lg:py-24'>
+    <section className='relative overflow-hidden bg-white dark:bg-darklight'>
+      <div className='container relative'>
+        <SectionHeading
+          eyebrow='Mitra Strategis'
+          title='Kerja Sama'
+          description='Membangun kemitraan strategis dengan berbagai institusi akademik dan riset untuk memperluas kontribusi ilmiah dalam kajian pemikiran politik Islam.'
+        />
 
-      {/* Decorative Background */}
-      <div className='absolute -top-24 -left-24 w-72 h-72 rounded-full bg-primary/5 blur-3xl' />
-      <div className='absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-primary/5 blur-3xl' />
-
-      <div className='container relative z-10'>
-
-        {/* Header */}
-        <div className='max-w-3xl mx-auto text-center mb-14'>
-
-          {/* Small Label */}
-          <div className='flex items-center justify-center gap-3 mb-4'>
-            <span className='h-px w-10 bg-primary' />
-
-            <span className='text-sm font-semibold uppercase tracking-[0.2em] text-primary'>
-              Mitra Strategis
-            </span>
-
-            <span className='h-px w-10 bg-primary' />
-          </div>
-
-          <h2 className='text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight'>
-            Kerjasama
-          </h2>
-
-          <p className='text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-5 leading-relaxed'>
-            Membangun kemitraan strategis dengan berbagai institusi
-            akademik dan riset untuk memperluas kontribusi ilmiah
-            dalam kajian pemikiran politik Islam.
-          </p>
-
-        </div>
-
-        {/* Loading */}
         {loading ? (
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-
+          <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
             {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className='h-36 rounded-2xl bg-white dark:bg-lightdarkblue shadow-sm animate-pulse'
-              />
+              <div key={item} className='h-32 animate-pulse rounded-2xl bg-darkblue/[0.06]' />
             ))}
-
           </div>
         ) : partners.length === 0 ? (
-
-          /* Empty State */
-          <div className='max-w-md mx-auto text-center py-12 px-6 rounded-2xl bg-white dark:bg-lightdarkblue shadow-sm'>
-
-            <div className='w-14 h-14 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-darklight flex items-center justify-center'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='26'
-                height='26'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='1.5'
-                className='text-gray-400'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M12 6v12m-6-6h12'
-                />
-              </svg>
-            </div>
-
-            <p className='text-gray-500 dark:text-gray-400'>
-              Belum ada data kerja sama.
-            </p>
-
+          <div className='card mx-auto max-w-md px-6 py-10 text-center'>
+            <Icon icon='tabler:heart-handshake' width={32} className='mx-auto mb-3 text-lightgrey' aria-hidden />
+            <p>Belum ada data kerja sama.</p>
           </div>
-
         ) : (
-
-          /* Partner Slider */
-          <div className='relative -mx-2'>
-
+          <div className='relative -mx-2 [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]'>
             <Slider {...settings}>
-
               {partners.map((partner) => {
-
                 const Card = (
-                  <div className='group px-3 py-4'>
-
-                    <div className='relative h-36 md:h-40 flex items-center justify-center rounded-2xl bg-white dark:bg-lightdarkblue border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden'>
-
-                      {/* Hover Gradient */}
-                      <div className='absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
-
-                      {/* Top Accent */}
-                      <div className='absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
-
+                  <div className='group px-2 py-3'>
+                    <div className='card card-hover relative flex h-32 items-center justify-center md:h-36'>
                       {partner.logo ? (
-                        <div className='relative z-10 flex items-center justify-center w-full h-full p-7'>
-
+                        <div className='flex h-full w-full items-center justify-center p-6'>
                           <Image
                             src={getImageUrl(partner.logo)}
                             alt={partner.name}
                             width={180}
                             height={90}
-                            className='object-contain max-w-[170px] max-h-[80px] w-auto h-auto grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500'
+                            className='h-auto max-h-[72px] w-auto max-w-[150px] object-contain opacity-70 grayscale transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0'
                           />
-
                         </div>
                       ) : (
-
-                        <div className='relative z-10 px-6 text-center'>
-
-                          <div className='text-sm md:text-base font-semibold text-gray-500 dark:text-gray-300 group-hover:text-primary transition-colors duration-300'>
-                            {partner.name}
-                          </div>
-
-                        </div>
-
-                      )}
-
-                      {/* Partner Name */}
-                      <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-white/90 dark:bg-lightdarkblue/90 backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
-
-                        <p className='text-xs font-medium text-center text-gray-600 dark:text-gray-300 truncate'>
+                        <p className='px-6 text-center text-sm font-semibold transition-colors group-hover:text-primary'>
                           {partner.name}
                         </p>
-
+                      )}
+                      <div className='absolute inset-x-0 bottom-0 translate-y-full bg-white/95 px-4 py-2 backdrop-blur-sm transition-transform duration-300 group-hover:translate-y-0 dark:bg-lightdarkblue/95'>
+                        <p className='truncate text-center text-xs font-medium !text-darkblue dark:!text-white'>{partner.name}</p>
                       </div>
-
                     </div>
-
                   </div>
                 )
 
                 return partner.website ? (
-                  <a
-                    key={partner.id}
-                    href={partner.website}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    aria-label={`Website ${partner.name}`}
-                  >
+                  <a key={partner.id} href={partner.website} target='_blank' rel='noopener noreferrer' aria-label={`Website ${partner.name}`}>
                     {Card}
                   </a>
                 ) : (
-                  <div key={partner.id}>
-                    {Card}
-                  </div>
+                  <div key={partner.id}>{Card}</div>
                 )
               })}
-
             </Slider>
-
           </div>
-
         )}
 
-        {/* Bottom Information */}
         {!loading && partners.length > 0 && (
-          <div className='mt-10 text-center'>
-
-            <div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 dark:bg-lightdarkblue/70 border border-gray-200 dark:border-gray-700 backdrop-blur-sm'>
-
-              <span className='w-2 h-2 rounded-full bg-primary' />
-
-              <span className='text-xs md:text-sm text-gray-500 dark:text-gray-400'>
-                {partners.length} institusi mitra
-              </span>
-
-            </div>
-
-          </div>
+          <p className='mt-8 text-center text-sm'>
+            <span className='font-semibold text-primary'>{partners.length}</span> institusi mitra
+          </p>
         )}
-
       </div>
     </section>
   )

@@ -1,5 +1,6 @@
 'use client'
 
+import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '@/lib/api'
 
@@ -219,28 +220,13 @@ const KurikulumPage = () => {
   }
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
-      <div className="container space-y-12">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Kurikulum"
+        description="Struktur kurikulum yang menyeimbangkan teori dan praktik untuk mengembangkan kompetensi akademik dan profesional."
+      />
 
-        {/* HEADER */}
-        <div className="text-center space-y-4">
-          <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-            Kurikulum{' '}
-            <span className="text-primary">
-              Akademik
-            </span>
-          </h1>
-
-          <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
-            Struktur kurikulum dirancang untuk
-            memberikan keseimbangan antara teori
-            dan praktik, serta mendukung
-            pengembangan kompetensi akademik dan
-            profesional mahasiswa.
-          </p>
-
-          <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
-        </div>
+      <div className="container space-y-12 py-16 lg:py-24">
 
         {/* LOADING */}
         {loading && (
@@ -437,7 +423,7 @@ const KurikulumPage = () => {
             )
           )}
       </div>
-    </div>
+    </main>
   )
 }
 

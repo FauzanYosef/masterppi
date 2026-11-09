@@ -4,44 +4,24 @@ import { useEffect, useState } from "react";
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Top: 0 takes us all the way back to the top of the page
-  // Behavior: smooth keeps it smooth!
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   useEffect(() => {
-    // Button is displayed after scrolling for 500 pixels
-    const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-
+    const toggleVisibility = () => setIsVisible(window.scrollY > 400);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
   return (
-    <div className="fixed bottom-8 right-8 z-999">
-      <div className="flex items-center gap-2.5">
-        {isVisible && (
-          <button
-            type="button"
-            onClick={scrollToTop}
-            aria-label="Kembali ke atas"
-            className="back-to-top flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-primary text-white shadow-md transition duration-300 ease-in-out hover:bg-dark"
-          >
-            <span className="mt-[6px] h-3 w-3 rotate-45 border-l border-t border-white"></span>
-          </button>
-        )}
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="Kembali ke atas"
+      className={`fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lift transition-all duration-300 hover:-translate-y-1 hover:bg-darkblue ${
+        isVisible ? "opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+      }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden>
+        <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19V5m-6 6l6-6l6 6" />
+      </svg>
+    </button>
   );
 }

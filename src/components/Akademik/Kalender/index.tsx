@@ -1,10 +1,7 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useState } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
 import { apiFetch } from '@/lib/api'
 
 type AcademicCalendar = {
@@ -29,11 +26,7 @@ type AcademicCalendarResponse = {
 }
 
 const KalenderPage = () => {
-  const pathname = usePathname()
 
-  const pathSegments = pathname
-    .split('/')
-    .filter(Boolean)
 
   const [data, setData] = useState<AcademicCalendar[]>([])
   const [loading, setLoading] = useState(true)
@@ -125,122 +118,13 @@ const KalenderPage = () => {
     sortedData.slice(1)
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Kalender Akademik"
+        description="Jadwal kegiatan akademik Program Studi setiap tahun akademik."
+      />
 
-      {/* =====================================================
-          HERO
-      ===================================================== */}
-
-      <div className="container mb-16">
-
-        <div className="relative rounded-2xl overflow-hidden shadow-lg">
-
-          <Image
-            src={getImgPath('/images/banner/uin.jpg')}
-            alt="Banner Kalender Akademik"
-            width={1400}
-            height={500}
-            className="w-full h-[300px] md:h-[400px] object-cover"
-          />
-
-          <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center text-center px-4">
-
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              Kalender Akademik
-            </h1>
-
-            {/* BREADCRUMB */}
-
-            <div className="flex gap-2 flex-wrap justify-center text-sm text-white/80 mt-3">
-
-              <Link
-                href="/"
-                className="hover:text-white transition"
-              >
-                Home
-              </Link>
-
-              {pathSegments.map(
-                (segment, index) => {
-
-                  const href =
-                    '/' +
-                    pathSegments
-                      .slice(0, index + 1)
-                      .join('/')
-
-                  const isLast =
-                    index ===
-                    pathSegments.length - 1
-
-                  const label =
-                    segment
-                      .charAt(0)
-                      .toUpperCase() +
-                    segment.slice(1)
-
-                  return (
-                    <span
-                      key={href}
-                      className="flex gap-2 items-center"
-                    >
-
-                      <span className="opacity-60">
-                        ›
-                      </span>
-
-                      {isLast ? (
-                        <span className="text-white font-medium">
-                          {label}
-                        </span>
-                      ) : (
-                        <Link
-                          href={href}
-                          className="hover:text-white transition"
-                        >
-                          {label}
-                        </Link>
-                      )}
-
-                    </span>
-                  )
-                }
-              )}
-
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* =====================================================
-          CONTENT
-      ===================================================== */}
-
-      <div className="container space-y-14">
-
-        {/* TITLE */}
-
-        <div className="text-center space-y-5">
-
-          <h2 className="text-3xl md:text-4xl font-bold">
-
-            Kalender{' '}
-
-            <span className="text-primary">
-              Akademik
-            </span>
-
-          </h2>
-
-          <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
-            Informasi jadwal kegiatan akademik
-            Program Studi setiap tahun akademik.
-          </p>
-
-          <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
-
-        </div>
+      <div className="container space-y-14 py-16 lg:py-24">
 
         {/* =====================================================
             LOADING
@@ -561,7 +445,7 @@ const KalenderPage = () => {
           )}
 
       </div>
-    </div>
+    </main>
   )
 }
 

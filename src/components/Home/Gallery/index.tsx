@@ -3,8 +3,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import CategorySkeleton from '../../Skeleton/Category'
+import { Icon } from '@iconify/react'
 import { apiFetch, getImageUrl } from '@/lib/api'
+import SectionHeading from '@/components/UI/SectionHeading'
 
 type GalleryItem = {
   id: number
@@ -20,10 +21,6 @@ type GalleryItem = {
 
 type GalleriesResponse = {
   success: boolean
-  scope?: {
-    faculty_id: number | null
-    study_program_id: number | null
-  }
   data: GalleryItem[]
 }
 
@@ -34,172 +31,78 @@ const Gallery = () => {
   useEffect(() => {
     const fetchGallery = async () => {
       try {
-        const response = await apiFetch<GalleriesResponse>(
-          '/api/galleries'
-        )
-
+        const response = await apiFetch<GalleriesResponse>('/api/galleries')
         setGallery(response.data || [])
       } catch (error) {
         console.error('Error fetching gallery:', error)
-        setGallery([])
       } finally {
         setLoading(false)
       }
     }
-
     fetchGallery()
   }, [])
 
+  // Tanpa foto, section disembunyikan agar beranda tidak menampilkan blok kosong.
+  if (!loading && gallery.length === 0) return null
+
   return (
-    <section
-      id="gallery"
-      className="scroll-mt-12"
-    >
-      <div className="container">
+    <section id='gallery' className='scroll-mt-24 bg-secondary dark:bg-darkmode'>
+      <div className='container'>
+        <SectionHeading
+          eyebrow='Galeri'
+          title='Dokumentasi Kegiatan'
+          description='Dokumentasi berbagai kegiatan, agenda akademik, serta aktivitas Magister Pemikiran Politik Islam.'
+        />
 
-        {/* =========================================
-            TITLE
-        ========================================== */}
-        <div className="text-center">
-          <h2>Gallery</h2>
-
-          <p className="text-lg font-normal max-w-sm md:max-w-md lg:max-w-2xl mx-auto my-6 px-4">
-            Dokumentasi berbagai kegiatan, agenda akademik,
-            serta aktivitas Magister Pemikiran Politik Islam.
-          </p>
-        </div>
-
-        {/* =========================================
-            GRID
-        ========================================== */}
-        <div className="mt-8">
-          <div className="grid lg:grid-cols-4 grid-cols-2 gap-6">
-
-            {/* =====================================
-                LOADING
-            ====================================== */}
-            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <CategorySkeleton key={i} />
+        <div className='grid auto-rows-[200px] grid-cols-2 gap-4 lg:auto-rows-[240px] lg:grid-cols-4 lg:gap-6'>
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`animate-pulse rounded-2xl bg-darkblue/[0.06] ${i === 0 ? 'col-span-2 row-span-2' : ''}`}
+                />
               ))
-            ) : gallery.length === 0 ? (
-
-              /* ===================================
-                  EMPTY
-              ==================================== */
-              <div className="col-span-full text-center py-10 text-gray-500">
-                Belum ada gallery.
-              </div>
-
-            ) : (
-
-              /* ===================================
-                  GALLERY
-              ==================================== */
-              gallery.slice(0, 5).map((item, i) => {
-
-                // Jika gallery berasal dari event,
-                // gunakan judul event.
-                const displayTitle =
-                  item.event_title || item.title
-
-                return (
-                  <div
-                    key={item.id}
-                    className={
-                      i === 0
-                        ? 'col-span-2 row-span-2'
-                        : 'sm:col-span-1 col-span-2 row-span-1'
-                    }
-                  >
-
-                    <div className="relative w-full h-full min-h-[200px] lg:min-h-[250px] group overflow-hidden rounded-lg">
-
-                      {/* =================================
-                          COVER IMAGE
-                          1 FOTO PER EVENT
-                      ================================== */}
-                      {item.cover_image ? (
-                        <Image
-                          src={getImageUrl(item.cover_image)}
-                          alt={displayTitle}
-                          fill
-                          priority={i === 0}
-                          className="object-cover rounded-lg transition duration-500 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-500 text-sm">
-                            Tidak ada gambar
-                          </span>
-                        </div>
-                      )}
-
-                      {/* =================================
-                          LINK DETAIL GALLERY
-                      ================================== */}
-                      <Link
-                        href={`/akademik/gallery/${item.slug}`}
-                        className="absolute inset-0"
-                        aria-label={`Lihat gallery ${displayTitle}`}
-                      >
-
-                        <div className="absolute inset-0 bg-gradient-to-b from-darklight/0 from-60% to-darklight/80 lg:translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out flex items-end rounded-lg">
-
-                          <div
-                            className={
-                              i === 0
-                                ? 'p-10'
-                                : 'p-5'
-                            }
-                          >
-
-                            <div className="flex items-start gap-3">
-
-                              <Image
-                                src="/images/banner/greentick.svg"
-                                alt=""
-                                width={16}
-                                height={16}
-                                className="mt-2 shrink-0"
-                              />
-
-                              <p className="text-xl lg:text-2xl font-medium text-white">
-                                {displayTitle}
-                              </p>
-
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                      </Link>
-
+            : gallery.slice(0, 5).map((item, i) => {
+                // Galeri dari agenda memakai judul agenda dan menautkan ke halaman agenda tersebut.
+                const displayTitle = item.event_title || item.title
+                const href = item.event_slug ? `/akademik/kegiatan/${item.event_slug}` : null
+                const content = (
+                  <>
+                    {item.cover_image ? (
+                      <Image
+                        src={getImageUrl(item.cover_image)}
+                        alt={displayTitle}
+                        fill
+                        priority={i === 0}
+                        sizes={i === 0 ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 25vw, 50vw'}
+                        className='object-cover transition-transform duration-700 group-hover:scale-105'
+                      />
+                    ) : (
+                      <div className='absolute inset-0 flex items-center justify-center bg-darkblue/10'>
+                        <Icon icon='tabler:photo' width={32} className='text-lightgrey' aria-hidden />
+                      </div>
+                    )}
+                    <div className='absolute inset-0 bg-gradient-to-t from-darkblue/85 via-darkblue/10 to-transparent opacity-90 transition-opacity group-hover:opacity-100' />
+                    <div className={`absolute inset-x-0 bottom-0 ${i === 0 ? 'p-6 md:p-8' : 'p-4 md:p-5'}`}>
+                      <p className={`font-semibold !text-white ${i === 0 ? 'text-xl md:text-2xl' : 'line-clamp-2 text-sm md:text-base'}`}>
+                        {displayTitle}
+                      </p>
                     </div>
+                  </>
+                )
+                const className = `group relative overflow-hidden rounded-2xl ${i === 0 ? 'col-span-2 row-span-2' : ''}`
 
+                return href ? (
+                  <Link key={item.id} href={href} className={className} aria-label={`Lihat kegiatan ${displayTitle}`}>
+                    {content}
+                  </Link>
+                ) : (
+                  <div key={item.id} className={className}>
+                    {content}
                   </div>
                 )
-              })
-            )}
-
-          </div>
+              })}
         </div>
-
-        {/* =========================================
-            MORE GALLERY
-        ========================================== */}
-        <div className="mt-10 text-center">
-
-          <Link
-            href="/akademik/gallery"
-            className="inline-block rounded-full bg-primary px-6 py-3 text-white font-medium hover:bg-primary/90 transition"
-          >
-            More Gallery →
-          </Link>
-
-        </div>
-
       </div>
     </section>
   )

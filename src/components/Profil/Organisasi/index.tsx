@@ -1,5 +1,7 @@
 'use client'
 
+import PageHeader from '@/components/UI/PageHeader'
+
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -180,31 +182,13 @@ const OrganisasiPage = () => {
     )
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Struktur Organisasi"
+        description="Susunan pimpinan dan pengelola Program Magister Pemikiran Politik Islam."
+      />
 
-      <div className="container">
-
-        {/* =====================================================
-            TITLE
-        ===================================================== */}
-
-        <div className="pb-12 text-center">
-
-          <div className="text-center space-y-5 mb-12">
-
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              Struktur Organisasi Magister <br />
-
-              <span className="text-primary">
-                Pemikiran Politik Islam
-              </span>
-            </h2>
-
-            <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
-
-          </div>
-
-        </div>
+      <div className="container py-16 lg:py-24">
 
         {/* =====================================================
             LOADING
@@ -405,7 +389,7 @@ const OrganisasiPage = () => {
           )}
 
       </div>
-    </div>
+    </main>
   )
 }
 
@@ -424,7 +408,7 @@ const Card = ({
 
   return (
 
-    <div className="bg-white rounded-2xl shadow-lg p-6 text-center w-[350px] hover:shadow-xl transition">
+    <div className="card card-hover p-6 text-center w-full max-w-[350px]">
 
       {/* FOTO */}
 
@@ -454,7 +438,7 @@ const Card = ({
 
       {/* JABATAN */}
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-lightgrey">
 
         {item.position ||
           item.name}

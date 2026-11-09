@@ -1,5 +1,7 @@
 'use client'
 
+import PageHeader from '@/components/UI/PageHeader'
+
 /* eslint-disable @next/next/no-img-element -- foto dosen dari storage API (ukuran beragam) memakai <img> dengan fallback onError. */
 
 import Link from 'next/link'
@@ -299,55 +301,13 @@ const DosenPage = () => {
   }, [])
 
   return (
-    <div className="pt-[160px] pb-[120px] dark:bg-darklight">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Dosen"
+        description="Para akademisi dengan latar kepakaran yang saling melengkapi dalam politik Islam, pemikiran Islam, dan studi agama."
+      />
 
-      <div className="container">
-
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
-
-        <div className="text-center space-y-4 mb-10">
-
-          <h2 className="
-            text-3xl
-            md:text-4xl
-            font-bold
-            leading-tight
-          ">
-
-            Daftar{' '}
-
-            <span className="text-primary">
-              Dosen
-            </span>
-
-          </h2>
-
-          <p className="
-            max-w-2xl
-            mx-auto
-            text-gray-500
-            dark:text-gray-400
-          ">
-
-            Dosen tetap Program Magister Pemikiran
-            Politik Islam terdiri atas para akademisi
-            dengan latar kepakaran yang saling
-            melengkapi dalam bidang politik Islam,
-            pemikiran Islam, dan studi agama.
-
-          </p>
-
-          <div className="
-            w-20
-            h-1
-            bg-primary
-            mx-auto
-            rounded-full
-          " />
-
-        </div>
+      <div className="container py-16 lg:py-24">
 
         {/* =====================================================
             LOADING
@@ -459,17 +419,7 @@ const DosenPage = () => {
 
                   <div
                     key={dosen.id}
-                    className="
-                      bg-white
-                      dark:bg-dark
-                      rounded-2xl
-                      shadow-md
-                      hover:shadow-xl
-                      transition-all
-                      duration-300
-                      overflow-hidden
-                      group
-                    "
+                    className="card card-hover group"
                   >
 
                     {/* =================================================
@@ -842,7 +792,7 @@ const DosenPage = () => {
 
       </div>
 
-    </div>
+    </main>
   )
 }
 

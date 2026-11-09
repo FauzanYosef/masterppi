@@ -3,52 +3,66 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { NavLinkType } from '@/app/(main)/types/navlink'
 
-const MobileHeaderLink: React.FC<{ item: NavLinkType }> = ({ item }) => {
-  const [submenuOpen, setSubmenuOpen] = useState(false)
-
-  const handleToggle = () => {
-    setSubmenuOpen(!submenuOpen)
-  }
+const MobileHeaderLink: React.FC<{ item: NavLinkType; onNavigate?: () => void }> = ({ item, onNavigate }) => {
   const path = usePathname()
+  const hasActiveChild = item.submenu?.some((sub) => sub.href === path) ?? false
+  const [submenuOpen, setSubmenuOpen] = useState(hasActiveChild)
 
-  return (
-    <div className='relative w-full'>
+  const baseClass =
+    'flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors'
+
+  if (!item.submenu) {
+    const active = item.href === path
+    return (
       <Link
         href={item.href}
-        onClick={item.submenu ? handleToggle : undefined}
-        className={`flex items-center justify-between w-full py-2 text-darkblue dark:text-white focus:outline-none hover:text-primary dark:hover:text-primary hover:cursor-pointer ${
-          item.href === path ? '!text-primary dark:!text-primary' : null
-        } `}>
+        onClick={onNavigate}
+        className={`${baseClass} ${
+          active ? 'bg-primary/[0.07] text-primary dark:bg-white/10 dark:text-white' : 'text-darkblue hover:bg-secondary dark:text-white dark:hover:bg-white/5'
+        }`}>
         {item.label}
-        {item.submenu && (
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='1.5em'
-            height='1.5em'
-            viewBox='0 0 24 24'>
-            <path
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='1.5'
-              d='m7 10l5 5l5-5'
-            />
-          </svg>
-        )}
       </Link>
-      {submenuOpen && item.submenu && (
-        <div className='bg-white  dark:bg-white/10  p-2 w-full'>
-          {item.submenu.map((subItem, index) => (
-            <Link
-              key={index}
-              href={subItem.href}
-              className='block py-2 text-darkblue dark:text-white hover:bg-neutral-50 dark:hover:bg-darkmode/10 hover:text-primary dark:hover:text-primary'>
-              {subItem.label}
-            </Link>
-          ))}
+    )
+  }
+
+  return (
+    <div className='w-full'>
+      <button
+        type='button'
+        onClick={() => setSubmenuOpen((open) => !open)}
+        aria-expanded={submenuOpen}
+        className={`${baseClass} ${hasActiveChild ? 'text-primary dark:text-white' : 'text-darkblue dark:text-white'} hover:bg-secondary dark:hover:bg-white/5`}>
+        {item.label}
+        <svg
+          className={`h-5 w-5 transition-transform duration-200 ${submenuOpen ? 'rotate-180' : ''}`}
+          xmlns='http://www.w3.org/2000/svg'
+          viewBox='0 0 24 24'
+          aria-hidden>
+          <path fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='m7 10l5 5l5-5' />
+        </svg>
+      </button>
+      <div className={`grid transition-all duration-300 ${submenuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+        <div className='overflow-hidden'>
+          <div className='ml-4 mt-1 flex flex-col border-l border-darkblue/10 pl-3 dark:border-white/10'>
+            {item.submenu.map((subItem) => {
+              const active = subItem.href === path
+              return (
+                <Link
+                  key={subItem.href}
+                  href={subItem.href}
+                  onClick={onNavigate}
+                  className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+                    active
+                      ? 'font-medium text-primary dark:text-white'
+                      : 'text-lightgrey hover:text-primary dark:text-white/70 dark:hover:text-white'
+                  }`}>
+                  {subItem.label}
+                </Link>
+              )
+            })}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

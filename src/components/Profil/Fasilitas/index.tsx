@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { getPage, PROFILE_PAGES } from '@/lib/site-content'
+import PageHeader from '@/components/UI/PageHeader'
+import RichText from '@/components/UI/RichText'
 import { Calendar, BookOpen, Building2, Users, Database, FlaskConical } from 'lucide-react'
 
 const FasilitasPage = () => {
@@ -53,114 +55,39 @@ const FasilitasPage = () => {
   ]
 
   return (
-    <div className="pt-[160px] pb-[120px]">
+    <main className="bg-white dark:bg-darklight">
+      <PageHeader
+        title="Fasilitas"
+        description="Program Magister PPI didukung oleh berbagai fasilitas akademik untuk menunjang studi dan riset."
+      />
 
-      {/* HERO */}
-      {/* <div className="container mb-16">
-        <div className="relative rounded-2xl overflow-hidden">
-          <Image
-            src={getImgPath('/images/banner/uin.jpg')}
-            alt="Banner"
-            width={1400}
-            height={500}
-            className="w-full h-[300px] md:h-[400px] object-cover"
-          />
-
-          <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              Fasilitas
-            </h1>
-
-            <div className="text-white/90 flex gap-2 mt-2 flex-wrap">
-              <Link href="/">Home</Link>
-              {pathSegments.map((segment, index) => {
-                const href = '/' + pathSegments.slice(0, index + 1).join('/')
-                const isLast = index === pathSegments.length - 1
-
-                return (
-                  <span key={href} className="flex gap-2">
-                    ›
-                    {isLast ? (
-                      <span>{segment}</span>
-                    ) : (
-                      <Link href={href}>{segment}</Link>
-                    )}
-                  </span>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* CONTENT */}
-      <div className="container">
-
-        {/* TITLE */}
-        <div className="text-center space-y-4 mb-10">
-
-          {/* BADGE */}
-          {/* <div className="inline-block px-4 py-1 text-sm font-medium bg-primary/10 text-primary rounded-full">
-            Akademik
-          </div> */}
-
-          {/* TITLE */}
-          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-            Fasilitas <span className="text-primary">Akademik</span>
-          </h2>
-
-          {/* SUBTITLE */}
-          <p className="max-w-2xl mx-auto text-gray-500 dark:text-gray-400">
-            Program Magister PPI didukung oleh berbagai fasilitas akademik, antara lain:
-          </p>
-
-          {/* GARIS AKSEN */}
-          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-
-        </div>
-
+      <div className="container py-16 lg:py-24">
         {content ? (
-          <div
-            className="prose prose-lg max-w-3xl mx-auto dark:prose-invert pt-10"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+          <RichText html={content} className="mx-auto max-w-3xl" />
         ) : (
-        /* GRID FITUR */
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 pt-10">
-
-          {fasilitas.map((item, i) => {
-            const Icon = item.icon
-
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center px-6"
-              >
-                {/* ICON */}
-                <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon size={28} />
-                </div>
-
-                {/* TITLE */}
-                <h3 className="font-semibold text-lg text-gray-800 mb-2">
-                  {item.title}
-                </h3>
-
-                {/* DESC */}
-                <p className="text-gray-500 text-sm leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            )
-          })}
-
-        </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {fasilitas.map((item, i) => {
+              const Icon = item.icon
+              return (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08 }}
+                  className="card card-hover p-7"
+                >
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/[0.08] text-primary dark:bg-white/10 dark:text-white">
+                    <Icon size={26} />
+                  </div>
+                  <h5 className="mb-2">{item.title}</h5>
+                  <p className="text-sm">{item.desc}</p>
+                </motion.div>
+              )
+            })}
+          </div>
         )}
       </div>
-    </div>
+    </main>
   )
 }
 

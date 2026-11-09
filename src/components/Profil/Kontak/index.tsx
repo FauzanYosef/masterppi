@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Icon } from '@iconify/react'
 import { apiFetch } from '@/lib/api'
+import PageHeader from '@/components/UI/PageHeader'
+import EmptyState from '@/components/UI/EmptyState'
 
 type ContactInfo = {
   id: number
@@ -78,254 +80,107 @@ const KontakPage = () => {
     fetchData()
   }, [])
 
+  const header = (
+    <PageHeader title="Kontak Kami" description="Ada pertanyaan seputar program, admisi, atau kegiatan akademik? Kami siap membantu." />
+  )
+
   if (loading) {
     return (
-      <div className="pt-[180px] pb-[100px] text-center">
-        <p>Loading...</p>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="pt-[180px] pb-[100px]">
-        <div className="container">
-          <div className="max-w-xl mx-auto bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-            <p className="font-semibold text-red-600">
-              Gagal memuat informasi kontak
-            </p>
-
-            <p className="text-sm text-red-500 mt-2">
-              {error}
-            </p>
-          </div>
+      <main>
+        {header}
+        <div className="container py-16 lg:py-24">
+          <div className="mx-auto h-64 max-w-4xl animate-pulse rounded-2xl bg-darkblue/[0.06]" />
         </div>
-      </div>
+      </main>
     )
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
-      <div className="pt-[180px] pb-[100px]">
-        <div className="container text-center">
-          <p className="text-gray-500">
-            Informasi kontak belum tersedia.
-          </p>
+      <main>
+        {header}
+        <div className="container py-16 lg:py-24">
+          <EmptyState
+            tone={error ? 'error' : 'default'}
+            icon="tabler:address-book"
+            title={error ? 'Gagal memuat informasi kontak' : 'Informasi kontak belum tersedia'}
+            description={error || undefined}
+          />
         </div>
-      </div>
+      </main>
     )
   }
 
-  const hasLocation =
-    data.latitude !== null &&
-    data.longitude !== null
-
+  const hasLocation = data.latitude !== null && data.longitude !== null
   const mapUrl =
     data.map_url ||
-    (hasLocation
-      ? `https://maps.google.com/maps?q=${data.latitude},${data.longitude}&z=15&output=embed`
-      : '')
+    (hasLocation ? `https://maps.google.com/maps?q=${data.latitude},${data.longitude}&z=15&output=embed` : '')
+  const whatsappUrl = data.whatsapp
+    ? data.whatsapp.startsWith('http')
+      ? data.whatsapp
+      : `https://wa.me/${data.whatsapp.replace(/\D/g, '')}`
+    : null
+
+  const items = [
+    data.address && { icon: 'tabler:map-pin', label: 'Alamat', value: data.address },
+    data.email && { icon: 'tabler:mail', label: 'Email', value: data.email, href: `mailto:${data.email}` },
+    data.phone && { icon: 'tabler:phone', label: 'Telepon', value: data.phone, href: `tel:${data.phone}` },
+    whatsappUrl && { icon: 'tabler:brand-whatsapp', label: 'WhatsApp', value: 'Hubungi via WhatsApp', href: whatsappUrl, external: true },
+    data.website && { icon: 'tabler:world', label: 'Website', value: data.website, href: data.website, external: true },
+  ].filter(Boolean) as { icon: string; label: string; value: string; href?: string; external?: boolean }[]
 
   return (
-    <div className="pt-[180px] pb-[100px] bg-gray-50 dark:bg-darklight">
-      <div className="container">
+    <main className="bg-secondary dark:bg-darklight">
+      {header}
 
-        {/* TITLE */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-black text-gray-900 dark:text-white">
-            Ada Pertanyaan? <br />
-            <span className="text-primary">
-              Kami Siap Membantu
-            </span>
-          </h2>
-        </div>
-
-        {/* CARD */}
+      <div className="container py-16 lg:py-24">
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 40,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            duration: 0.6,
-          }}
-          className="bg-white dark:bg-dark rounded-2xl overflow-hidden shadow-sm"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="grid gap-6 lg:grid-cols-12"
         >
-
-          {/* TOP CONTENT */}
-          <div className="grid md:grid-cols-2 gap-10 p-10">
-
-            {/* LEFT */}
-            <div className="space-y-6">
-
-              {/* EMAIL */}
-              {data.email && (
-                <div>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Email
-                  </p>
-
-                  <a
-                    href={`mailto:${data.email}`}
-                    className="font-semibold text-lg hover:text-primary transition break-all"
-                  >
-                    {data.email}
-                  </a>
-                </div>
-              )}
-
-              {/* LOCATION */}
-              {data.address && (
-                <div>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Location
-                  </p>
-
-                  <h4 className="font-semibold text-lg text-gray-900 dark:text-white">
-                    {data.address}
-                  </h4>
-                </div>
-              )}
-
-            </div>
-
-            {/* RIGHT */}
-            <div className="space-y-6">
-
-              {/* PHONE */}
-              {data.phone && (
-                <div>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Call Us
-                  </p>
-
-                  <a
-                    href={`tel:${data.phone}`}
-                    className="font-semibold text-lg hover:text-primary transition"
-                  >
-                    {data.phone}
-                  </a>
-                </div>
-              )}
-
-              {/* WHATSAPP */}
-              {data.whatsapp && (
-                <div>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    WhatsApp
-                  </p>
-
-                  <a
-                    href={
-                      data.whatsapp.startsWith('http')
-                        ? data.whatsapp
-                        : `https://wa.me/${data.whatsapp.replace(
-                            /\D/g,
-                            ''
-                          )}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-lg hover:text-primary transition"
-                  >
-                    Hubungi via WhatsApp
-                  </a>
-                </div>
-              )}
-
-              {/* WEBSITE */}
-              {data.website && (
-                <div>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Website
-                  </p>
-
-                  <a
-                    href={data.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-lg hover:text-primary transition break-all"
-                  >
-                    {data.website}
-                  </a>
-                </div>
-              )}
-
-              {/* SOCIAL MEDIA */}
-              <div>
-                <p className="text-gray-500 dark:text-gray-400 mb-2">
-                  Follow Us
-                </p>
-
-                <div className="flex gap-4">
-
-                  {data.website && (
+          <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
+            {items.map((item) => (
+              <div key={item.label} className="card flex items-start gap-4 p-5">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/[0.08] text-primary dark:bg-white/10 dark:text-white">
+                  <Icon icon={item.icon} width={24} aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em]">{item.label}</p>
+                  {item.href ? (
                     <a
-                      href={data.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Website"
+                      href={item.href}
+                      {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      className="mt-1 block break-words font-semibold text-darkblue transition hover:text-primary dark:text-white"
                     >
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 hover:bg-primary hover:text-white transition">
-                        <Icon icon="mdi:web" />
-                      </div>
+                      {item.value}
                     </a>
+                  ) : (
+                    <p className="mt-1 font-semibold !text-darkblue dark:!text-white">{item.value}</p>
                   )}
-
-                  {data.whatsapp && (
-                    <a
-                      href={
-                        data.whatsapp.startsWith('http')
-                          ? data.whatsapp
-                          : `https://wa.me/${data.whatsapp.replace(
-                              /\D/g,
-                              ''
-                            )}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="WhatsApp"
-                    >
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 hover:bg-primary hover:text-white transition">
-                        <Icon icon="mdi:whatsapp" />
-                      </div>
-                    </a>
-                  )}
-
                 </div>
               </div>
-
-            </div>
+            ))}
           </div>
 
-          {/* MAP */}
-          {hasLocation && (
-            <div className="w-full h-[400px] relative">
-
+          <div className="card relative min-h-[360px] lg:col-span-7">
+            {hasLocation || mapUrl ? (
               <iframe
-                width="100%"
-                height="100%"
                 loading="lazy"
-                className="border-0"
+                className="absolute inset-0 h-full w-full border-0"
                 src={mapUrl}
-                title="Lokasi"
+                title="Lokasi Program Magister Pemikiran Politik Islam"
               />
-
-              {/* LABEL */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-md text-sm font-semibold text-primary">
-                We Are Here
+            ) : (
+              <div className="flex h-full min-h-[360px] items-center justify-center">
+                <Icon icon="tabler:map-off" width={40} className="text-lightgrey" aria-hidden />
               </div>
-
-            </div>
-          )}
-
+            )}
+          </div>
         </motion.div>
       </div>
-    </div>
+    </main>
   )
 }
 

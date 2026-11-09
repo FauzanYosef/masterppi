@@ -3,136 +3,95 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { apiFetch } from '@/lib/api'
+import { Icon } from '@iconify/react'
+import { getImageUrl } from '@/lib/api'
+import { getHomeData, type HomeSection } from '@/lib/home'
 import { toHtml } from '@/lib/site-content'
 
-type SejarahData = {
-  title: string | null
-  subtitle: string | null
-  description: string | null
-  image: string | null
-}
+const FALLBACK_IMAGE = '/images/banner/uin.jpg'
 
-type HomeResponse = {
-  success: boolean
-  data: {
-    sejarah?: SejarahData
-  }
-}
+// Gambar bawaan website ada di /images; selain itu berasal dari penyimpanan API.
+const resolveImage = (path?: string | null) =>
+  !path ? FALLBACK_IMAGE : path.startsWith('/images/') ? path : getImageUrl(path)
 
 const SejarahPage = () => {
-  const [sejarah, setSejarah] = useState<SejarahData | null>(null)
+  const [sejarah, setSejarah] = useState<HomeSection | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiFetch<HomeResponse>(
-          '/api/home'
-        )
-
-        setSejarah(response.data?.sejarah || null)
-      } catch (err) {
-        console.error('Error fetch sejarah:', err)
-      } finally {
-        setLoading(false)
-      }
+    let active = true
+    getHomeData().then((data) => {
+      if (!active) return
+      setSejarah(data?.sejarah ?? null)
+      setLoading(false)
+    })
+    return () => {
+      active = false
     }
-
-    fetchData()
   }, [])
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container">
+    <section className='bg-white dark:bg-darklight'>
+      <div className='container'>
+        <div className='grid items-center gap-12 lg:grid-cols-12 lg:gap-16'>
+          {/* Konten */}
+          <div className='order-2 lg:order-1 lg:col-span-6'>
+            <span className='eyebrow'>{sejarah?.subtitle || 'Sejarah Singkat'}</span>
+            <h2 className='mt-4'>
+              {sejarah?.title || 'Program Magister Pemikiran Politik Islam'}
+            </h2>
+            <span className='accent-bar mt-6' />
 
-        {/* GRID 60:40 */}
-        <div className="grid lg:grid-cols-[60%_40%] gap-12 items-stretch">
-
-          {/* KONTEN */}
-          <div className="flex flex-col h-full">
-            <div className="relative flex flex-col h-full overflow-hidden">
-
-              {loading ? (
-                <p>Loading...</p>
-              ) : !sejarah ? (
-                <p className="text-gray-500">
-                  Sejarah belum tersedia.
-                </p>
-              ) : (
-                <>
-                  {/* TITLE */}
-                  <div className="text-left mb-8">
-
-                    {/* BADGE */}
-                    <span className="inline-block px-4 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary/10 text-primary">
-                      {sejarah.subtitle || 'Sejarah Singkat'}
-                    </span>
-
-                    {/* TITLE */}
-                    <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white leading-tight">
-                      {sejarah.title || (
-                        <>
-                          Program Magister <br className="hidden lg:block" />
-                          Pemikiran Politik Islam
-                        </>
-                      )}
-                    </h2>
-
-                    {/* SUBTLE LINE */}
-                    <div className="mt-4 w-20 h-1 bg-primary rounded-full"></div>
-
-                  </div>
-
-                  {/* TEXT PREVIEW */}
-                  <div
-                    className="prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed overflow-hidden max-h-[200px] mr-10 text-justify"
-                    dangerouslySetInnerHTML={{
-                      __html: toHtml(sejarah.description)
-                    }}
-                  />
-
-                  {/* GRADIENT */}
-                  <div className="pointer-events-none absolute bottom-0 left-0 w-full h-24" />
-                </>
-              )}
-
-            </div>
-
-            {/* BUTTON */}
-            {!loading && sejarah && (
-              <div className="flex justify-start mt-8">
-                <Link
-                  href="/profil/sejarah"
-                  className="px-10 py-3 rounded-lg bg-primary text-white text-sm font-semibold shadow hover:scale-105 hover:shadow-lg transition-all duration-300 inline-block"
-                >
-                  Baca Selengkapnya
-                </Link>
+            {loading ? (
+              <div className='mt-8 space-y-3'>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className='h-4 animate-pulse rounded bg-darkblue/[0.06]' style={{ width: `${95 - i * 7}%` }} />
+                ))}
               </div>
+            ) : !sejarah ? (
+              <p className='mt-8'>Sejarah belum tersedia.</p>
+            ) : (
+              <>
+                <div className='relative mt-8'>
+                  <div
+                    className='prose max-h-[220px] max-w-none overflow-hidden text-justify leading-relaxed text-lightgrey dark:prose-invert'
+                    dangerouslySetInnerHTML={{ __html: toHtml(sejarah.description) }}
+                  />
+                  <div className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white dark:from-darklight' />
+                </div>
+                <Link href='/profil/sejarah' className='btn-primary mt-8'>
+                  Baca Sejarah Lengkap
+                  <Icon icon='tabler:arrow-right' width={18} aria-hidden />
+                </Link>
+              </>
             )}
-
           </div>
 
-          {/* GAMBAR */}
-          <div className="flex justify-center items-start">
-            <div className="relative w-full h-[300px] lg:h-[420px]">
-
-              <Image
-                src={
-                  sejarah?.image ||
-                  '/images/banner/uin.jpg'
-                }
-                alt={
-                  sejarah?.title ||
-                  'UIN Sunan Gunung Djati Bandung'
-                }
-                fill
-                className="object-cover rounded-2xl shadow-xl"
-              />
-
+          {/* Gambar */}
+          <div className='order-1 lg:order-2 lg:col-span-6'>
+            <div className='relative'>
+              <div className='absolute -right-4 -top-4 hidden h-32 w-32 rounded-2xl bg-dots sm:block' />
+              <div className='relative aspect-[4/3] overflow-hidden rounded-3xl shadow-lift'>
+                <Image
+                  src={resolveImage(sejarah?.image)}
+                  alt={sejarah?.title || 'UIN Sunan Gunung Djati Bandung'}
+                  fill
+                  sizes='(min-width: 1024px) 50vw, 100vw'
+                  className='object-cover'
+                />
+                <div className='absolute inset-0 bg-gradient-to-t from-darkblue/40 via-transparent to-transparent' />
+              </div>
+              <div className='card absolute -bottom-6 left-6 flex items-center gap-3 px-5 py-4 shadow-lift'>
+                <span className='flex h-11 w-11 items-center justify-center rounded-xl bg-sec-yellow/15 text-sec-yellow'>
+                  <Icon icon='tabler:building-community' width={24} aria-hidden />
+                </span>
+                <div className='leading-tight'>
+                  <p className='text-sm font-semibold !text-darkblue dark:!text-white'>UIN Sunan Gunung Djati</p>
+                  <p className='text-xs'>Bandung, Jawa Barat</p>
+                </div>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

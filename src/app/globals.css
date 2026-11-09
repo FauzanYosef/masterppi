@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* Palet warna website (tidak diubah) */
   --color-primary: #2C5AA8;
   --color-secondary: #f5f9ff;
   --color-lightgrey: #547593;
@@ -12,6 +13,13 @@
   --color-darkblue: #102d47;
   --color-lightdarkblue: #112145;
   --color-sec-yellow : #D9A441;
+  /* Alias untuk kelas `bg-dark` / `text-offwhite` yang sudah dipakai komponen lama */
+  --color-dark: #000f30;
+  --color-offwhite: #547593;
+
+  /* Bayangan lembut yang konsisten */
+  --shadow-soft: 0 1px 2px rgb(16 45 71 / 0.04), 0 4px 16px -4px rgb(16 45 71 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(16 45 71 / 0.04), 0 18px 40px -12px rgb(16 45 71 / 0.22);
 
   /* spacing */
   --spacing-45: 45%;
@@ -19,6 +27,7 @@
   /* breakpoint */
   --breakpoint-xs: 420px;
 }
+
 .scrollbar-hide:hover::-webkit-scrollbar {
   display: block;
   width: 4px;
@@ -35,10 +44,24 @@
 
 @layer utilities {
   .container {
-    @apply max-w-7xl mx-auto w-full px-4;
+    @apply max-w-7xl mx-auto w-full px-4 sm:px-6;
+  }
+
+  /* Pola titik halus untuk latar section */
+  .bg-dots {
+    background-image: radial-gradient(rgb(44 90 168 / 0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgb(44 90 168 / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(44 90 168 / 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
 }
 
+/* Tombol editor (dipakai komponen Editor) */
 .btn {
   padding: 6px 10px;
   border-radius: 6px;
@@ -52,40 +75,89 @@
   background: #f3f4f6;
 }
 
+/* -------------------------------------------------------------------------- */
+/*                      Komponen dasar (dipakai seluruh halaman)              */
+/* -------------------------------------------------------------------------- */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgb(44_90_168/0.6)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#244b8f] hover:shadow-[0_12px_24px_-8px_rgb(44_90_168/0.7)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-primary/30 bg-white px-6 py-3 text-sm font-semibold text-primary transition-all duration-300 hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:bg-transparent dark:text-white dark:border-white/30;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-sec-yellow px-6 py-3 text-sm font-semibold text-darkblue transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_12px_24px_-10px_rgb(217_164_65/0.8)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sec-yellow;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply block h-0.5 w-6 rounded-full bg-sec-yellow;
+  }
+
+  .card {
+    @apply overflow-hidden rounded-2xl border border-darkblue/[0.06] bg-white shadow-soft dark:border-white/10 dark:bg-lightdarkblue;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lift;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full bg-primary/[0.08] px-3 py-1 text-xs font-medium text-primary dark:bg-primary/20 dark:text-blue-200;
+  }
+
+  .accent-bar {
+    @apply block h-1 w-14 rounded-full bg-gradient-to-r from-primary to-sec-yellow;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
+  body {
+    @apply bg-white text-darkblue;
+  }
+
+  ::selection {
+    @apply bg-primary/15;
+  }
+
   section {
-    @apply py-14;
+    @apply py-16 lg:py-24;
   }
 
   h1 {
-    @apply text-darkblue dark:text-white  normal-case md:text-6xl text-5xl font-bold xl:leading-tight leading-tight;
+    @apply text-darkblue dark:text-white normal-case text-4xl md:text-5xl xl:text-6xl font-bold leading-[1.1] tracking-tight;
   }
 
   h2 {
-    @apply text-darkblue dark:text-white  normal-case md:text-5xl text-4xl font-bold;
+    @apply text-darkblue dark:text-white normal-case text-3xl md:text-4xl font-bold leading-tight tracking-tight;
   }
 
   h3 {
-    @apply text-white  normal-case text-3xl font-normal
+    @apply text-white normal-case text-3xl font-normal;
   }
 
   h4 {
-    @apply text-darkblue dark:text-white  normal-case text-2xl font-medium;
+    @apply text-darkblue dark:text-white normal-case text-2xl font-semibold tracking-tight;
   }
 
   h5 {
-    @apply text-darkblue dark:text-white  normal-case text-xl font-medium;
+    @apply text-darkblue dark:text-white normal-case text-xl font-semibold;
   }
 
   h6 {
-    @apply text-darkblue dark:text-white  normal-case text-lg font-medium;
+    @apply text-darkblue dark:text-white normal-case text-lg font-semibold;
   }
 
   p {
-    @apply text-lightgrey normal-case text-base;
+    @apply text-lightgrey normal-case text-base leading-relaxed;
   }
 }
