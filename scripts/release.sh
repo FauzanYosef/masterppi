@@ -8,7 +8,7 @@
 #
 # Alur rilis: cek repo bersih & sinkron → cek kode → naik versi (package.json + tag git vX.Y.Z)
 # → push → GitHub Release → build image <repo>:X.Y.Z di server → jalankan → cek versi yang hidup.
-# Server hanya terjangkau dari jaringan LAN kampus (192.168.18.x).
+# Server dijangkau lewat LAN (192.168.18.134) atau IP publik (103.55.33.134), mana yang tersedia.
 set -euo pipefail
 
 # ---------------------------- konfigurasi project ----------------------------
@@ -23,16 +23,26 @@ CHECK_CMD="npm run typecheck"              # pemeriksaan sebelum rilis
 MIGRATE_CMD=""          # perintah migrasi (kosong = tidak ada)
 # ------------------------------------------------------------------------------
 
-SSH_HOST="${DEPLOY_SSH_HOST:-root@192.168.18.134}"
 SSH_KEY="${DEPLOY_SSH_KEY:-$HOME/.ssh/fisip_server}"
-ssh_run() { ssh -i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 "$SSH_HOST" "$@"; }
+SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=6)
+# Server dicoba lewat LAN dulu (cepat), lalu IP publik bila laptop di luar jaringan kampus.
+# Bisa dipaksa dengan DEPLOY_SSH_HOST=user@host.
+resolve_host() {
+  local h
+  for h in ${DEPLOY_SSH_HOST:-} root@192.168.18.134 root@103.55.33.134; do
+    if ssh "${SSH_OPTS[@]}" "$h" true 2>/dev/null; then SSH_HOST="$h"; return 0; fi
+  done
+  return 1
+}
+SSH_HOST=""; resolve_host || true
+ssh_run() { ssh "${SSH_OPTS[@]}" "$SSH_HOST" "$@"; }
 
 cd "$(dirname "$0")/.."
 say() { printf '\n\033[1m== %s\033[0m\n' "$*"; }
 die() { printf '\033[31mGAGAL: %s\033[0m\n' "$*" >&2; exit 1; }
 current_version() { node -p "require('./package.json').version"; }
 
-need_server() { ssh_run true 2>/dev/null || die "server tidak terjangkau. Pastikan laptop di jaringan 192.168.18.x."; }
+need_server() { [ -n "$SSH_HOST" ] || die "server tidak terjangkau lewat LAN (192.168.18.134) maupun IP publik (103.55.33.134)."; }
 
 wait_for_version() { # $1 = versi yang diharapkan
   local want="$1" out="" i
@@ -116,10 +126,10 @@ case "$cmd" in
   status)
     echo "Laptop   : v$(current_version)  ($(git rev-parse --short HEAD))"
     echo "GitHub   : $(git ls-remote --tags origin 'v*' | sed 's#.*refs/tags/##' | sort -V | tail -1 || true)"
-    if ssh_run true 2>/dev/null; then
-      echo "Server   : $(ssh_run "curl -fsS -m 5 '$VERIFY_URL'" 2>/dev/null || echo 'tidak merespons')"
+    if [ -n "$SSH_HOST" ]; then
+      echo "Server   : ($SSH_HOST) $(ssh_run "curl -fsS -m 5 '$VERIFY_URL'" 2>/dev/null || echo 'tidak merespons')"
       echo "Image    : $(ssh_run "docker images '$IMAGE' --format '{{.Tag}}' | sort -V | tr '\n' ' '")"
-    else echo "Server   : tidak terjangkau (di luar LAN)"; fi ;;
+    else echo "Server   : tidak terjangkau"; fi ;;
 
   *) sed -n 2,9p "$0"; exit 1 ;;
 esac
