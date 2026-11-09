@@ -4,6 +4,8 @@
 services:
   web:
     container_name: mppi-web
+    # Image bertag versi rilis (scripts/release.sh mengisi APP_VERSION); tag 'latest' mengikuti rilis terakhir.
+    image: mppi-web:${APP_VERSION:-latest}
     build:
       context: .
       args:
