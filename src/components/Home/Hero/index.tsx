@@ -31,6 +31,25 @@ const HeroButton = ({ text, url, variant }: { text?: string | null; url?: string
   )
 }
 
+// Parameter autoplay/mute/loop diset sekali saja (URL dari CMS bisa sudah memuatnya). Loop YouTube
+// membutuhkan `playlist` berisi id video yang sama.
+function buildVideoUrl(raw?: string | null): string | null {
+  if (!raw) return null
+  try {
+    const url = new URL(raw)
+    url.searchParams.set('autoplay', '1')
+    url.searchParams.set('mute', '1')
+    url.searchParams.set('controls', '0')
+    url.searchParams.set('loop', '1')
+    url.searchParams.set('playsinline', '1')
+    const id = url.pathname.match(/\/embed\/([\w-]+)/)?.[1]
+    if (id) url.searchParams.set('playlist', id)
+    return url.toString()
+  } catch {
+    return raw
+  }
+}
+
 const Hero = () => {
   const [hero, setHero] = useState<HomeSection | null>(null)
   const [loading, setLoading] = useState(true)
@@ -49,9 +68,7 @@ const Hero = () => {
 
   if (!loading && !hero) return null
 
-  const videoUrl = hero?.video_url
-    ? `${hero.video_url}${hero.video_url.includes('?') ? '&' : '?'}autoplay=1&mute=1&controls=0&loop=1`
-    : null
+  const videoUrl = buildVideoUrl(hero?.video_url)
 
   return (
     <section className='relative isolate overflow-hidden bg-gradient-to-b from-secondary via-white to-white pt-36 pb-20 lg:pt-44 lg:pb-28 dark:from-darkmode dark:via-darklight dark:to-darklight'>
@@ -113,6 +130,8 @@ const Hero = () => {
                   className='aspect-video w-full border-0'
                   title={hero?.title || 'Video profil'}
                   allow='autoplay; encrypted-media; picture-in-picture'
+                  // Situs mengirim Referrer-Policy: same-origin; YouTube menolak embed tanpa referrer (error 153).
+                  referrerPolicy='strict-origin-when-cross-origin'
                   allowFullScreen
                 />
               ) : (
