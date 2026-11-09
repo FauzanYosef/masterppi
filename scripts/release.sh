@@ -96,8 +96,12 @@ case "$cmd" in
     if [ "$DRY" = 1 ]; then echo "(dry-run) berhenti sebelum menaikkan versi."; exit 0; fi
 
     say "Naik versi ($cmd)"
-    npm version "$cmd" -m "Release v%s" >/dev/null
+    # --no-git-tag-version: commit & tag dibuat di bawah, agar berkas lokal (mis. .claude/) tidak menghalangi.
+    npm version "$cmd" --no-git-tag-version >/dev/null
     NEW="$(current_version)"; TAG="v$NEW"
+    git add package.json package-lock.json
+    git commit -q -m "Release $TAG"
+    git tag -a "$TAG" -m "Release $TAG"
     echo "$OLD → $NEW (tag $TAG)"
 
     say "Push ke GitHub"
