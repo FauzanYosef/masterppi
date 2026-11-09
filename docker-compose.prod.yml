@@ -14,6 +14,8 @@ services:
     environment:
       # Bila API berjalan sebagai container di server yang sama, isi dengan nama container-nya.
       INTERNAL_API_URL: ${INTERNAL_API_URL:-https://api-fisip.uinsgd.ac.id}
+      # Sama dengan REVALIDATE_SECRET di fisip-api; supaya perubahan CMS langsung tampil.
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
     ports:
       - "${WEB_PORT:-3002}:3000"
     restart: unless-stopped
