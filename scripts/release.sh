@@ -70,7 +70,9 @@ remote_deploy() { # $1 = versi, $2 = "build" | "reuse", $3 = "migrate" (opsional
     fi
     docker compose $COMPOSE_FILES up -d --no-build $SERVICE
     docker tag '$IMAGE:$v' '$IMAGE:$ALT_TAG'
-    docker image prune -f >/dev/null"
+    docker image prune -f >/dev/null
+    # aaPanel memasang proxy_cache global di nginx; halaman lama bisa tersimpan di sana. Kosongkan setelah deploy.
+    find /www/server/nginx/proxy_cache_dir -type f -delete 2>/dev/null || true"
 }
 
 cmd="${1:-}"
