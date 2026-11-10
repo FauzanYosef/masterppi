@@ -2,27 +2,35 @@ import type { Metadata } from 'next'
 import { DM_Sans } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from 'next-themes'
-import { SITE } from '@/lib/server-api'
+import { SITE, getServerApi } from '@/lib/server-api'
+import { mediaUrl } from '@/lib/site-identity'
 
 const DMSans = DM_Sans({
   variable: '--font-DM-Sans',
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: { default: `${SITE.name} | ${SITE.institution}`, template: '%s' },
-  description: SITE.description,
-  applicationName: SITE.name,
-  openGraph: {
-    type: 'website',
-    locale: 'id_ID',
-    siteName: SITE.name,
-    title: SITE.name,
+export async function generateMetadata(): Promise<Metadata> {
+  // Favicon dari CMS (Pengaturan Website); bila belum diisi memakai /favicon.ico bawaan.
+  const settings = await getServerApi<{ data?: Record<string, string | null | undefined> }>('/api/site-settings')
+  const favicon = mediaUrl(settings?.data?.['site.favicon']) ?? '/favicon.ico'
+
+  return {
+    metadataBase: new URL(SITE.url),
+    title: { default: `${SITE.name} | ${SITE.institution}`, template: '%s' },
     description: SITE.description,
-    images: [{ url: '/images/banner/uin.jpg', alt: SITE.name }],
-  },
-  robots: { index: true, follow: true },
+    applicationName: SITE.name,
+    icons: { icon: favicon },
+    openGraph: {
+      type: 'website',
+      locale: 'id_ID',
+      siteName: SITE.name,
+      title: SITE.name,
+      description: SITE.description,
+      images: [{ url: '/images/banner/uin.jpg', alt: SITE.name }],
+    },
+    robots: { index: true, follow: true },
+  }
 }
 
 export default function RootLayout({
