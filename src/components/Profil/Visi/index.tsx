@@ -5,8 +5,10 @@ import { Icon } from '@iconify/react'
 import { getPage, PROFILE_PAGES } from '@/lib/site-content'
 import PageHeader from '@/components/UI/PageHeader'
 import RichText from '@/components/UI/RichText'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const VisiPage = () => {
+  const { t } = useI18n()
   const [content, setContent] = useState<string | null>(null)
 
   // Visi Misi dari CMS (Profil → Visi Misi); tanpa isi, kutipan visi bawaan yang tampil.
@@ -22,7 +24,7 @@ const VisiPage = () => {
 
   return (
     <main className='bg-white dark:bg-darklight'>
-      <PageHeader title='Visi & Misi' description='Arah dan komitmen Program Magister Pemikiran Politik Islam.' />
+      <PageHeader title={t.pages.visi.title} description={t.pages.visi.description} />
 
       <div className='container py-16 lg:py-24'>
         <div className='mx-auto max-w-3xl'>
@@ -34,11 +36,10 @@ const VisiPage = () => {
               <span className='mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white'>
                 <Icon icon='tabler:target-arrow' width={28} aria-hidden />
               </span>
-              <span className='eyebrow justify-center'>Visi</span>
+              <span className='eyebrow justify-center'>{t.profil.visiEyebrow}</span>
               <blockquote className='mt-6 text-xl font-medium leading-relaxed text-darkblue md:text-2xl dark:text-white'>
-                “Menjadi Program Magister Pemikiran Politik Islam rujukan di Asia Tenggara pada tahun 2030 yang unggul
-                dalam riset, publikasi, dan kontribusi kebijakan, berlandaskan nilai{' '}
-                <span className='font-semibold text-primary dark:text-sec-yellow'>Rahmatan lil Alamin</span>.”
+                “{t.profil.visiQuote}{' '}
+                <span className='font-semibold text-primary dark:text-sec-yellow'>{t.profil.visiValue}</span>.”
               </blockquote>
             </figure>
           )}

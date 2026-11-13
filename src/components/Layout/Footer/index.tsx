@@ -1,6 +1,6 @@
 "use client";
 
-import { FooterLinkType } from "@/app/(main)/types/footerlinks";
+import type { NavLinkType } from "@/types/navlink";
 import {
   DEFAULT_NAVIGATION,
   getContactInfo,
@@ -11,9 +11,11 @@ import {
   type SocialLink,
 } from "@/lib/site-content";
 import { Icon } from "@iconify/react";
-import Link from "next/link";
+import Link from '@/components/UI/LocaleLink';
 import { useEffect, useState } from "react";
 import Logo from "../Header/Logo";
+import { useI18n } from "@/i18n/I18nProvider";
+import { localizeNav } from "@/i18n/nav";
 
 const SOCIAL_ICONS: Record<string, string> = {
   instagram: "tabler:brand-instagram",
@@ -39,7 +41,8 @@ const ContactRow = ({ icon, children }: { icon: string; children: React.ReactNod
 );
 
 const Footer = () => {
-  const [footerlink, setFooterlink] = useState<FooterLinkType[]>(toFooterLinks(DEFAULT_NAVIGATION));
+  const { lang, t } = useI18n();
+  const [cmsNav, setFooterlink] = useState<NavLinkType[]>(DEFAULT_NAVIGATION);
   const [contact, setContact] = useState<ContactInfo | null>(null);
   const [social, setSocial] = useState<SocialLink[]>([]);
 
@@ -48,7 +51,7 @@ const Footer = () => {
     let active = true;
     Promise.all([getNavigation(), getContactInfo(), getSocialLinks()]).then(([items, info, links]) => {
       if (!active) return;
-      setFooterlink(toFooterLinks(items));
+      setFooterlink(items);
       setContact(info);
       setSocial(links);
     });
@@ -57,6 +60,7 @@ const Footer = () => {
     };
   }, []);
 
+  const footerlink = toFooterLinks(localizeNav(cmsNav, lang, t));
   const linkClass = "text-sm text-white/60 transition hover:text-white";
 
   return (
@@ -70,8 +74,7 @@ const Footer = () => {
           <div className="flex flex-col gap-6 lg:col-span-4">
             <Logo inverted />
             <p className="max-w-sm text-sm text-white/60">
-              Program Magister Pemikiran Politik Islam, Fakultas Ilmu Sosial dan Ilmu Politik, UIN Sunan Gunung
-              Djati Bandung.
+              {t.site.about}
             </p>
             {social.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -109,7 +112,7 @@ const Footer = () => {
 
           {/* Kontak */}
           <div className="lg:col-span-4 lg:col-start-9 xl:col-span-3 xl:col-start-10">
-            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.14em] !text-white">Kontak</p>
+            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.14em] !text-white">{t.footer.contact}</p>
             <ul className="flex flex-col gap-4">
               {contact?.address && (
                 <ContactRow icon="tabler:map-pin">
@@ -142,7 +145,7 @@ const Footer = () => {
               {!contact && (
                 <li>
                   <Link href="/profil/kontak" className={linkClass}>
-                    Lihat halaman kontak →
+                    {t.footer.contactPage}
                   </Link>
                 </li>
               )}
@@ -152,7 +155,7 @@ const Footer = () => {
 
         <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 text-center md:flex-row md:text-left">
           <p className="text-xs !text-white/50">
-            © {new Date().getFullYear()} Program Magister Pemikiran Politik Islam — FISIP UIN Sunan Gunung Djati Bandung
+            © {new Date().getFullYear()} {t.footer.rights}
           </p>
           <p className="text-xs !text-white/40">uinsgd.ac.id</p>
         </div>

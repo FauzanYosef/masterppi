@@ -2,7 +2,7 @@
 
 import PageHeader from '@/components/UI/PageHeader'
 import { Icon } from '@iconify/react'
-import PostCard, { PostCardSkeleton, formatDateId, stripHtml } from '@/components/UI/PostCard'
+import PostCard, { PostCardSkeleton, stripHtml } from '@/components/UI/PostCard'
 import EventStatusBadge from '@/components/UI/EventStatusBadge'
 import Pagination from '@/components/UI/Pagination'
 import EmptyState from '@/components/UI/EmptyState'
@@ -11,6 +11,7 @@ import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const LIMIT = 6
 
@@ -44,6 +45,7 @@ type EventResponse = {
 }
 
 const EventPage = () => {
+  const { t, date } = useI18n()
   const [page, setPage] = useState(1)
   // Hasil per halaman; "loading" = hasil belum untuk halaman yang diminta.
   const [result, setResult] = useState<{
@@ -103,8 +105,8 @@ const EventPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Kegiatan Akademik"
-        description="Agenda dan kegiatan akademik yang mendorong pertukaran gagasan, penguatan riset, dan keterlibatan publik."
+        title={t.pages.kegiatan.title}
+        description={t.pages.kegiatan.description}
       />
 
       <div className="container py-16 lg:py-24">
@@ -118,20 +120,20 @@ const EventPage = () => {
         ) : error ? (
           <EmptyState
             tone="error"
-            title="Gagal memuat kegiatan"
+            title={t.akademik.kegiatan.error}
             description={error}
             action={
               <button onClick={() => window.location.reload()} className="btn-primary">
-                Coba Lagi
+                {t.common.retry}
               </button>
             }
           />
         ) : data.length === 0 ? (
-          <EmptyState icon="tabler:calendar-event" title="Belum ada kegiatan" description="Belum tersedia kegiatan untuk ditampilkan." />
+          <EmptyState icon="tabler:calendar-event" title={t.akademik.kegiatan.empty} description={t.akademik.kegiatan.emptyHint} />
         ) : (
           <>
             <p className="mb-8 text-sm">
-              <span className="font-semibold text-darkblue dark:text-white">{total}</span> kegiatan ditemukan
+              <span className="font-semibold text-darkblue dark:text-white">{total}</span> {t.akademik.kegiatan.found}
             </p>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
@@ -141,14 +143,14 @@ const EventPage = () => {
                   href={`/akademik/kegiatan/${item.slug}`}
                   image={getImageUrl(item.cover_image)}
                   title={item.title}
-                  excerpt={stripHtml(item.description, 140) || 'Belum ada deskripsi.'}
+                  excerpt={stripHtml(item.description, 140) || t.common.noDescription}
                   category={item.category}
-                  date={formatDateId(item.start_date)}
+                  date={date(item.start_date)}
                   badge={<EventStatusBadge status={item.status} />}
                   footer={
                     <span className="flex items-center gap-1.5">
                       <Icon icon="tabler:map-pin" width={14} className="shrink-0" aria-hidden />
-                      <span className="truncate">{item.location || 'Lokasi belum tersedia'}</span>
+                      <span className="truncate">{item.location || t.common.locationUnavailable}</span>
                     </span>
                   }
                 />

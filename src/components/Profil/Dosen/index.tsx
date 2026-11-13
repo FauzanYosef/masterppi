@@ -4,12 +4,13 @@ import PageHeader from '@/components/UI/PageHeader'
 
 /* eslint-disable @next/next/no-img-element -- foto dosen dari storage API (ukuran beragam) memakai <img> dengan fallback onError. */
 
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { useEffect, useState } from 'react'
 import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Lecturer = {
   id: number
@@ -141,6 +142,7 @@ const LecturerPhoto = ({
   photo: string | null
   name: string
 }) => {
+  const { t } = useI18n()
   const [imageError, setImageError] =
     useState(false)
 
@@ -177,7 +179,7 @@ const LecturerPhoto = ({
         </svg>
 
         <span className="text-sm">
-          Foto tidak tersedia
+          {t.common.photoUnavailable}
         </span>
       </div>
     )
@@ -186,7 +188,7 @@ const LecturerPhoto = ({
   return (
     <img
       src={imageUrl}
-      alt={name || 'Dosen'}
+      alt={name || t.pages.dosen.title}
       className="
         w-full
         h-full
@@ -213,6 +215,7 @@ const LecturerPhoto = ({
 // =====================================================
 
 const DosenPage = () => {
+  const { t } = useI18n()
   const [lecturers, setLecturers] =
     useState<Lecturer[]>([])
 
@@ -303,8 +306,8 @@ const DosenPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Dosen"
-        description="Para akademisi dengan latar kepakaran yang saling melengkapi dalam politik Islam, pemikiran Islam, dan studi agama."
+        title={t.pages.dosen.title}
+        description={t.pages.dosen.description}
       />
 
       <div className="container py-16 lg:py-24">
@@ -332,7 +335,7 @@ const DosenPage = () => {
             />
 
             <p className="text-gray-500">
-              Memuat data dosen...
+              {t.profil.dosen.loading}
             </p>
 
           </div>
@@ -362,7 +365,7 @@ const DosenPage = () => {
                 font-semibold
                 text-red-600
               ">
-                Gagal memuat data dosen
+                {t.profil.dosen.error}
               </p>
 
               <p className="
@@ -393,7 +396,7 @@ const DosenPage = () => {
             ">
 
               <p className="text-gray-500">
-                Belum ada data dosen.
+                {t.profil.dosen.empty}
               </p>
 
             </div>
@@ -459,7 +462,7 @@ const DosenPage = () => {
                             photo={dosen.photo}
                             name={
                               dosen.name ||
-                              'Dosen'
+                              t.pages.dosen.title
                             }
                           />
 
@@ -511,7 +514,7 @@ const DosenPage = () => {
                             <span className="
                               font-semibold
                             ">
-                              Jabatan:
+                              {t.profil.dosen.position}
                             </span>{' '}
 
                             {
@@ -529,7 +532,7 @@ const DosenPage = () => {
                             <span className="
                               font-semibold
                             ">
-                              Keahlian:
+                              {t.profil.dosen.expertise}
                             </span>{' '}
 
                             {
@@ -550,7 +553,7 @@ const DosenPage = () => {
                             <span className="
                               font-semibold
                             ">
-                              Email:
+                              {t.profil.dosen.email}
                             </span>{' '}
 
                             {
@@ -574,7 +577,7 @@ const DosenPage = () => {
                           "
                         >
 
-                          Lihat Profil
+                          {t.profil.dosen.viewProfile}
 
                           <span className="ml-1">
                             →

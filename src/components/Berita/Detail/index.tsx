@@ -1,13 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
+import { INTL_LOCALE, clientLocale } from '@/i18n/config'
 
 /* =====================================================
    TYPE
@@ -50,7 +52,7 @@ const formatDate = (date?: string | null) => {
     return '-'
   }
 
-  return parsedDate.toLocaleDateString('id-ID', {
+  return parsedDate.toLocaleDateString(INTL_LOCALE[clientLocale()], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -70,7 +72,7 @@ const formatTime = (date?: string | null) => {
     return ''
   }
 
-  return parsedDate.toLocaleTimeString('id-ID', {
+  return parsedDate.toLocaleTimeString(INTL_LOCALE[clientLocale()], {
     hour: '2-digit',
     minute: '2-digit',
   })
@@ -81,6 +83,7 @@ const formatTime = (date?: string | null) => {
 ===================================================== */
 
 const DetailBeritaPage = () => {
+  const { t } = useI18n()
   const params = useParams<{ slug: string | string[] }>()
 
   const slug = Array.isArray(params.slug)
@@ -191,11 +194,11 @@ const DetailBeritaPage = () => {
             </div>
 
             <h1 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
-              Berita Tidak Ditemukan
+              {t.detail.newsNotFound}
             </h1>
 
             <p className="mt-3 text-gray-500 dark:text-gray-400">
-              {error || 'Data berita tidak tersedia.'}
+              {error}
             </p>
 
             <div className="flex justify-center gap-3 mt-8 flex-wrap">
@@ -204,14 +207,14 @@ const DetailBeritaPage = () => {
                 onClick={() => window.location.reload()}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-medium hover:opacity-90 transition"
               >
-                Coba Lagi
+                {t.common.retry}
               </button>
 
               <Link
                 href="/berita"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
               >
-                ← Kembali ke Berita
+                {`← ${t.detail.backToNews}`}
               </Link>
             </div>
           </div>
@@ -238,7 +241,7 @@ const DetailBeritaPage = () => {
               href="/"
               className="text-gray-400 hover:text-primary transition"
             >
-              Beranda
+              {t.nav['/']}
             </Link>
 
             <span className="text-gray-300">/</span>
@@ -247,13 +250,13 @@ const DetailBeritaPage = () => {
               href="/berita"
               className="text-gray-400 hover:text-primary transition"
             >
-              Berita
+              {t.detail.news}
             </Link>
 
             <span className="text-gray-300">/</span>
 
             <span className="text-gray-600 dark:text-gray-300 truncate max-w-[250px]">
-              Detail
+              {t.detail.detail}
             </span>
           </div>
 
@@ -273,7 +276,7 @@ const DetailBeritaPage = () => {
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 text-white/60">
-                  Gambar berita tidak tersedia
+                  {t.common.imageUnavailable}
                 </div>
               )}
 
@@ -286,7 +289,7 @@ const DetailBeritaPage = () => {
 
                   <div className="mb-5">
                     <span className="inline-flex items-center px-4 py-2 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-sm font-medium">
-                      {article.category || 'Berita'}
+                      {article.category || t.detail.news}
                     </span>
                   </div>
 
@@ -307,7 +310,7 @@ const DetailBeritaPage = () => {
 
                     <div className="flex items-center gap-2">
                       <span className="text-lg">👁</span>
-                      <span>{article.views || 0} kali dilihat</span>
+                      <span>{article.views || 0} {t.detail.times} dilihat</span>
                     </div>
                   </div>
 
@@ -332,10 +335,10 @@ const DetailBeritaPage = () => {
 
                   <div>
                     <p className="text-xs uppercase tracking-wider text-gray-400">
-                      Berita
+                      {t.detail.news}
                     </p>
                     <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      Informasi & Publikasi
+                      {t.detail.newsLabel}
                     </p>
                   </div>
                 </div>
@@ -401,7 +404,7 @@ const DetailBeritaPage = () => {
 
               <div className="bg-white dark:bg-dark rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
-                  Informasi Berita
+                  {t.detail.newsInfo}
                 </h2>
 
                 <div className="space-y-1">
@@ -415,7 +418,7 @@ const DetailBeritaPage = () => {
 
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-wider text-gray-400">
-                        Dipublikasikan
+                        {t.detail.published}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                         {formatDate(article.published_at)}
@@ -432,7 +435,7 @@ const DetailBeritaPage = () => {
 
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-wider text-gray-400">
-                        Waktu
+                        {t.detail.time}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                         {formatTime(article.published_at)}
@@ -449,10 +452,10 @@ const DetailBeritaPage = () => {
 
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-wider text-gray-400">
-                        Dibaca
+                        {t.detail.views}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        {article.views || 0} kali
+                        {article.views || 0} {t.detail.times}
                       </p>
                     </div>
                   </div>
@@ -466,10 +469,10 @@ const DetailBeritaPage = () => {
 
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-wider text-gray-400">
-                        Status
+                        {t.detail.status}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-emerald-600">
-                        Dipublikasikan
+                        {t.detail.published}
                       </p>
                     </div>
                   </div>
@@ -484,7 +487,7 @@ const DetailBeritaPage = () => {
                 <span className="transition-transform group-hover:-translate-x-1">
                   ←
                 </span>
-                Kembali ke Berita
+                {t.detail.backToNews}
               </Link>
 
             </aside>
@@ -498,7 +501,7 @@ const DetailBeritaPage = () => {
               className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary transition"
             >
               <span>←</span>
-              Lihat semua berita
+              {t.detail.allNews}
             </Link>
           </div>
 

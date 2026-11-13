@@ -1,11 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import Link from '@/components/UI/LocaleLink'
+import { useCurrentPath, useI18n } from '@/i18n/I18nProvider'
 import type { ReactNode } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
-import { DEFAULT_NAVIGATION } from '@/lib/site-content'
+import { getImgPath } from '@/lib/paths'
 
 type PageHeaderProps = {
   title: ReactNode
@@ -17,29 +16,23 @@ type PageHeaderProps = {
   image?: string
 }
 
-// Peta href → label dari menu bawaan, agar breadcrumb memakai nama yang sama dengan navigasi.
-const LABELS = new Map<string, string>()
-for (const item of DEFAULT_NAVIGATION) {
-  LABELS.set(item.href, item.label)
-  item.submenu?.forEach((sub) => LABELS.set(sub.href, sub.label))
-}
-
-const toLabel = (href: string, segment: string) =>
-  LABELS.get(href) ??
+const toLabel = (labels: Record<string, string>, href: string, segment: string) =>
+  labels[href] ??
   decodeURIComponent(segment)
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (l) => l.toUpperCase())
 
 /** Banner judul halaman dalam yang seragam: latar navy, foto kampus samar, dan breadcrumb. */
 const PageHeader = ({ title, description, eyebrow, currentLabel, image }: PageHeaderProps) => {
-  const pathname = usePathname()
+  const { t } = useI18n()
+  const pathname = useCurrentPath()
   const segments = pathname.split('/').filter(Boolean)
   const crumbs = segments.map((segment, index) => {
     const href = '/' + segments.slice(0, index + 1).join('/')
     const isLast = index === segments.length - 1
-    return { href, label: isLast && currentLabel ? currentLabel : toLabel(href, segment), isLast }
+    return { href, label: isLast && currentLabel ? currentLabel : toLabel(t.nav, href, segment), isLast }
   })
-  const parentLabel = eyebrow ?? (segments.length > 1 ? toLabel('/' + segments[0], segments[0]) : undefined)
+  const parentLabel = eyebrow ?? (segments.length > 1 ? toLabel(t.nav, '/' + segments[0], segments[0]) : undefined)
 
   return (
     <div className='relative isolate overflow-hidden bg-darkblue pt-36 pb-16 md:pt-44 md:pb-20'>
@@ -56,11 +49,11 @@ const PageHeader = ({ title, description, eyebrow, currentLabel, image }: PageHe
       <div className='absolute -right-24 -top-24 -z-10 h-72 w-72 rounded-full bg-sec-yellow/20 blur-3xl' />
 
       <div className='container'>
-        <nav aria-label='Breadcrumb' className='mb-6'>
+        <nav aria-label={t.common.breadcrumb} className='mb-6'>
           <ol className='flex flex-wrap items-center gap-2 text-sm text-white/60'>
             <li>
               <Link href='/' className='transition hover:text-white'>
-                Beranda
+                {t.nav['/']}
               </Link>
             </li>
             {crumbs.map((crumb) => (

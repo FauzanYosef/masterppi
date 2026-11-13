@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getServerApi, SITE } from '@/lib/server-api'
+import { LOCALES, localizePath } from '@/i18n/config'
 
 // Dibuat saat diminta (data dari API), bukan saat build.
 export const dynamic = 'force-dynamic'
@@ -34,14 +35,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getServerApi<{ data?: Row[] }>('/api/events?limit=200'),
   ])
 
-  const entry = (path: string, row?: Row) => ({
-    url: `${SITE.url}${path}`,
-    lastModified: row?.updated_at ? new Date(row.updated_at) : undefined,
-  })
+  // Setiap halaman tercantum dalam semua bahasa, masing-masing dengan tautan hreflang ke versi lainnya.
+  const entries = (path: string, row?: Row): MetadataRoute.Sitemap => {
+    const languages = Object.fromEntries(LOCALES.map((l) => [l, `${SITE.url}${localizePath(path, l)}`]))
+    return LOCALES.map((l) => ({
+      url: languages[l],
+      lastModified: row?.updated_at ? new Date(row.updated_at) : undefined,
+      alternates: { languages },
+    }))
+  }
 
   return [
-    ...STATIC_PATHS.map((path) => entry(path)),
-    ...(articles?.data ?? []).map((row) => entry(`/berita/${row.slug}`, row)),
-    ...(events?.data ?? []).map((row) => entry(`/akademik/kegiatan/${row.slug}`, row)),
+    ...STATIC_PATHS.flatMap((path) => entries(path)),
+    ...(articles?.data ?? []).flatMap((row) => entries(`/berita/${row.slug}`, row)),
+    ...(events?.data ?? []).flatMap((row) => entries(`/akademik/kegiatan/${row.slug}`, row)),
   ]
 }

@@ -1,4 +1,5 @@
 import { apiFetch } from '@/lib/api'
+import { DEFAULT_LOCALE, type Locale } from '@/i18n/config'
 
 export type HomeSection = {
   id?: number
@@ -18,24 +19,26 @@ type HomeResponse = {
   data?: Record<string, HomeSection | undefined>
 }
 
-let pending: Promise<HomeResponse['data'] | null> | null = null
+const pending = new Map<Locale, Promise<HomeResponse['data'] | null>>()
 
 /**
  * Data beranda (/api/home) dipakai beberapa section sekaligus (Hero, Sambutan, Sejarah).
- * Satu permintaan dibagi bersama; bila gagal, permintaan berikutnya mencoba lagi.
+ * Satu permintaan per bahasa dibagi bersama; bila gagal, permintaan berikutnya mencoba lagi.
  */
-export function getHomeData() {
-  if (!pending) {
-    pending = apiFetch<HomeResponse>('/api/home')
+export function getHomeData(lang: Locale = DEFAULT_LOCALE) {
+  let request = pending.get(lang)
+  if (!request) {
+    request = apiFetch<HomeResponse>('/api/home', { lang })
       .then((res) => {
         if (!res.success) throw new Error('API gagal mengambil data halaman utama')
         return res.data ?? null
       })
       .catch((error) => {
-        pending = null
+        pending.delete(lang)
         console.error('Error fetching home:', error)
         return null
       })
+    pending.set(lang, request)
   }
-  return pending
+  return request
 }

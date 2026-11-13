@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { Icon } from '@iconify/react'
 import { getImageUrl } from '@/lib/api'
 import { getHomeData, type HomeSection } from '@/lib/home'
 import { toHtml } from '@/lib/site-content'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const FALLBACK_IMAGE = '/images/banner/uin.jpg'
 
@@ -15,12 +16,13 @@ const resolveImage = (path?: string | null) =>
   !path ? FALLBACK_IMAGE : path.startsWith('/images/') ? path : getImageUrl(path)
 
 const SejarahPage = () => {
+  const { lang, t } = useI18n()
   const [sejarah, setSejarah] = useState<HomeSection | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let active = true
-    getHomeData().then((data) => {
+    getHomeData(lang).then((data) => {
       if (!active) return
       setSejarah(data?.sejarah ?? null)
       setLoading(false)
@@ -28,7 +30,7 @@ const SejarahPage = () => {
     return () => {
       active = false
     }
-  }, [])
+  }, [lang])
 
   return (
     <section className='bg-white dark:bg-darklight'>
@@ -36,9 +38,9 @@ const SejarahPage = () => {
         <div className='grid items-center gap-12 lg:grid-cols-12 lg:gap-16'>
           {/* Konten */}
           <div className='order-2 lg:order-1 lg:col-span-6'>
-            <span className='eyebrow'>{sejarah?.subtitle || 'Sejarah Singkat'}</span>
+            <span className='eyebrow'>{sejarah?.subtitle || t.home.sejarah.eyebrow}</span>
             <h2 className='mt-4'>
-              {sejarah?.title || 'Program Magister Pemikiran Politik Islam'}
+              {sejarah?.title || t.home.sejarah.defaultTitle}
             </h2>
             <span className='accent-bar mt-6' />
 
@@ -49,7 +51,7 @@ const SejarahPage = () => {
                 ))}
               </div>
             ) : !sejarah ? (
-              <p className='mt-8'>Sejarah belum tersedia.</p>
+              <p className='mt-8'>{t.home.sejarah.empty}</p>
             ) : (
               <>
                 <div className='relative mt-8'>
@@ -60,7 +62,7 @@ const SejarahPage = () => {
                   <div className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white dark:from-darklight' />
                 </div>
                 <Link href='/profil/sejarah' className='btn-primary mt-8'>
-                  Baca Sejarah Lengkap
+                  {t.home.sejarah.readFull}
                   <Icon icon='tabler:arrow-right' width={18} aria-hidden />
                 </Link>
               </>
@@ -74,7 +76,7 @@ const SejarahPage = () => {
               <div className='relative aspect-[4/3] overflow-hidden rounded-3xl shadow-lift'>
                 <Image
                   src={resolveImage(sejarah?.image)}
-                  alt={sejarah?.title || 'UIN Sunan Gunung Djati Bandung'}
+                  alt={sejarah?.title || t.site.campusAlt}
                   fill
                   sizes='(min-width: 1024px) 50vw, 100vw'
                   className='object-cover'
@@ -86,8 +88,8 @@ const SejarahPage = () => {
                   <Icon icon='tabler:building-community' width={24} aria-hidden />
                 </span>
                 <div className='leading-tight'>
-                  <p className='text-sm font-semibold !text-darkblue dark:!text-white'>UIN Sunan Gunung Djati</p>
-                  <p className='text-xs'>Bandung, Jawa Barat</p>
+                  <p className='text-sm font-semibold !text-darkblue dark:!text-white'>{t.home.sejarah.campus}</p>
+                  <p className='text-xs'>{t.home.sejarah.city}</p>
                 </div>
               </div>
             </div>

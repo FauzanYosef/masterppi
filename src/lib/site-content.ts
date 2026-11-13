@@ -4,8 +4,8 @@
  * atau data belum diisi.
  */
 import { apiFetch } from '@/lib/api'
-import type { NavLinkType } from '@/app/(main)/types/navlink'
-import type { FooterLinkType } from '@/app/(main)/types/footerlinks'
+import type { NavLinkType } from '@/types/navlink'
+import type { FooterLinkType } from '@/types/footerlinks'
 
 /* -------------------------------------------------------------------------- */
 /*                                    Teks                                    */

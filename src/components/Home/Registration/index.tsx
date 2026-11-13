@@ -1,14 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { Icon } from '@iconify/react'
 import { getImageUrl } from '@/lib/api'
 import { getCurrentAdmission } from '@/lib/site-content'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const DEFAULT_REGISTRATION_URL = 'https://pmb.uinsgd.ac.id'
 
 const RegistrationBanner = () => {
+  const { t } = useI18n()
   const [registrationUrl, setRegistrationUrl] = useState(DEFAULT_REGISTRATION_URL)
 
   // Tautan pendaftaran dari CMS (Akademik → Penerimaan).
@@ -32,24 +34,24 @@ const RegistrationBanner = () => {
 
           <div className='flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center'>
             <div className='max-w-2xl'>
-              <span className='eyebrow !text-sec-yellow'>Penerimaan Mahasiswa Baru</span>
+              <span className='eyebrow !text-sec-yellow'>{t.home.registration.eyebrow}</span>
               <h2 className='mt-4 !text-white'>
-                Bergabung bersama Program Magister <span className='text-sec-yellow'>Pemikiran Politik Islam</span>
+                {t.home.registration.titleLead} <span className='text-sec-yellow'>{t.home.registration.titleAccent}</span>
               </h2>
               <p className='mt-4 !text-white/75 md:text-lg'>
-                Kembangkan kapasitas riset dan analisis Anda dalam kajian politik Islam bersama dosen dan jejaring akademik kami.
+                {t.home.registration.description}
               </p>
             </div>
 
             <div className='flex w-full flex-col gap-3 sm:w-auto sm:flex-row lg:flex-col xl:flex-row'>
               <a href={registrationUrl} target='_blank' rel='noopener noreferrer' className='btn-accent !px-8 !py-4'>
-                Daftar Sekarang
+                {t.home.registration.register}
                 <Icon icon='tabler:arrow-up-right' width={18} aria-hidden />
               </a>
               <Link
                 href='/akademik/admisi'
                 className='inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-4 text-sm font-semibold text-white transition hover:bg-white hover:text-primary'>
-                Info Admisi
+                {t.home.registration.info}
               </Link>
             </div>
           </div>

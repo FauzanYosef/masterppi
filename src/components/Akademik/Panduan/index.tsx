@@ -3,6 +3,7 @@
 import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type AcademicGuide = {
   id: number
@@ -35,6 +36,7 @@ type AcademicGuideResponse = {
 }
 
 const PanduanPage = () => {
+  const { t } = useI18n()
 
   const [data, setData] = useState<AcademicGuide[]>([])
   const [loading, setLoading] = useState(true)
@@ -85,8 +87,8 @@ const PanduanPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Panduan Akademik"
-        description="Dokumen panduan dan pedoman akademik bagi mahasiswa Program Magister Pemikiran Politik Islam."
+        title={t.pages.panduan.title}
+        description={t.pages.panduan.description}
       />
 
       <div className="container  py-16 lg:py-24">
@@ -95,7 +97,7 @@ const PanduanPage = () => {
         {loading && (
           <div className="py-12 text-center">
             <p className="text-gray-500 dark:text-gray-400">
-              Memuat panduan akademik...
+              {t.akademik.panduan.loading}
             </p>
           </div>
         )}
@@ -105,7 +107,7 @@ const PanduanPage = () => {
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950/30">
 
             <p className="font-medium text-red-600 dark:text-red-400">
-              Gagal memuat panduan akademik
+              {t.akademik.panduan.error}
             </p>
 
             <p className="mt-2 text-sm text-red-500 dark:text-red-300">
@@ -126,7 +128,7 @@ const PanduanPage = () => {
               </div>
 
               <p className="text-gray-500 dark:text-gray-400">
-                Data panduan belum tersedia.
+                {t.akademik.panduan.empty}
               </p>
 
             </div>
@@ -178,7 +180,7 @@ const PanduanPage = () => {
                       {/* DESCRIPTION */}
                       <p className="line-clamp-4 text-justify text-sm leading-relaxed text-gray-600 dark:text-gray-300">
                         {item.description ||
-                          'Belum ada deskripsi.'}
+                          t.common.noDescription}
                       </p>
 
                     </div>
@@ -193,11 +195,11 @@ const PanduanPage = () => {
                           rel="noopener noreferrer"
                           className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90"
                         >
-                          Lihat Panduan →
+                          {t.akademik.panduan.view}
                         </a>
                       ) : (
                         <span className="block w-full rounded-lg bg-gray-100 px-4 py-2 text-center text-sm text-gray-400 dark:bg-gray-800">
-                          File belum tersedia
+                          {t.common.fileUnavailable}
                         </span>
                       )}
 

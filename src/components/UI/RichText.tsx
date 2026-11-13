@@ -19,7 +19,7 @@ const RichText = ({ html, className = '' }: RichTextProps) => (
 )
 
 export const RichTextSkeleton = ({ lines = 8 }: { lines?: number }) => (
-  <div className='space-y-3' aria-label='Memuat konten'>
+  <div className='space-y-3' aria-busy='true'>
     {Array.from({ length: lines }).map((_, i) => (
       <div key={i} className='h-4 animate-pulse rounded bg-darkblue/[0.06]' style={{ width: `${98 - ((i * 7) % 30)}%` }} />
     ))}

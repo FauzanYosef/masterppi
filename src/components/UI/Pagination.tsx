@@ -1,3 +1,7 @@
+'use client'
+
+import { useI18n } from '@/i18n/I18nProvider'
+
 type PaginationProps = {
   page: number
   totalPages: number
@@ -23,11 +27,12 @@ const buildPages = (page: number, total: number): (number | 'gap')[] => {
 }
 
 const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
+  const { t } = useI18n()
   if (totalPages <= 1) return null
 
   return (
-    <nav aria-label='Halaman' className='mt-14 flex flex-wrap items-center justify-center gap-2'>
-      <button className={`${base} ${idle}`} disabled={page === 1} onClick={() => onChange(page - 1)} aria-label='Halaman sebelumnya'>
+    <nav aria-label={t.common.pagination} className='mt-14 flex flex-wrap items-center justify-center gap-2'>
+      <button className={`${base} ${idle}`} disabled={page === 1} onClick={() => onChange(page - 1)} aria-label={t.common.previousPage}>
         ←
       </button>
       {buildPages(page, totalPages).map((item, i) =>
@@ -49,7 +54,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
         className={`${base} ${idle}`}
         disabled={page === totalPages}
         onClick={() => onChange(page + 1)}
-        aria-label='Halaman berikutnya'>
+        aria-label={t.common.nextPage}>
         →
       </button>
     </nav>

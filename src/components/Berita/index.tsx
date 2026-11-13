@@ -9,6 +9,7 @@ import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 /* =====================================================
    TYPE
@@ -55,26 +56,12 @@ const stripHtml = (
     .trim()
 }
 
-const formatDate = (
-  date?: string | null
-) => {
-  if (!date) return ''
-
-  return new Date(date).toLocaleDateString(
-    'id-ID',
-    {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }
-  )
-}
-
 /* =====================================================
    PAGE
 ===================================================== */
 
 const BeritaPage = () => {
+  const { t, date } = useI18n()
   const [data, setData] =
     useState<Article[]>([])
 
@@ -170,8 +157,8 @@ const BeritaPage = () => {
 
   const header = (
     <PageHeader
-      title="Berita & Informasi"
-      description="Informasi terbaru seputar kegiatan, akademik, prestasi, dan berbagai aktivitas Program Magister Pemikiran Politik Islam."
+      title={t.pages.berita.title}
+      description={t.pages.berita.description}
     />
   )
 
@@ -182,11 +169,11 @@ const BeritaPage = () => {
         <div className="container py-16 lg:py-24">
           <EmptyState
             tone="error"
-            title="Gagal memuat berita"
+            title={t.berita.loadError}
             description={error}
             action={
               <button onClick={() => window.location.reload()} className="btn-primary">
-                Coba Lagi
+                {t.common.retry}
               </button>
             }
           />
@@ -207,16 +194,16 @@ const BeritaPage = () => {
             ))}
           </div>
         ) : data.length === 0 ? (
-          <EmptyState icon="tabler:news" title="Belum ada berita" description="Belum tersedia berita atau informasi untuk ditampilkan." />
+          <EmptyState icon="tabler:news" title={t.berita.empty} description={t.berita.emptyHint} />
         ) : (
           <>
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm">
-                Menampilkan <span className="font-semibold text-darkblue dark:text-white">{start}–{end}</span> dari{' '}
-                <span className="font-semibold text-darkblue dark:text-white">{total}</span> berita
+                {t.berita.showing} <span className="font-semibold text-darkblue dark:text-white">{start}–{end}</span> {t.berita.of}{' '}
+                <span className="font-semibold text-darkblue dark:text-white">{total}</span> {t.berita.items}
               </p>
               <label className="flex items-center gap-3 text-sm">
-                Tampilkan
+                {t.common.show}
                 <select
                   value={limit}
                   onChange={(e) => {
@@ -241,10 +228,10 @@ const BeritaPage = () => {
                   href={`/berita/${item.slug}`}
                   image={getImageUrl(item.cover_img)}
                   title={item.title}
-                  excerpt={stripHtml(item.content).slice(0, 140) || 'Baca informasi selengkapnya mengenai berita ini.'}
+                  excerpt={stripHtml(item.content).slice(0, 140) || t.berita.fallbackExcerpt}
                   category={item.category}
-                  date={formatDate(item.published_date)}
-                  footer={<span className="truncate">Oleh {item.author || 'Admin'}</span>}
+                  date={date(item.published_date)}
+                  footer={<span className="truncate">{t.common.by} {item.author || 'Admin'}</span>}
                 />
               ))}
             </div>

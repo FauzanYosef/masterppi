@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react'
 import { getPage, PROFILE_PAGES } from '@/lib/site-content'
 import PageHeader from '@/components/UI/PageHeader'
 import RichText from '@/components/UI/RichText'
+import { useI18n } from '@/i18n/I18nProvider'
 import { Calendar, BookOpen, Building2, Users, Database, FlaskConical } from 'lucide-react'
 
 const FasilitasPage = () => {
+  const { t } = useI18n()
   const [content, setContent] = useState<string | null>(null)
 
   // Fasilitas dari CMS (Halaman → "Fasilitas"); tanpa itu, daftar bawaan di bawah yang tampil.
@@ -21,44 +23,14 @@ const FasilitasPage = () => {
     }
   }, [])
 
-  const fasilitas = [
-    {
-      title: 'Ruang Kuliah Modern',
-      desc: 'Fasilitas ruang belajar yang nyaman dan dilengkapi teknologi pembelajaran terbaru.',
-      icon: Calendar
-    },
-    {
-      title: 'Akses Jurnal Internasional',
-      desc: 'Akses ke berbagai jurnal ilmiah internasional dari database universitas.',
-      icon: BookOpen
-    },
-    {
-      title: 'Research Laboratory',
-      desc: 'Islamic Governance, Policy and Digital Politics Lab sebagai pusat riset.',
-      icon: FlaskConical
-    },
-    {
-      title: 'Perpustakaan',
-      desc: 'Koleksi buku dan referensi akademik lengkap untuk menunjang studi.',
-      icon: Building2
-    },
-    {
-      title: 'Ruang Diskusi',
-      desc: 'Area kolaboratif untuk diskusi akademik dan pengembangan ide.',
-      icon: Users
-    },
-    {
-      title: 'Repository Riset',
-      desc: 'Sistem penyimpanan dan akses hasil penelitian mahasiswa dan dosen.',
-      icon: Database
-    }
-  ]
+  const icons = [Calendar, BookOpen, FlaskConical, Building2, Users, Database]
+  const fasilitas = t.profil.fasilitas.map((item, i) => ({ ...item, icon: icons[i] }))
 
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Fasilitas"
-        description="Program Magister PPI didukung oleh berbagai fasilitas akademik untuk menunjang studi dan riset."
+        title={t.pages.fasilitas.title}
+        description={t.pages.fasilitas.description}
       />
 
       <div className="container py-16 lg:py-24">

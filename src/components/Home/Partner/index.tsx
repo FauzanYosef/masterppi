@@ -10,6 +10,7 @@ import 'slick-carousel/slick/slick-theme.css'
 import { Icon } from '@iconify/react'
 import { apiFetch, getImageUrl } from '@/lib/api'
 import SectionHeading from '@/components/UI/SectionHeading'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Partner = {
   id: number
@@ -29,6 +30,7 @@ type PartnersResponse = {
 }
 
 const Partners = () => {
+  const { t } = useI18n()
   const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -95,9 +97,9 @@ const Partners = () => {
     <section className='relative overflow-hidden bg-white dark:bg-darklight'>
       <div className='container relative'>
         <SectionHeading
-          eyebrow='Mitra Strategis'
-          title='Kerja Sama'
-          description='Membangun kemitraan strategis dengan berbagai institusi akademik dan riset untuk memperluas kontribusi ilmiah dalam kajian pemikiran politik Islam.'
+          eyebrow={t.home.partners.eyebrow}
+          title={t.home.partners.title}
+          description={t.home.partners.description}
         />
 
         {loading ? (
@@ -109,7 +111,7 @@ const Partners = () => {
         ) : partners.length === 0 ? (
           <div className='card mx-auto max-w-md px-6 py-10 text-center'>
             <Icon icon='tabler:heart-handshake' width={32} className='mx-auto mb-3 text-lightgrey' aria-hidden />
-            <p>Belum ada data kerja sama.</p>
+            <p>{t.home.partners.empty}</p>
           </div>
         ) : (
           <div className='relative -mx-2 [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]'>
@@ -141,7 +143,7 @@ const Partners = () => {
                 )
 
                 return partner.website ? (
-                  <a key={partner.id} href={partner.website} target='_blank' rel='noopener noreferrer' aria-label={`Website ${partner.name}`}>
+                  <a key={partner.id} href={partner.website} target='_blank' rel='noopener noreferrer' aria-label={`${t.home.partners.website} ${partner.name}`}>
                     {Card}
                   </a>
                 ) : (
@@ -154,7 +156,7 @@ const Partners = () => {
 
         {!loading && partners.length > 0 && (
           <p className='mt-8 text-center text-sm'>
-            <span className='font-semibold text-primary'>{partners.length}</span> institusi mitra
+            <span className='font-semibold text-primary'>{partners.length}</span> {t.home.partners.count}
           </p>
         )}
       </div>

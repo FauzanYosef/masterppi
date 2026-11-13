@@ -3,6 +3,7 @@
 import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type AcademicCalendar = {
   id: number
@@ -26,6 +27,7 @@ type AcademicCalendarResponse = {
 }
 
 const KalenderPage = () => {
+  const { t } = useI18n()
 
 
   const [data, setData] = useState<AcademicCalendar[]>([])
@@ -120,8 +122,8 @@ const KalenderPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Kalender Akademik"
-        description="Jadwal kegiatan akademik Program Studi setiap tahun akademik."
+        title={t.pages.kalender.title}
+        description={t.pages.kalender.description}
       />
 
       <div className="container space-y-14 py-16 lg:py-24">
@@ -138,7 +140,7 @@ const KalenderPage = () => {
               <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
 
               <span>
-                Memuat kalender akademik...
+                {t.akademik.kalender.loading}
               </span>
 
             </div>
@@ -155,7 +157,7 @@ const KalenderPage = () => {
           <div className="max-w-xl mx-auto p-6 rounded-2xl border border-red-200 bg-red-50 text-center">
 
             <h3 className="font-semibold text-red-700">
-              Gagal Memuat Data
+              {t.akademik.loadError}
             </h3>
 
             <p className="mt-2 text-sm text-red-600">
@@ -177,7 +179,7 @@ const KalenderPage = () => {
             <div className="py-16 text-center">
 
               <p className="text-gray-500 dark:text-gray-400">
-                Data kalender akademik belum tersedia.
+                {t.akademik.kalender.empty}
               </p>
 
             </div>
@@ -240,7 +242,7 @@ const KalenderPage = () => {
                         </div>
 
                         <p className="text-gray-600 dark:text-gray-300 mb-4">
-                          Browser tidak dapat menampilkan PDF secara langsung.
+                          {t.akademik.kalender.pdfFallback}
                         </p>
 
                         <a
@@ -251,7 +253,7 @@ const KalenderPage = () => {
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-5 py-3 rounded-lg bg-primary text-white font-medium hover:opacity-90 transition"
                         >
-                          Buka PDF
+                          {t.common.openPdf}
                         </a>
 
                       </div>
@@ -265,7 +267,7 @@ const KalenderPage = () => {
                   <div className="py-12 text-center border rounded-xl">
 
                     <p className="text-gray-500">
-                      File kalender belum tersedia.
+                      {t.akademik.kalender.fileEmpty}
                     </p>
 
                   </div>
@@ -329,11 +331,11 @@ const KalenderPage = () => {
               <div className="mb-8">
 
                 <h3 className="text-2xl md:text-3xl font-bold">
-                  Arsip Kalender Akademik
+                  {t.akademik.kalender.archiveTitle}
                 </h3>
 
                 <p className="mt-2 text-gray-500 dark:text-gray-400">
-                  Kalender akademik tahun-tahun sebelumnya.
+                  {t.akademik.kalender.archiveDescription}
                 </p>
 
               </div>
@@ -368,7 +370,7 @@ const KalenderPage = () => {
                           </div>
 
                           <span className="text-xs px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300">
-                            Arsip
+                            {t.akademik.kalender.archive}
                           </span>
 
                         </div>
@@ -419,13 +421,13 @@ const KalenderPage = () => {
                               rel="noopener noreferrer"
                               className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-lg border border-primary text-primary text-sm font-medium hover:bg-primary hover:text-white transition"
                             >
-                              Buka PDF ↗
+                              {t.akademik.kalender.openPdfExternal}
                             </a>
 
                           ) : (
 
                             <span className="block text-center text-sm text-gray-400 py-2.5">
-                              File tidak tersedia
+                              {t.akademik.kalender.fileMissing}
                             </span>
 
                           )}

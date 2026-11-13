@@ -1,11 +1,12 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { useEffect, useState } from 'react'
 import { Icon } from '@iconify/react'
 import { apiFetch, getImageUrl } from '@/lib/api'
 import SectionHeading from '@/components/UI/SectionHeading'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type GalleryItem = {
   id: number
@@ -25,6 +26,7 @@ type GalleriesResponse = {
 }
 
 const Gallery = () => {
+  const { t } = useI18n()
   const [gallery, setGallery] = useState<GalleryItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -49,9 +51,9 @@ const Gallery = () => {
     <section id='gallery' className='scroll-mt-24 bg-secondary dark:bg-darkmode'>
       <div className='container'>
         <SectionHeading
-          eyebrow='Galeri'
-          title='Dokumentasi Kegiatan'
-          description='Dokumentasi berbagai kegiatan, agenda akademik, serta aktivitas Magister Pemikiran Politik Islam.'
+          eyebrow={t.home.gallery.eyebrow}
+          title={t.home.gallery.title}
+          description={t.home.gallery.description}
         />
 
         <div className='grid auto-rows-[200px] grid-cols-2 gap-4 lg:auto-rows-[240px] lg:grid-cols-4 lg:gap-6'>
@@ -93,7 +95,7 @@ const Gallery = () => {
                 const className = `group relative overflow-hidden rounded-2xl ${i === 0 ? 'col-span-2 row-span-2' : ''}`
 
                 return href ? (
-                  <Link key={item.id} href={href} className={className} aria-label={`Lihat kegiatan ${displayTitle}`}>
+                  <Link key={item.id} href={href} className={className} aria-label={`${t.home.gallery.viewEvent}: ${displayTitle}`}>
                     {content}
                   </Link>
                 ) : (

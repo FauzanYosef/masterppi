@@ -6,15 +6,17 @@ import { Icon } from '@iconify/react'
 import { getImageUrl } from '@/lib/api'
 import { getHomeData, type HomeSection } from '@/lib/home'
 import { toHtml } from '@/lib/site-content'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const SambutanPage = () => {
+  const { lang, t } = useI18n()
   const [sambutan, setSambutan] = useState<HomeSection | null>(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     let active = true
-    getHomeData().then((data) => {
+    getHomeData(lang).then((data) => {
       if (!active) return
       setSambutan(data?.sambutan ?? null)
       setLoading(false)
@@ -22,7 +24,7 @@ const SambutanPage = () => {
     return () => {
       active = false
     }
-  }, [])
+  }, [lang])
 
   return (
     <section className='bg-secondary dark:bg-darkmode'>
@@ -35,7 +37,7 @@ const SambutanPage = () => {
               <div className='relative overflow-hidden rounded-3xl bg-gradient-to-b from-primary/10 to-primary/30 shadow-lift'>
                 <Image
                   src={getImageUrl(sambutan?.image)}
-                  alt='Ketua Program Studi Magister Pemikiran Politik Islam'
+                  alt={t.home.sambutan.photoAlt}
                   width={420}
                   height={520}
                   sizes='(min-width: 1024px) 420px, 90vw'
@@ -47,9 +49,9 @@ const SambutanPage = () => {
 
           {/* Isi */}
           <div className='lg:col-span-7'>
-            <span className='eyebrow'>Sambutan</span>
+            <span className='eyebrow'>{t.home.sambutan.eyebrow}</span>
             <h2 className='mt-4'>
-              Ketua Program Magister <span className='text-primary dark:text-sec-yellow'>Pemikiran Politik Islam</span>
+              {t.home.sambutan.titleLead} <span className='text-primary dark:text-sec-yellow'>{t.home.sambutan.titleAccent}</span>
             </h2>
             <span className='accent-bar mt-6' />
 
@@ -60,13 +62,13 @@ const SambutanPage = () => {
                 ))}
               </div>
             ) : !sambutan ? (
-              <p className='mt-10'>Sambutan belum tersedia.</p>
+              <p className='mt-10'>{t.home.sambutan.empty}</p>
             ) : (
               <>
                 <figure className='card relative mt-10 p-6 md:p-8'>
                   <Icon icon='tabler:quote' width={40} className='absolute -top-5 left-6 rounded-xl bg-primary p-2 text-white' aria-hidden />
                   <blockquote className='text-lg font-medium italic leading-relaxed text-darkblue md:text-xl dark:text-white'>
-                    “Membangun pemikiran politik Islam yang kritis, inklusif, dan relevan dengan tantangan global.”
+                    {t.home.sambutan.quote}
                   </blockquote>
                 </figure>
 
@@ -83,7 +85,7 @@ const SambutanPage = () => {
                 </div>
 
                 <button onClick={() => setExpanded(!expanded)} className='btn-outline mt-8' aria-expanded={expanded}>
-                  {expanded ? 'Tutup' : 'Baca Selengkapnya'}
+                  {expanded ? t.common.close : t.common.readMore}
                   <Icon icon='tabler:chevron-down' width={18} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden />
                 </button>
               </>

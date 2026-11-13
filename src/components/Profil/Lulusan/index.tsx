@@ -5,8 +5,10 @@ import { getPage, PROFILE_PAGES } from '@/lib/site-content'
 import PageHeader from '@/components/UI/PageHeader'
 import RichText, { RichTextSkeleton } from '@/components/UI/RichText'
 import EmptyState from '@/components/UI/EmptyState'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const LulusanPage = () => {
+  const { t } = useI18n()
   const [content, setContent] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
@@ -26,8 +28,8 @@ const LulusanPage = () => {
   return (
     <main className='bg-white dark:bg-darklight'>
       <PageHeader
-        title='Profil Lulusan'
-        description='Kompetensi dan peran yang disiapkan bagi lulusan Magister Pemikiran Politik Islam.'
+        title={t.pages.lulusan.title}
+        description={t.pages.lulusan.description}
       />
 
       <div className='container py-16 lg:py-24'>
@@ -35,7 +37,7 @@ const LulusanPage = () => {
           {loading ? (
             <RichTextSkeleton lines={12} />
           ) : !content ? (
-            <EmptyState icon='tabler:certificate' title='Konten sedang disiapkan' />
+            <EmptyState icon='tabler:certificate' title={t.common.contentPreparing} />
           ) : (
             <RichText html={content} />
           )}

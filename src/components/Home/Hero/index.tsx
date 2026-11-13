@@ -1,19 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { Icon } from '@iconify/react'
 import { getHomeData, type HomeSection } from '@/lib/home'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const QUICK_LINKS = [
-  { href: '/akademik/kurikulum', label: 'Kurikulum', icon: 'tabler:books' },
-  { href: '/akademik/admisi', label: 'Admisi', icon: 'tabler:school' },
-  { href: '/profil/dosen', label: 'Dosen', icon: 'tabler:users' },
-]
+  { href: '/akademik/kurikulum', key: 'kurikulum', icon: 'tabler:books' },
+  { href: '/akademik/admisi', key: 'admisi', icon: 'tabler:school' },
+  { href: '/profil/dosen', key: 'dosen', icon: 'tabler:users' },
+] as const
 
 const isExternal = (url: string) => /^https?:\/\//i.test(url)
 
 const HeroButton = ({ text, url, variant }: { text?: string | null; url?: string | null; variant: 'primary' | 'outline' }) => {
+  const { path } = useI18n()
   if (!text || !url) return null
   const className = variant === 'primary' ? 'btn-primary !px-7 !py-3.5' : 'btn-outline !px-7 !py-3.5'
   const arrow = variant === 'primary' && <Icon icon='tabler:arrow-right' width={18} aria-hidden />
@@ -24,7 +26,7 @@ const HeroButton = ({ text, url, variant }: { text?: string | null; url?: string
       {arrow}
     </a>
   ) : (
-    <Link href={url} className={className}>
+    <Link href={path(url)} className={className}>
       {text}
       {arrow}
     </Link>
@@ -51,12 +53,13 @@ function buildVideoUrl(raw?: string | null): string | null {
 }
 
 const Hero = () => {
+  const { lang, t } = useI18n()
   const [hero, setHero] = useState<HomeSection | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
-    getHomeData().then((data) => {
+    getHomeData(lang).then((data) => {
       if (cancelled) return
       setHero(data?.hero ?? null)
       setLoading(false)
@@ -64,7 +67,7 @@ const Hero = () => {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [lang])
 
   if (!loading && !hero) return null
 
@@ -82,7 +85,7 @@ const Hero = () => {
           <div className='flex flex-col items-center text-center lg:col-span-6 lg:items-start lg:text-left'>
             <span className='mb-6 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-4 py-1.5 text-xs font-semibold text-primary shadow-soft backdrop-blur dark:bg-white/5 dark:text-white'>
               <span className='h-2 w-2 rounded-full bg-sec-yellow' />
-              FISIP · UIN Sunan Gunung Djati Bandung
+              {t.site.faculty}
             </span>
 
             {loading ? (
@@ -111,7 +114,7 @@ const Hero = () => {
                   <span className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary/[0.08] text-primary dark:bg-white/10 dark:text-white'>
                     <Icon icon={link.icon} width={22} aria-hidden />
                   </span>
-                  {link.label}
+                  {t.home.hero.quickLinks[link.key]}
                 </Link>
               ))}
             </div>
@@ -128,7 +131,7 @@ const Hero = () => {
                 <iframe
                   src={videoUrl}
                   className='aspect-video w-full border-0'
-                  title={hero?.title || 'Video profil'}
+                  title={hero?.title || t.home.hero.videoTitle}
                   allow='autoplay; encrypted-media; picture-in-picture'
                   // Situs mengirim Referrer-Policy: same-origin; YouTube menolak embed tanpa referrer (error 153).
                   referrerPolicy='strict-origin-when-cross-origin'
@@ -136,7 +139,7 @@ const Hero = () => {
                 />
               ) : (
                 <div className='flex aspect-video w-full items-center justify-center bg-gradient-to-br from-primary to-darkblue'>
-                  <p className='!text-white/70'>Video tidak tersedia</p>
+                  <p className='!text-white/70'>{t.home.hero.videoUnavailable}</p>
                 </div>
               )}
             </div>

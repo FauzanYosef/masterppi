@@ -9,6 +9,7 @@ import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Organization = {
   id: number
@@ -34,6 +35,7 @@ type OrganizationResponse = {
 }
 
 const OrganisasiPage = () => {
+  const { t } = useI18n()
   const [data, setData] = useState<Organization[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -184,8 +186,8 @@ const OrganisasiPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Struktur Organisasi"
-        description="Susunan pimpinan dan pengelola Program Magister Pemikiran Politik Islam."
+        title={t.pages.organisasi.title}
+        description={t.pages.organisasi.description}
       />
 
       <div className="container py-16 lg:py-24">
@@ -202,7 +204,7 @@ const OrganisasiPage = () => {
               <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
 
               <p>
-                Loading struktur organisasi...
+                {t.profil.organisasi.loading}
               </p>
 
             </div>
@@ -239,7 +241,7 @@ const OrganisasiPage = () => {
             <div className="text-center py-20">
 
               <p className="text-gray-500">
-                Data struktur organisasi belum tersedia.
+                {t.profil.organisasi.empty}
               </p>
 
             </div>

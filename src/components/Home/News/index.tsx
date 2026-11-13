@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { Icon } from '@iconify/react'
 import { apiFetch, getImageUrl } from '@/lib/api'
 import EmptyState from '@/components/UI/EmptyState'
 import SectionHeading from '@/components/UI/SectionHeading'
-import PostCard, { PostCardSkeleton, formatDateId, stripHtml } from '@/components/UI/PostCard'
+import PostCard, { PostCardSkeleton, stripHtml } from '@/components/UI/PostCard'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type NewsType = {
   id?: number
@@ -24,6 +25,7 @@ type ArticlesResponse = {
 }
 
 const News = () => {
+  const { t, date } = useI18n()
   const [news, setNews] = useState<NewsType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -35,7 +37,7 @@ const News = () => {
         setNews(response.success && Array.isArray(response.data) ? response.data.slice(0, 3) : [])
       } catch (error) {
         console.error('Error fetching news:', error)
-        setError('Gagal memuat berita.')
+        setError('error')
       } finally {
         setLoading(false)
       }
@@ -48,12 +50,12 @@ const News = () => {
       <div className='container'>
         <SectionHeading
           align='left'
-          eyebrow='Kabar Terkini'
-          title='Berita Terbaru'
-          description='Informasi terkini seputar publikasi, kegiatan ilmiah, kolaborasi institusi, serta perkembangan kajian pemikiran politik Islam.'
+          eyebrow={t.home.news.eyebrow}
+          title={t.home.news.title}
+          description={t.home.news.description}
           action={
             <Link href='/berita' className='btn-outline'>
-              Semua Berita
+              {t.home.news.all}
               <Icon icon='tabler:arrow-right' width={18} aria-hidden />
             </Link>
           }
@@ -66,9 +68,9 @@ const News = () => {
             ))}
           </div>
         ) : error ? (
-          <EmptyState tone='error' title={error} description='Silakan muat ulang halaman beberapa saat lagi.' />
+          <EmptyState tone='error' title={t.home.news.error} description={t.common.reloadHint} />
         ) : news.length === 0 ? (
-          <EmptyState icon='tabler:news' title='Belum ada berita' description='Berita terbaru akan tampil di sini.' />
+          <EmptyState icon='tabler:news' title={t.home.news.empty} description={t.home.news.emptyHint} />
         ) : (
           <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8'>
             {news.map((item) => (
@@ -77,9 +79,9 @@ const News = () => {
                 href={`/berita/${item.slug}`}
                 image={getImageUrl(item.cover_img)}
                 title={item.title}
-                excerpt={stripHtml(item.content, 140) || 'Baca selengkapnya mengenai berita ini.'}
+                excerpt={stripHtml(item.content, 140) || t.home.news.fallbackExcerpt}
                 category={item.category}
-                date={formatDateId(item.published_date)}
+                date={date(item.published_date)}
               />
             ))}
           </div>

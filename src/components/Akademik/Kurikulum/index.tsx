@@ -3,6 +3,7 @@
 import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Course = {
   id: number
@@ -54,6 +55,7 @@ type CurriculumGroup = {
 }
 
 const KurikulumPage = () => {
+  const { t } = useI18n()
   const [curriculums, setCurriculums] = useState<Curriculum[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -170,25 +172,25 @@ const KurikulumPage = () => {
   ) => {
     switch (type) {
       case 'wajib':
-        return 'Wajib'
+        return t.courseType.wajib
 
       case 'pilihan':
-        return 'Pilihan'
+        return t.courseType.pilihan
 
       case 'konsentrasi':
-        return 'Konsentrasi'
+        return t.courseType.konsentrasi
 
       case 'tesis':
-        return 'Tesis'
+        return t.courseType.tesis
 
       case 'disertasi':
-        return 'Disertasi'
+        return t.courseType.disertasi
 
       case 'praktikum':
-        return 'Praktikum'
+        return t.courseType.praktikum
 
       default:
-        return 'Lainnya'
+        return t.courseType.lainnya
     }
   }
 
@@ -222,8 +224,8 @@ const KurikulumPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Kurikulum"
-        description="Struktur kurikulum yang menyeimbangkan teori dan praktik untuk mengembangkan kompetensi akademik dan profesional."
+        title={t.pages.kurikulum.title}
+        description={t.pages.kurikulum.description}
       />
 
       <div className="container space-y-12 py-16 lg:py-24">
@@ -234,7 +236,7 @@ const KurikulumPage = () => {
             <div className="inline-flex items-center gap-3 text-gray-500">
               <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               <span>
-                Memuat kurikulum...
+                {t.akademik.kurikulum.loading}
               </span>
             </div>
           </div>
@@ -244,7 +246,7 @@ const KurikulumPage = () => {
         {!loading && error && (
           <div className="max-w-xl mx-auto p-6 rounded-2xl border border-red-200 bg-red-50 text-center">
             <h3 className="font-semibold text-red-700">
-              Gagal Memuat Data
+              {t.akademik.loadError}
             </h3>
 
             <p className="mt-2 text-sm text-red-600">
@@ -259,7 +261,7 @@ const KurikulumPage = () => {
           groupedData.length === 0 && (
             <div className="py-16 text-center">
               <p className="text-gray-500 dark:text-gray-400">
-                Data kurikulum belum tersedia.
+                {t.akademik.kurikulum.empty}
               </p>
             </div>
           )}
@@ -297,7 +299,7 @@ const KurikulumPage = () => {
                         {Number(
                           curriculum.total_sks
                         )}{' '}
-                        SKS
+                        {t.akademik.kurikulum.credits}
                       </span>
                     </p>
                   )}
@@ -324,16 +326,16 @@ const KurikulumPage = () => {
                       {/* SEMESTER HEADER */}
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-6 py-5 border-b border-gray-100 dark:border-gray-700">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                          Semester {semester}
+                          {t.akademik.kurikulum.semester} {semester}
                         </h3>
 
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                           {courses.length}{' '}
-                          Mata Kuliah
+                          {t.akademik.kurikulum.course}
                           <span className="mx-2">
                             •
                           </span>
-                          {totalSks} SKS
+                          {totalSks} {t.akademik.kurikulum.credits}
                         </div>
                       </div>
 
@@ -344,19 +346,19 @@ const KurikulumPage = () => {
                           <thead>
                             <tr className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                               <th className="px-4 py-2 text-left">
-                                Kode
+                                {t.akademik.kurikulum.code}
                               </th>
 
                               <th className="px-4 py-2 text-left">
-                                Mata Kuliah
+                                {t.akademik.kurikulum.course}
                               </th>
 
                               <th className="px-4 py-2 text-center">
-                                SKS
+                                {t.akademik.kurikulum.credits}
                               </th>
 
                               <th className="px-4 py-2 text-center">
-                                Tipe
+                                {t.akademik.kurikulum.type}
                               </th>
                             </tr>
                           </thead>

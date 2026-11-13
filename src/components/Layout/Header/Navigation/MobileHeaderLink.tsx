@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { NavLinkType } from '@/app/(main)/types/navlink'
+import Link from '@/components/UI/LocaleLink'
+import { useCurrentPath } from '@/i18n/I18nProvider'
+import { NavLinkType } from '@/types/navlink'
 
 const MobileHeaderLink: React.FC<{ item: NavLinkType; onNavigate?: () => void }> = ({ item, onNavigate }) => {
-  const path = usePathname()
+  const path = useCurrentPath()
   const hasActiveChild = item.submenu?.some((sub) => sub.href === path) ?? false
   const [submenuOpen, setSubmenuOpen] = useState(hasActiveChild)
 

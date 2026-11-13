@@ -3,6 +3,7 @@
 import PageHeader from '@/components/UI/PageHeader'
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/lib/api'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Course = {
   id: number
@@ -24,6 +25,7 @@ type CourseResponse = {
 }
 
 const MatkulPage = () => {
+  const { t } = useI18n()
 
   const [data, setData] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -76,25 +78,25 @@ const MatkulPage = () => {
   ) => {
     switch (type) {
       case 'wajib':
-        return 'Wajib'
+        return t.courseType.wajib
 
       case 'pilihan':
-        return 'Pilihan'
+        return t.courseType.pilihan
 
       case 'konsentrasi':
-        return 'Konsentrasi'
+        return t.courseType.konsentrasi
 
       case 'tesis':
-        return 'Tesis'
+        return t.courseType.tesis
 
       case 'disertasi':
-        return 'Disertasi'
+        return t.courseType.disertasi
 
       case 'praktikum':
-        return 'Praktikum'
+        return t.courseType.praktikum
 
       default:
-        return 'Lainnya'
+        return t.courseType.lainnya
     }
   }
 
@@ -128,8 +130,8 @@ const MatkulPage = () => {
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Mata Kuliah"
-        description="Daftar mata kuliah beserta bobot SKS, semester, dan deskripsinya."
+        title={t.pages.matkul.title}
+        description={t.pages.matkul.description}
       />
 
       <div className="container  py-16 lg:py-24">
@@ -142,7 +144,7 @@ const MatkulPage = () => {
               <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
 
               <span>
-                Memuat mata kuliah...
+                {t.akademik.matkul.loading}
               </span>
 
             </div>
@@ -154,7 +156,7 @@ const MatkulPage = () => {
           <div className="max-w-xl mx-auto p-6 rounded-2xl border border-red-200 bg-red-50 text-center">
 
             <h3 className="font-semibold text-red-700">
-              Gagal Memuat Data
+              {t.akademik.loadError}
             </h3>
 
             <p className="mt-2 text-sm text-red-600">
@@ -170,7 +172,7 @@ const MatkulPage = () => {
           data.length === 0 && (
             <div className="py-16 text-center">
               <p className="text-gray-500 dark:text-gray-400">
-                Data mata kuliah belum tersedia.
+                {t.akademik.matkul.empty}
               </p>
             </div>
           )}
@@ -204,7 +206,7 @@ const MatkulPage = () => {
 
                     {/* SKS */}
                     <span className="shrink-0 text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
-                      {Number(mk.sks)} SKS
+                      {Number(mk.sks)} {t.akademik.kurikulum.credits}
                     </span>
 
                   </div>
@@ -226,7 +228,7 @@ const MatkulPage = () => {
                     {/* SEMESTER */}
                     {mk.semester && (
                       <span className="px-3 py-1 text-xs rounded-full font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                        Semester {mk.semester}
+                        {t.akademik.kurikulum.semester} {mk.semester}
                       </span>
                     )}
 
@@ -235,7 +237,7 @@ const MatkulPage = () => {
                   {/* DESCRIPTION */}
                   <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-justify">
                     {mk.description ||
-                      'Belum ada deskripsi mata kuliah.'}
+                      t.akademik.matkul.noDescription}
                   </p>
 
                 </div>

@@ -3,17 +3,16 @@
 import PageHeader from '@/components/UI/PageHeader'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { getImgPath } from '@/app/(main)/utils/paths'
+import { getImgPath } from '@/lib/paths'
 import { getImageUrl } from '@/lib/api'
 import { getCurrentAdmission, type Admission } from '@/lib/site-content'
+import { useI18n } from '@/i18n/I18nProvider'
 
 const DEFAULT_REGISTRATION_URL = 'https://pmb.uinsgd.ac.id/program-pascasarjana/'
 const DEFAULT_BROCHURES = ['/images/brosur/1.png', '/images/brosur/2.png'].map(getImgPath)
 
-const formatDate = (value: string | null) =>
-  value ? new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : null
-
 const AdmisiPage = () => {
+  const { t, date } = useI18n()
   const [admission, setAdmission] = useState<Admission | null>(null)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
@@ -31,14 +30,15 @@ const AdmisiPage = () => {
   const brochures = admission?.files.filter((f) => f.isImage).map((f) => f.url) ?? []
   const images = brochures.length > 0 ? brochures : DEFAULT_BROCHURES
   const documents = admission?.files.filter((f) => !f.isImage) ?? []
-  const opens = formatDate(admission?.registrationStart ?? null)
-  const closes = formatDate(admission?.registrationEnd ?? null)
+  const longDate = { day: 'numeric', month: 'long', year: 'numeric' } as const
+  const opens = date(admission?.registrationStart, longDate) || null
+  const closes = date(admission?.registrationEnd, longDate) || null
 
   return (
     <main className="bg-white dark:bg-darklight">
       <PageHeader
-        title="Pendaftaran Mahasiswa Baru"
-        description="Calon mahasiswa dapat mengajukan pendaftaran melalui sistem resmi PMB UIN Sunan Gunung Djati Bandung."
+        title={t.pages.admisi.title}
+        description={t.pages.admisi.description}
       />
 
       <div className="py-16 lg:py-24">
@@ -57,7 +57,7 @@ const AdmisiPage = () => {
             >
               <Image
                 src={img}
-                alt={`Brosur PMB ${i + 1}`}
+                alt={`${t.akademik.admisi.brochure} ${i + 1}`}
                 unoptimized={img.startsWith('http')}
                 fill
                 className="object-cover group-hover:scale-105 transition duration-500"
@@ -66,7 +66,7 @@ const AdmisiPage = () => {
               {/* overlay hover */}
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                 <span className="text-white text-sm bg-black/60 px-4 py-2 rounded-full">
-                  Klik untuk memperbesar
+                  {t.akademik.admisi.zoomHint}
                 </span>
               </div>
             </div>
@@ -107,14 +107,14 @@ const AdmisiPage = () => {
           <div className="mt-12 max-w-3xl mx-auto bg-white dark:bg-dark rounded-2xl shadow-md p-6 md:p-8 space-y-4">
             <h3 className="font-semibold text-lg text-gray-800 dark:text-white">
               {admission.title}
-              {admission.academicYear ? ` — Tahun Akademik ${admission.academicYear}` : ''}
+              {admission.academicYear ? ` — ${t.akademik.admisi.academicYear} ${admission.academicYear}` : ''}
             </h3>
             {opens && (
               <p className="text-gray-600 dark:text-gray-300">
-                Pendaftaran dibuka <span className="text-primary font-medium">{opens}</span>
+                {t.akademik.admisi.opens} <span className="text-primary font-medium">{opens}</span>
                 {closes && (
                   <>
-                    {' '}sampai <span className="text-primary font-medium">{closes}</span>
+                    {' '}{t.akademik.admisi.until} <span className="text-primary font-medium">{closes}</span>
                   </>
                 )}
                 .
@@ -143,7 +143,7 @@ const AdmisiPage = () => {
             rel="noopener noreferrer"
             className="inline-block px-8 py-4 bg-primary text-white rounded-full text-sm md:text-base font-medium shadow-lg hover:bg-primary/90 transition"
           >
-            Daftar Sekarang
+            {t.akademik.admisi.register}
           </a>
 
 
@@ -161,7 +161,7 @@ const AdmisiPage = () => {
           <div className="relative w-full max-w-4xl h-[80vh]">
             <Image
               src={selectedImage}
-              alt="Preview Brosur"
+              alt={t.akademik.admisi.preview}
               unoptimized={selectedImage.startsWith('http')}
               fill
               className="object-contain rounded-lg"

@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function ScrollToTop() {
+  const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -14,7 +16,7 @@ export default function ScrollToTop() {
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Kembali ke atas"
+      aria-label={t.common.backToTop}
       className={`fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lift transition-all duration-300 hover:-translate-y-1 hover:bg-darkblue ${
         isVisible ? "opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       }`}

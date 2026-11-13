@@ -1,17 +1,22 @@
 'use client'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Logo from './Logo'
 import HeaderLink from './Navigation/HeaderLink'
 import MobileHeaderLink from './Navigation/MobileHeaderLink'
-import { NavLinkType } from '@/app/(main)/types/navlink'
+import { NavLinkType } from '@/types/navlink'
 import { DEFAULT_NAVIGATION, getNavigation } from '@/lib/site-content'
+import { useI18n } from '@/i18n/I18nProvider'
+import { localizeNav } from '@/i18n/nav'
+import LanguageSwitcher from '@/components/UI/LanguageSwitcher'
 
 const CONTACT_HREF = '/profil/kontak'
 
 const Header: React.FC = () => {
-  const [navlink, setNavlink] = useState<NavLinkType[]>(DEFAULT_NAVIGATION)
+  const { lang, t } = useI18n()
+  const [cmsNav, setNavlink] = useState<NavLinkType[]>(DEFAULT_NAVIGATION)
+  const navlink = localizeNav(cmsNav, lang, t)
   // Menu mobile hanya terbuka di halaman tempat ia dibuka, jadi pindah halaman otomatis menutupnya.
   const [openPath, setOpenPath] = useState<string | null>(null)
   const [sticky, setSticky] = useState(false)
@@ -59,7 +64,7 @@ const Header: React.FC = () => {
       <div className={`container flex items-center justify-between gap-6 transition-all duration-300 ${sticky ? 'h-[72px]' : 'h-[88px]'}`}>
         <Logo compact={sticky} />
 
-        <nav aria-label='Navigasi utama' className='hidden xl:block'>
+        <nav aria-label={t.header.mainNav} className='hidden xl:block'>
           <ul className='flex items-center gap-1'>
             {navlink.map((item) => (
               <HeaderLink key={item.href + item.label} item={item} />
@@ -68,13 +73,14 @@ const Header: React.FC = () => {
         </nav>
 
         <div className='flex items-center gap-3'>
+          <LanguageSwitcher />
           <Link href={CONTACT_HREF} className='btn-primary hidden xl:inline-flex !py-2.5'>
-            Hubungi Kami
+            {t.header.contact}
           </Link>
           <button
             onClick={() => setNavbarOpen(true)}
             className='flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full border border-darkblue/10 transition hover:border-primary/40 hover:bg-secondary xl:hidden dark:border-white/20'
-            aria-label='Buka menu'
+            aria-label={t.header.openMenu}
             aria-expanded={navbarOpen}>
             <span className='block h-0.5 w-5 rounded-full bg-darkblue dark:bg-white' />
             <span className='block h-0.5 w-5 rounded-full bg-darkblue dark:bg-white' />
@@ -82,6 +88,14 @@ const Header: React.FC = () => {
           </button>
         </div>
       </div>
+      {t.header.contentNotice && (
+        <div className='border-t border-sec-yellow/30 bg-sec-yellow/15 dark:bg-sec-yellow/10'>
+          <p className='container flex items-center justify-center gap-2 py-1.5 text-center text-xs !text-darkblue dark:!text-white/80'>
+            <span aria-hidden className='h-1.5 w-1.5 shrink-0 rounded-full bg-sec-yellow' />
+            {t.header.contentNotice}
+          </p>
+        </div>
+      )}
     </header>
 
       {/* Menu mobile (di luar <header>: backdrop-filter membuat elemen fixed ikut terkurung) */}
@@ -101,21 +115,21 @@ const Header: React.FC = () => {
           <Logo withText={false} compact />
           <button
             onClick={() => setNavbarOpen(false)}
-            aria-label='Tutup menu'
+            aria-label={t.header.closeMenu}
             className='flex h-10 w-10 items-center justify-center rounded-full text-darkblue transition hover:bg-secondary hover:text-primary dark:text-white dark:hover:bg-white/10'>
             <svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' aria-hidden>
               <path fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M6 18L18 6M6 6l12 12' />
             </svg>
           </button>
         </div>
-        <nav aria-label='Navigasi mobile' className='flex flex-1 flex-col gap-1 overflow-y-auto p-4'>
+        <nav aria-label={t.header.mobileNav} className='flex flex-1 flex-col gap-1 overflow-y-auto p-4'>
           {navlink.map((item) => (
             <MobileHeaderLink key={item.href + item.label} item={item} onNavigate={() => setNavbarOpen(false)} />
           ))}
         </nav>
         <div className='border-t border-darkblue/[0.06] p-4 dark:border-white/10'>
           <Link href={CONTACT_HREF} className='btn-primary w-full' onClick={() => setNavbarOpen(false)}>
-            Hubungi Kami
+            {t.header.contact}
           </Link>
         </div>
       </aside>

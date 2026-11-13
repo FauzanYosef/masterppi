@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react'
 import { apiFetch } from '@/lib/api'
 import PageHeader from '@/components/UI/PageHeader'
 import EmptyState from '@/components/UI/EmptyState'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type ContactInfo = {
   id: number
@@ -34,6 +35,7 @@ type ContactInfoResponse = {
 }
 
 const KontakPage = () => {
+  const { t } = useI18n()
   const [data, setData] = useState<ContactInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -81,7 +83,7 @@ const KontakPage = () => {
   }, [])
 
   const header = (
-    <PageHeader title="Kontak Kami" description="Ada pertanyaan seputar program, admisi, atau kegiatan akademik? Kami siap membantu." />
+    <PageHeader title={t.pages.kontak.title} description={t.pages.kontak.description} />
   )
 
   if (loading) {
@@ -103,7 +105,7 @@ const KontakPage = () => {
           <EmptyState
             tone={error ? 'error' : 'default'}
             icon="tabler:address-book"
-            title={error ? 'Gagal memuat informasi kontak' : 'Informasi kontak belum tersedia'}
+            title={error ? t.profil.kontak.error : t.profil.kontak.empty}
             description={error || undefined}
           />
         </div>
@@ -122,11 +124,11 @@ const KontakPage = () => {
     : null
 
   const items = [
-    data.address && { icon: 'tabler:map-pin', label: 'Alamat', value: data.address },
-    data.email && { icon: 'tabler:mail', label: 'Email', value: data.email, href: `mailto:${data.email}` },
-    data.phone && { icon: 'tabler:phone', label: 'Telepon', value: data.phone, href: `tel:${data.phone}` },
-    whatsappUrl && { icon: 'tabler:brand-whatsapp', label: 'WhatsApp', value: 'Hubungi via WhatsApp', href: whatsappUrl, external: true },
-    data.website && { icon: 'tabler:world', label: 'Website', value: data.website, href: data.website, external: true },
+    data.address && { icon: 'tabler:map-pin', label: t.profil.kontak.address, value: data.address },
+    data.email && { icon: 'tabler:mail', label: t.profil.kontak.email, value: data.email, href: `mailto:${data.email}` },
+    data.phone && { icon: 'tabler:phone', label: t.profil.kontak.phone, value: data.phone, href: `tel:${data.phone}` },
+    whatsappUrl && { icon: 'tabler:brand-whatsapp', label: t.profil.kontak.whatsapp, value: t.profil.kontak.whatsappCta, href: whatsappUrl, external: true },
+    data.website && { icon: 'tabler:world', label: t.profil.kontak.website, value: data.website, href: data.website, external: true },
   ].filter(Boolean) as { icon: string; label: string; value: string; href?: string; external?: boolean }[]
 
   return (
@@ -170,7 +172,7 @@ const KontakPage = () => {
                 loading="lazy"
                 className="absolute inset-0 h-full w-full border-0"
                 src={mapUrl}
-                title="Lokasi Program Magister Pemikiran Politik Islam"
+                title={t.profil.kontak.mapTitle}
               />
             ) : (
               <div className="flex h-full min-h-[360px] items-center justify-center">

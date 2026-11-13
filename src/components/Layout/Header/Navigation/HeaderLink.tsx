@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { NavLinkType } from '@/app/(main)/types/navlink'
+import Link from '@/components/UI/LocaleLink'
+import { useCurrentPath } from '@/i18n/I18nProvider'
+import { NavLinkType } from '@/types/navlink'
 
 const Chevron = ({ open }: { open: boolean }) => (
   <svg
@@ -16,7 +16,7 @@ const Chevron = ({ open }: { open: boolean }) => (
 
 const HeaderLink: React.FC<{ item: NavLinkType }> = ({ item }) => {
   const [submenuOpen, setSubmenuOpen] = useState(false)
-  const path = usePathname()
+  const path = useCurrentPath()
 
   const isActive = item.submenu ? item.submenu.some((sub) => sub.href === path) : path === item.href
 

@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE, localeFromPath, type Locale } from '@/i18n/config'
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 const SITE_DOMAIN = process.env.NEXT_PUBLIC_SITE_DOMAIN
 
@@ -5,6 +7,12 @@ interface ApiOptions extends RequestInit {
   headers?: HeadersInit
   /** Dipertahankan agar pemanggil lama tetap valid; website publik tidak mengirim token. */
   auth?: boolean
+  /**
+   * Bahasa konten yang diminta (dikirim sebagai header Accept-Language). Bawaan: bahasa halaman
+   * yang sedang dibuka. fisip-api saat ini mengabaikannya; begitu API menyediakan konten
+   * berbahasa Inggris, halaman /en langsung menampilkannya tanpa perubahan di website.
+   */
+  lang?: Locale
 }
 
 export async function apiFetch<T>(
@@ -22,6 +30,7 @@ export async function apiFetch<T>(
   // `auth` hanya penanda lama; website publik tidak pernah mengirim token.
   const {
     auth,
+    lang,
     headers: customHeaders,
     ...fetchOptions
   } = options
@@ -34,6 +43,10 @@ export async function apiFetch<T>(
   const headers = new Headers(customHeaders)
 
   headers.set('X-Site-Domain', SITE_DOMAIN)
+
+  const locale =
+    lang ?? (typeof window !== 'undefined' ? localeFromPath(window.location.pathname) : DEFAULT_LOCALE)
+  if (!headers.has('Accept-Language')) headers.set('Accept-Language', locale)
 
   // Website publik hanya memakai endpoint publik: tidak pernah mengirim token.
   headers.delete('Authorization')

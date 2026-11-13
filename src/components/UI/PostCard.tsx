@@ -1,7 +1,10 @@
+'use client'
+
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/UI/LocaleLink'
 import { Icon } from '@iconify/react'
 import type { ReactNode } from 'react'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type PostCardProps = {
   href: string
@@ -18,7 +21,9 @@ type PostCardProps = {
 }
 
 /** Kartu konten (berita, agenda) yang dipakai di beranda dan halaman daftar. */
-const PostCard = ({ href, image, title, excerpt, category, date, badge, footer, priority }: PostCardProps) => (
+const PostCard = ({ href, image, title, excerpt, category, date, badge, footer, priority }: PostCardProps) => {
+  const { t } = useI18n()
+  return (
   <Link href={href} className='group card card-hover flex h-full flex-col'>
     <div className='relative aspect-[16/10] shrink-0 overflow-hidden bg-secondary'>
       <Image
@@ -34,7 +39,7 @@ const PostCard = ({ href, image, title, excerpt, category, date, badge, footer, 
 
     <div className='flex flex-1 flex-col p-6'>
       <div className='mb-4 flex items-center justify-between gap-3'>
-        <span className='chip'>{category || 'Umum'}</span>
+        <span className='chip'>{category || t.common.general}</span>
         {date && (
           <span className='flex items-center gap-1.5 whitespace-nowrap text-xs text-lightgrey'>
             <Icon icon='tabler:calendar' width={14} aria-hidden />
@@ -51,13 +56,14 @@ const PostCard = ({ href, image, title, excerpt, category, date, badge, footer, 
       <div className='mt-auto flex items-center justify-between gap-3 pt-6'>
         <div className='min-w-0 text-xs text-lightgrey'>{footer}</div>
         <span className='flex items-center gap-1 text-sm font-semibold text-primary dark:text-sec-yellow'>
-          Baca
+          {t.common.read}
           <Icon icon='tabler:arrow-right' width={16} className='transition-transform group-hover:translate-x-1' aria-hidden />
         </span>
       </div>
     </div>
   </Link>
-)
+  )
+}
 
 export const PostCardSkeleton = () => (
   <div className='card flex h-full flex-col'>
@@ -70,11 +76,6 @@ export const PostCardSkeleton = () => (
     </div>
   </div>
 )
-
-export const formatDateId = (date?: string | null) =>
-  date
-    ? new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-    : ''
 
 export const stripHtml = (html?: string | null, max?: number) => {
   if (!html) return ''
