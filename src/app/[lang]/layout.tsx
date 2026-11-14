@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { DM_Sans } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import '../globals.css'
 import { ThemeProvider } from 'next-themes'
 import { SITE, getServerApi } from '@/lib/server-api'
@@ -8,9 +8,10 @@ import { mediaUrl } from '@/lib/site-identity'
 import { getDictionary, hasLocale, LOCALES, OG_LOCALE, DEFAULT_LOCALE } from '@/i18n'
 import { I18nProvider } from '@/i18n/I18nProvider'
 
-const DMSans = DM_Sans({
-  variable: '--font-DM-Sans',
+const jakarta = Plus_Jakarta_Sans({
+  variable: '--font-jakarta',
   subsets: ['latin'],
+  display: 'swap',
 })
 
 export function generateStaticParams() {
@@ -50,8 +51,8 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
   if (!hasLocale(lang)) notFound()
 
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <body className={`${DMSans.variable} antialiased dark:bg-darkmode`}>
+    <html lang={lang} className={jakarta.variable} suppressHydrationWarning>
+      <body className="antialiased dark:bg-darkmode">
         <ThemeProvider attribute='class' enableSystem={false} defaultTheme='light'>
           <I18nProvider lang={lang}>{children}</I18nProvider>
         </ThemeProvider>
