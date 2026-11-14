@@ -342,6 +342,7 @@ const en: Dictionary = {
   },
 
   detail: {
+    indonesianOnly: 'This content is only available in Indonesian.',
     newsNotFound: 'Article Not Found',
     eventNotFound: 'Event Not Found',
     backToNews: 'Back to News',

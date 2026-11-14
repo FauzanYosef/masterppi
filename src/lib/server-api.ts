@@ -17,13 +17,16 @@ function apiBaseUrl(): string | null {
   return url ? url.replace(/\/+$/, '') : null
 }
 
-export async function getServerApi<T>(endpoint: string): Promise<T | null> {
+/** `lang` selain 'id' → ?lang= (terjemahan konten dari CMS bila ada). */
+export async function getServerApi<T>(endpoint: string, lang?: string): Promise<T | null> {
   const base = apiBaseUrl()
   const domain = process.env.NEXT_PUBLIC_SITE_DOMAIN
   if (!base || !domain) return null
+  const url =
+    lang && lang !== 'id' ? `${base}${endpoint}${endpoint.includes('?') ? '&' : '?'}lang=${encodeURIComponent(lang)}` : `${base}${endpoint}`
 
   try {
-    const response = await fetch(`${base}${endpoint}`, {
+    const response = await fetch(url, {
       headers: { Accept: 'application/json', 'X-Site-Domain': domain },
       next: { revalidate: REVALIDATE_SECONDS, tags: ['api'] },
       signal: AbortSignal.timeout(10_000),

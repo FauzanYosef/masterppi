@@ -4,6 +4,7 @@ import DetailBeritaPage from '@/components/Berita/Detail'
 import { getImageUrl } from '@/lib/api'
 import { getServerApi } from '@/lib/server-api'
 import { getDictionary } from '@/i18n'
+import { localizePath } from '@/i18n/config'
 import { languageAlternates, resolveLang } from '@/i18n/metadata'
 
 interface ArticleSummary {
@@ -11,12 +12,14 @@ interface ArticleSummary {
   excerpt: string | null
   cover_img: string | null
   published_at: string | null
+  /** API ?lang=en: true bila sudah diterjemahkan di CMS. */
+  translated?: boolean
 }
 
 type Props = { params: Promise<{ lang: string; slug: string }> }
 
-async function getArticle(slug: string): Promise<ArticleSummary | null> {
-  const res = await getServerApi<{ data?: ArticleSummary }>(`/api/articles/slug/${encodeURIComponent(slug)}`)
+async function getArticle(slug: string, lang?: string): Promise<ArticleSummary | null> {
+  const res = await getServerApi<{ data?: ArticleSummary }>(`/api/articles/slug/${encodeURIComponent(slug)}`, lang)
   return res?.data ?? null
 }
 
@@ -24,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const lang = await resolveLang(params)
   const t = getDictionary(lang)
-  const article = await getArticle(slug)
+  const article = await getArticle(slug, lang)
   if (!article) return { title: t.detail.notFoundMeta, robots: { index: false } }
 
   const description = article.excerpt?.slice(0, 160) || undefined
@@ -33,7 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.title,
     description,
-    alternates: languageAlternates(`/berita/${slug}`, lang),
+    // Belum diterjemahkan di CMS: versi Indonesia jadi canonical (tanpa hreflang) agar tidak dianggap duplikat.
+    alternates:
+      lang !== 'id' && article.translated !== true
+        ? { canonical: localizePath(`/berita/${slug}`, 'id') }
+        : languageAlternates(`/berita/${slug}`, lang),
     openGraph: {
       type: 'article',
       title: article.title,

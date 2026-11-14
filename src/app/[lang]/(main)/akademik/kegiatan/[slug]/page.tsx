@@ -8,6 +8,7 @@ import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import ContentNotice, { isIndonesianOnly } from '@/components/UI/ContentNotice'
 import { useI18n } from '@/i18n/I18nProvider'
 import { INTL_LOCALE, clientLocale } from '@/i18n/config'
 import { dictionaries } from '@/i18n'
@@ -31,6 +32,8 @@ type Event = {
     | 'completed'
   created_at: string
   updated_at: string
+  /** API ?lang=en: true bila sudah diterjemahkan di CMS. */
+  translated?: boolean
 }
 
 type EventResponse = {
@@ -156,7 +159,7 @@ const getStatusClass = (
 ===================================================== */
 
 const EventDetailPage = () => {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const params = useParams()
 
   const slug = Array.isArray(params.slug)
@@ -497,8 +500,11 @@ const EventDetailPage = () => {
 
                 </div>
 
+                <ContentNotice item={event} className="mb-6" />
+
                 {event.description ? (
                   <div
+                    lang={isIndonesianOnly(lang, event) ? 'id' : undefined}
                     className="
                       prose
                       prose-gray

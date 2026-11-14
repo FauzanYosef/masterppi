@@ -8,6 +8,7 @@ import {
   apiFetch,
   getImageUrl,
 } from '@/lib/api'
+import ContentNotice, { isIndonesianOnly } from '@/components/UI/ContentNotice'
 import { useI18n } from '@/i18n/I18nProvider'
 import { INTL_LOCALE, clientLocale } from '@/i18n/config'
 
@@ -31,6 +32,8 @@ type Article = {
   updated_at: string
   author?: string | null
   category?: string | null
+  /** API ?lang=en: true bila sudah diterjemahkan di CMS. */
+  translated?: boolean
 }
 
 type ArticleResponse = {
@@ -83,7 +86,7 @@ const formatTime = (date?: string | null) => {
 ===================================================== */
 
 const DetailBeritaPage = () => {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const params = useParams<{ slug: string | string[] }>()
 
   const slug = Array.isArray(params.slug)
@@ -355,8 +358,11 @@ const DetailBeritaPage = () => {
 
                 {/* CONTENT */}
 
+                <ContentNotice item={article} className="mb-6" />
+
                 {article.content ? (
                   <div
+                    lang={isIndonesianOnly(lang, article) ? 'id' : undefined}
                     className="
                       prose prose-lg prose-gray max-w-none dark:prose-invert
                       prose-headings:font-bold

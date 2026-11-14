@@ -342,6 +342,7 @@ const id = {
   },
 
   detail: {
+    indonesianOnly: 'Konten ini hanya tersedia dalam bahasa Indonesia.',
     newsNotFound: 'Berita Tidak Ditemukan',
     eventNotFound: 'Kegiatan Tidak Ditemukan',
     backToNews: 'Kembali ke Berita',

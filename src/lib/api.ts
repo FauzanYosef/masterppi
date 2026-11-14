@@ -8,9 +8,9 @@ interface ApiOptions extends RequestInit {
   /** Dipertahankan agar pemanggil lama tetap valid; website publik tidak mengirim token. */
   auth?: boolean
   /**
-   * Bahasa konten yang diminta (dikirim sebagai header Accept-Language). Bawaan: bahasa halaman
-   * yang sedang dibuka. fisip-api saat ini mengabaikannya; begitu API menyediakan konten
-   * berbahasa Inggris, halaman /en langsung menampilkannya tanpa perubahan di website.
+   * Bahasa konten yang diminta. Bawaan: bahasa halaman yang sedang dibuka. Selain bahasa
+   * Indonesia dikirim sebagai ?lang= (fisip-api mengganti teks dengan terjemahan dari CMS dan
+   * memberi translated: true|false per data) dan header Accept-Language.
    */
   lang?: Locale
 }
@@ -79,9 +79,15 @@ export async function apiFetch<T>(
 
   const baseUrl = API_URL.replace(/\/+$/, '')
 
-  const normalizedEndpoint = endpoint.startsWith('/')
+  const pathEndpoint = endpoint.startsWith('/')
     ? endpoint
     : `/${endpoint}`
+
+  const method = (fetchOptions.method ?? 'GET').toUpperCase()
+  const normalizedEndpoint =
+    method === 'GET' && locale !== DEFAULT_LOCALE && !/[?&]lang=/.test(pathEndpoint)
+      ? `${pathEndpoint}${pathEndpoint.includes('?') ? '&' : '?'}lang=${encodeURIComponent(locale)}`
+      : pathEndpoint
 
   // ============================================================
   // FETCH
